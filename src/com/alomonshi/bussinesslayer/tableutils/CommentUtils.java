@@ -7,8 +7,8 @@ import java.util.Map;
 
 import com.alomonshi.datalayer.dataaccess.TableComment;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
-import com.alomonshi.object.Comments;
-import com.alomonshi.object.Units;
+import com.alomonshi.object.entity.Comments;
+import com.alomonshi.object.entity.Units;
 
 public class CommentUtils extends TableComment {
 	public Map<Integer,LinkedList<Comments>> getCompanyComments(int companyID) {

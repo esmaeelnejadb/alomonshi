@@ -2,7 +2,7 @@ package com.alomonshi.restwebservices.services;
 
 import com.alomonshi.bussinesslayer.tableutils.CompanyUtils;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
-import com.alomonshi.object.Company;
+import com.alomonshi.object.entity.Company;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

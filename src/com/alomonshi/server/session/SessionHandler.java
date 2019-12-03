@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import javax.websocket.Session;
 
-import com.alomonshi.object.ReserveTime;
+import com.alomonshi.object.entity.ReserveTime;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped

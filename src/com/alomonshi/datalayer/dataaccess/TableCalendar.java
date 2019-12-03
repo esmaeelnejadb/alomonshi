@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TableCalendar {
 
@@ -42,7 +44,6 @@ public abstract class TableCalendar {
 		}
 		return 0;
 	}
-	
 
 	//Getting date
 
@@ -135,5 +136,36 @@ public abstract class TableCalendar {
 			}	
 		}
 		return null;
+	}
+
+	public static List<Integer> getDates(int formDateID, int toDateID){
+		String command = "select ID from CALENDAR where ID between " + formDateID + " and " + toDateID ;
+		List<Integer> dates = new ArrayList<>();
+		Connection conn = DBConnection.getConnection();
+		try
+		{
+			Statement stmt =conn.createStatement();
+			ResultSet rs=stmt.executeQuery(command);
+			while(rs.next())
+			{
+				dates.add(rs.getInt(1)) ;
+			}
+		}catch(SQLException e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return dates;
 	}
 }

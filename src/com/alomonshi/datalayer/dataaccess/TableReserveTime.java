@@ -8,20 +8,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.entity.ReserveTime;
+import com.alomonshi.object.enums.MiddayID;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import com.alomonshi.bussinesslayer.tableutils.CalendarUtils;
 import com.alomonshi.bussinesslayer.tableutils.ClientUtils;
-import com.alomonshi.object.*;
 import com.alomonshi.server.AlomonshiServer;
 
 public class TableReserveTime {
@@ -231,7 +229,7 @@ public class TableReserveTime {
 			PreparedStatement ps = conn.prepareStatement(command);
 			ps.setInt(1, clientdata.getStatus());
 			ps.setInt(2, clientdata.getClientID());
-			ps.setString(3, clientdata.getRescodeID());
+			ps.setString(3, clientdata.getResCodeID());
 			int i=ps.executeUpdate();
 			return i == 1;
 			
@@ -347,10 +345,10 @@ public class TableReserveTime {
 		}
 	}
 	
-	public static List<ReserveTime> getClientUnitReserveTimeInADay(int dateID, int unitID)
+	public static Map<Enum, List<ReserveTime>> getClientUnitReserveTimeInADay(int dateID, int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
-		List<ReserveTime> reserveTimes = new ArrayList<>();
+		Map<Enum, List<ReserveTime>> reserveTimes = new HashMap<>();
 		try
 		{
 			Statement stmt = conn.createStatement();
@@ -795,7 +793,7 @@ public class TableReserveTime {
 			preparedStatement.setInt(1, reserveTime.getUnitID());
 			preparedStatement.setInt(2, reserveTime.getDateID());
 			preparedStatement.setInt(3, reserveTime.getMiddayID());
-			preparedStatement.setTime(4, reserveTime.getStarttime());
+			preparedStatement.setTime(4, reserveTime.getStartTime());
 			preparedStatement.setTime(5, reserveTime.getDuration());
 			preparedStatement.setInt(6, reserveTime.getStatus());
 		}catch (SQLException e){
@@ -809,11 +807,11 @@ public class TableReserveTime {
 			reserveTime.setUnitID(resultSet.getInt(2));
 			reserveTime.setDateID(resultSet.getInt(3));
 			reserveTime.setMiddayID(resultSet.getInt(4));
-			reserveTime.setStarttime(resultSet.getTime(5));
+			reserveTime.setStartTime(resultSet.getTime(5));
 			reserveTime.setDuration(resultSet.getTime(6));
 			reserveTime.setStatus(resultSet.getInt(7));
 			reserveTime.setClientID(resultSet.getInt(8));
-			reserveTime.setRescodeID(resultSet.getString(9));
+			reserveTime.setResCodeID(resultSet.getString(9));
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -826,6 +824,25 @@ public class TableReserveTime {
 				fillReserveTime(resultSet, reserveTime);
 				reserveTimes.add(reserveTime);
 			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+
+	private static void fillReserveTimes(ResultSet resultSet, Map<Enum, List<ReserveTime>> reserveTimes){
+		try{
+			List<ReserveTime> morningReserveTimes = new ArrayList<>();
+			List<ReserveTime> afternoonReserveTimes = new ArrayList<>();
+			while (resultSet.next()){
+				ReserveTime reserveTime = new ReserveTime();
+				fillReserveTime(resultSet, reserveTime);
+				if (reserveTime.getMiddayID() == MiddayID.MORNING.getValue())
+					morningReserveTimes.add(reserveTime);
+				else if (reserveTime.getMiddayID() == MiddayID.AFTERNOON.getValue())
+					afternoonReserveTimes.add(reserveTime);
+			}
+			reserveTimes.put(MiddayID.MORNING, morningReserveTimes);
+			reserveTimes.put(MiddayID.AFTERNOON, afternoonReserveTimes);
 		}catch(SQLException e){
 			e.printStackTrace();
 		}

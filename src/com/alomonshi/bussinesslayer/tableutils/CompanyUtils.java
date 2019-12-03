@@ -9,8 +9,7 @@ import com.alomonshi.datalayer.dataaccess.TableCompanies;
 
 import com.alomonshi.datalayer.dataaccess.TableService;
 import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.object.*;
-import org.apache.poi.ss.usermodel.Table;
+import com.alomonshi.object.entity.Company;
 
 public class CompanyUtils extends TableCompanies {
 	

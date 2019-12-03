@@ -6,7 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.*;
+import com.alomonshi.object.entity.CompanyCategories;
+
 public class TableCompanyCategory {
 
 	public static boolean insert(CompanyCategories companyCategories){

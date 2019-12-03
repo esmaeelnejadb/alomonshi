@@ -12,8 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.bussinesslayer.tableutils.UnitUtils;
-import com.alomonshi.object.*;
+import com.alomonshi.object.entity.Company;
+
 public class TableCompanies {
 
 	public TableCompanies()

@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.*;
-import javafx.concurrent.Service;
+import com.alomonshi.object.entity.Services;
 
 public class TableService {
 

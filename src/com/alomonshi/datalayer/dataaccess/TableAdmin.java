@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.Users;
+import com.alomonshi.object.entity.Users;
 
 public abstract class TableAdmin {
 
@@ -450,7 +450,9 @@ public abstract class TableAdmin {
 		{
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
-			fillUser(rs, user);
+			while (rs.next()){
+				fillUser(rs, user);
+			}
 		}catch(SQLException e)
 		{
 			e.printStackTrace();

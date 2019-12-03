@@ -18,18 +18,18 @@ import com.alomonshi.server.message.MessageEncoder;
 import com.alomonshi.server.message.SendMessage;
 import com.alomonshi.server.message.ServerMessages;
 import com.alomonshi.server.message.sendsms.SMSUtils;
-import com.alomonshi.object.Services;
-import com.alomonshi.object.UnitPicture;
-import com.alomonshi.object.Units;
-import com.alomonshi.object.Users;
+import com.alomonshi.object.entity.Services;
+import com.alomonshi.object.entity.UnitPicture;
+import com.alomonshi.object.entity.Units;
+import com.alomonshi.object.entity.Users;
 import com.alomonshi.server.config.HandShakeConfiguration;
 import com.alomonshi.server.session.SessionHandler;
 import com.alomonshi.server.session.SessionUtils;
 import com.alomonshi.utility.UtilityFunctions;
-import com.alomonshi.object.Comments;
-import com.alomonshi.object.Company;
-import com.alomonshi.object.CompanyCategories;
-import com.alomonshi.object.ReserveTime;
+import com.alomonshi.object.entity.Comments;
+import com.alomonshi.object.entity.Company;
+import com.alomonshi.object.entity.CompanyCategories;
+import com.alomonshi.object.entity.ReserveTime;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -412,7 +412,7 @@ public class AlomonshiServer {
                 	int unitID = Integer.parseInt(jsonMessage.getString("unitID"));
     				int dateID = Integer.parseInt(UtilityFunctions.convertToEnglishDigits(jsonMessage.getString("dateID")));
                 	if(!CalendarUtils.isExpiredDate(dateID)) {
-        				List<ReserveTime> resTimes = TableReserveTime.getClientUnitReserveTimeInADay(dateID, unitID);
+						Map<Enum, List<ReserveTime>> resTimes = TableReserveTime.getClientUnitReserveTimeInADay(dateID, unitID);
         				if(!resTimes.isEmpty())
         				{
                     		try {
@@ -1127,7 +1127,7 @@ public class AlomonshiServer {
     							if(ReserveTimeUtils.isPossibleToGetForService(restimeID, serviceDur))
     							{
     								ReserveTime devotedResTime = ReserveTimeUtils.getReserveTimeFromID(restimeID);
-    								devotedResTime.setServIDs(serviceIDs).setClientID(1);
+    								devotedResTime.setServiceIDs(serviceIDs).setClientID(1);
     								if(ReserveTimeUtils.setClientNewReserveTime(devotedResTime)) {
 										List<ReserveTime> restimes = ReserveTimeUtils.getAdminUnitReserveTimeInADay(dateID, unitID);
 										try {
@@ -1667,7 +1667,7 @@ public class AlomonshiServer {
         						{
         							ReserveTime devotedResTime = ReserveTimeUtils.getReserveTimeFromID(restimeID);
         							if(SessionUtils.checkRestimeIsfreeAndAdd(session, devotedResTime)) {
-            							devotedResTime.setServIDs(serviceIDs).setClientID(userID);
+            							devotedResTime.setServiceIDs(serviceIDs).setClientID(userID);
             							if(ReserveTimeUtils.setClientNewReserveTime(devotedResTime)) {
             								List<Integer> mngIDs = adminUnit.getAdminIDs(unitID);
             								String[] toNumbers = new String[mngIDs.size()];
@@ -1677,8 +1677,8 @@ public class AlomonshiServer {
             									+ "شماره تماس: "	+ clientUtil.getPhoneNo() +  "\n"
             									+ "روز:  " + new CalendarUtils().getDayName(devotedResTime.getDateID()) + "\n"
             									+ "تاریخ:  " + new CalendarUtils().getDate(devotedResTime.getDateID()) + "\n"
-            									+ "ساعت:  " + CalendarUtils.timeToString(CalendarUtils.sqlTimeToLong(devotedResTime.getStarttime())) + "\n"
-            									+ "کد رزرو:  " + devotedResTime.getRescodeID() +"\n\n"
+            									+ "ساعت:  " + CalendarUtils.timeToString(CalendarUtils.sqlTimeToLong(devotedResTime.getStartTime())) + "\n"
+            									+ "کد رزرو:  " + devotedResTime.getResCodeID() +"\n\n"
             									+ "وب سایت الومنشی: \n" + "https://alomonshi.com";
             								//UtilityFunctions.sendSMS(toNumbers, SMSmessage);
 
@@ -1800,7 +1800,7 @@ public class AlomonshiServer {
 										+ "شماره تماس:  " + clientUtil.getPhoneNo() +  "\n"
 										+ "روز:  " + new CalendarUtils().getDayName(restime.getDateID()) + "\n"
 										+ "تاریخ:  " + new CalendarUtils().getDate(restime.getDateID()) + "\n"
-										+ "ساعت:  " + CalendarUtils.timeToString(CalendarUtils.sqlTimeToLong(restime.getStarttime())) +"\n\n"
+										+ "ساعت:  " + CalendarUtils.timeToString(CalendarUtils.sqlTimeToLong(restime.getStartTime())) +"\n\n"
 										+ "وب سایت الومنشی: \n" + "https://alomonshi.com";
 								//UtilityFunctions.sendSMS(toNumbers, SMSmessage);
 							} try {

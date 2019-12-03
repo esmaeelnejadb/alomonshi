@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.*;
+import com.alomonshi.object.entity.CategoryTypes;
 
 public class TableCategoryType {
 	

@@ -20,15 +20,16 @@ import com.alomonshi.bussinesslayer.tableutils.ClientUtils;
 import com.alomonshi.bussinesslayer.tableutils.CommentUtils;
 import com.alomonshi.bussinesslayer.tableutils.ServiceUtils;
 import com.alomonshi.bussinesslayer.tableutils.UnitUtils;
-import com.alomonshi.object.CategoryTypes;
-import com.alomonshi.object.Comments;
-import com.alomonshi.object.Company;
-import com.alomonshi.object.CompanyCategories;
-import com.alomonshi.object.ReserveTime;
-import com.alomonshi.object.Services;
-import com.alomonshi.object.UnitPicture;
-import com.alomonshi.object.Units;
-import com.alomonshi.object.Users;
+import com.alomonshi.object.entity.CategoryTypes;
+import com.alomonshi.object.entity.Comments;
+import com.alomonshi.object.entity.Company;
+import com.alomonshi.object.entity.CompanyCategories;
+import com.alomonshi.object.entity.ReserveTime;
+import com.alomonshi.object.entity.Services;
+import com.alomonshi.object.entity.UnitPicture;
+import com.alomonshi.object.entity.Units;
+import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.enums.MiddayID;
 
 public class SendMessageUtils {
 	
@@ -142,7 +143,7 @@ public class SendMessageUtils {
     {
     	List<Services> services = new ArrayList<Services>();
     	int servsPrice = 0;
-    	for(Integer serviceID : restime.getServIDs()) {
+    	for(Integer serviceID : restime.getServiceIDs()) {
     		services.add(TableService.getService(serviceID));
     		servsPrice += TableService.getPrice(serviceID);
     	}
@@ -152,11 +153,11 @@ public class SendMessageUtils {
 				.add("midID", restime.getMiddayID())
 				.add("date", new CalendarUtils().getDate(restime.getDateID()))
 				.add("day", new CalendarUtils().getDayName(restime.getDateID()))
-				.add("startTime", restime.getStarttime().toString().substring(0, 5))
+				.add("startTime", restime.getStartTime().toString().substring(0, 5))
 				.add("duration", restime.getDuration().toString().substring(0, 5))
 				.add("status", restime.getStatus());
-		if(restime.getRescodeID() != null) {
-			data.add("reserveCode", restime.getRescodeID());
+		if(restime.getResCodeID() != null) {
+			data.add("reserveCode", restime.getResCodeID());
 			data.add("client", createJsonObjectFromUser(new ClientUtils().setUserID(restime.getClientID()).getUser()));
 			data.add("services", createJsonArrayFromServiceList(services));
 			data.add("servsPrice", servsPrice);
@@ -229,22 +230,43 @@ public class SendMessageUtils {
         for(ReserveTime restime : list) {
         	if(restime.getMiddayID() == 1)
         		jsonArray_mor.add(Json.createObjectBuilder()
-                .add("stTime", restime.getStarttime().toString().substring(0, 5))
+                .add("stTime", restime.getStartTime().toString().substring(0, 5))
                 .add("ID", restime.getID())
                 .add("status", restime.getStatus()));
         	else if (restime.getMiddayID() == 2)
         	{
         		jsonArray_aft.add(Json.createObjectBuilder()
-                        .add("stTime", restime.getStarttime().toString().substring(0, 5))
+                        .add("stTime", restime.getStartTime().toString().substring(0, 5))
                         .add("ID", restime.getID())
                         .add("status", restime.getStatus()));
         	}
         }
         data.add("morning", jsonArray_mor.build()).add("afternoon", jsonArray_aft.build());
         return data.build();         
-    }    
-    
-    public JsonArray createJsonObjFromClientReservedtimesList(Map<String,ReserveTime> timeList)
+    }
+
+	public JsonObject createJsonObjFromDayReservetimesList(Map<Enum, List<ReserveTime>> list) {
+		JsonObjectBuilder data = JsonProvider.provider().createObjectBuilder();
+		JsonArrayBuilder jsonArray_mor = Json.createArrayBuilder();
+		JsonArrayBuilder jsonArray_aft = Json.createArrayBuilder();
+		for(ReserveTime reserveTime : list.get(MiddayID.MORNING)) {
+			jsonArray_mor.add(Json.createObjectBuilder()
+					.add("stTime", reserveTime.getStartTime().toString().substring(0, 5))
+					.add("ID", reserveTime.getID())
+					.add("status", reserveTime.getStatus()));
+		}
+
+		for(ReserveTime reserveTime : list.get(MiddayID.AFTERNOON)) {
+			jsonArray_aft.add(Json.createObjectBuilder()
+					.add("stTime", reserveTime.getStartTime().toString().substring(0, 5))
+					.add("ID", reserveTime.getID())
+					.add("status", reserveTime.getStatus()));
+		}
+		data.add("morning", jsonArray_mor.build()).add("afternoon", jsonArray_aft.build());
+		return data.build();
+	}
+
+	public JsonArray createJsonObjFromClientReservedtimesList(Map<String,ReserveTime> timeList)
     {
 		JsonArrayBuilder reservedTimes = Json.createArrayBuilder();
     	for(Entry<String,ReserveTime> entry : timeList.entrySet()) {
@@ -252,7 +274,7 @@ public class SendMessageUtils {
         	int catID = TableCompanies.getCategoryID(compID);
         	int unitID = entry.getValue().getUnitID();
         	int dateID = entry.getValue().getDateID();
-        	List<Integer> serviceIDs = entry.getValue().getServIDs();        	
+        	List<Integer> serviceIDs = entry.getValue().getServiceIDs();
         	String catname = TableCompanyCategory.getCompanyCategory(catID).getCategoryName();
         	String companyname = TableCompanies.getName(compID);
         	String adress ="";
@@ -269,7 +291,7 @@ public class SendMessageUtils {
         		totalprice =+ TableService.getPrice(serviceIDs.get(i));
         	}
         	String date = new CalendarUtils().getDayName(dateID) + " " + new CalendarUtils().getDate(dateID);
-        	String hour = entry.getValue().getStarttime().toString().substring(0, 5);
+        	String hour = entry.getValue().getStartTime().toString().substring(0, 5);
     		switch(entry.getKey().substring(0,1)) {
     		case "0" :    			
     			reservedTimes.add(Json.createObjectBuilder()
@@ -284,7 +306,7 @@ public class SendMessageUtils {
 					.add("hour", hour)
 					.add("totaltime", CalendarUtils.timeToString(totaltime).substring(0, 5))
 					.add("totalprice", totalprice)
-					.add("reservecode", entry.getValue().getRescodeID())
+					.add("reservecode", entry.getValue().getResCodeID())
 					.add("restimeID", entry.getValue().getID()));
 	            break;
     		case "1" :
@@ -300,7 +322,7 @@ public class SendMessageUtils {
         			.add("hour", hour)
 					.add("totaltime", CalendarUtils.timeToString(totaltime).substring(0, 5))
 					.add("totalprice", totalprice)
-        			.add("reservecode", entry.getValue().getRescodeID())
+        			.add("reservecode", entry.getValue().getResCodeID())
         			.add("restimeID", entry.getValue().getID())
         			.add("comment", createJsonObjectFromComment(CommentUtils.getCommentByResTimeID(entry.getValue().getID()))));
 	            break;
@@ -317,7 +339,7 @@ public class SendMessageUtils {
         			.add("hour", hour)
 					.add("totaltime", CalendarUtils.timeToString(totaltime).substring(0, 5))
 					.add("totalprice", totalprice)
-        			.add("reservecode", entry.getValue().getRescodeID())
+        			.add("reservecode", entry.getValue().getResCodeID())
         			.add("restimeID", entry.getValue().getID()));
 	            break;
 	            default:
@@ -374,11 +396,11 @@ public class SendMessageUtils {
     	}
     		
         for(ReserveTime restime : list) {
-    		int unitID  = TableService.getUnitID(restime.getServIDs().get(0));
-        	for(int i = 0; i < restime.getServIDs().size(); i++) {
+    		int unitID  = TableService.getUnitID(restime.getServiceIDs().get(0));
+        	for(int i = 0; i < restime.getServiceIDs().size(); i++) {
         		LinkedHashMap<Integer,Integer> serv_res_no = unit_serv_res_no.get(unitID);        		
-        		int new_res_no = serv_res_no.get(restime.getServIDs().get(i))+1;
-        		serv_res_no.put(restime.getServIDs().get(i), new_res_no);        		
+        		int new_res_no = serv_res_no.get(restime.getServiceIDs().get(i))+1;
+        		serv_res_no.put(restime.getServiceIDs().get(i), new_res_no);
         		unit_serv_res_no.put(unitID, serv_res_no);
         	}
         }

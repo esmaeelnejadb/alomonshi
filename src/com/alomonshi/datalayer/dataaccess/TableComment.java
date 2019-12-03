@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.Comments;
+import com.alomonshi.object.entity.Comments;
 
 public class TableComment {
 
