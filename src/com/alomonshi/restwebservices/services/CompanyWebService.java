@@ -30,6 +30,18 @@ public class CompanyWebService{
     }
 
     @GET
+    @Path("/getCompany")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Company getCompany(@QueryParam("companyID") int companyID){
+        try{
+            return TableCompanies.getCompany(companyID);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
+    @GET
     @Path("/getBestList")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Company> getBestList(){
