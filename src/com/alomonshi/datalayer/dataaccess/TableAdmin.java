@@ -25,7 +25,6 @@ public abstract class TableAdmin {
 		return executeInsertUpdate(user, command);
 	}
 
-
 	/**
 	 * Author Behzad
 	 * This function identify if a manager has been registered before or not

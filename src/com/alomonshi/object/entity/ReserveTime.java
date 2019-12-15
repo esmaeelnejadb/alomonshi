@@ -1,5 +1,8 @@
 package com.alomonshi.object.entity;
 
+import com.alomonshi.object.views.JsonViews;
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.sql.Time;
 import java.util.List;
@@ -8,20 +11,28 @@ import java.util.List;
  * @author Behzad
  * Define reserve time object
  */
-@XmlRootElement(namespace = " ")
 public class ReserveTime {
-	
+
 	private int ID;
+	@JsonView(JsonViews.HiddenViews.class)
 	private int unitID;
+	@JsonView(JsonViews.HiddenViews.class)
 	private int middayID;
+	@JsonView(JsonViews.HiddenViews.class)
 	private int dateID;
+	@JsonView(JsonViews.NormalViews.class)
 	private Time startTime;
+	@JsonView(JsonViews.HiddenViews.class)
 	private Time duration;
+	@JsonView(JsonViews.AdminViews.class)
 	private int status; // 1: not reserved ; 2: reserved; 3 : canceled; 4: hold; 5 : deleted;
+	@JsonView(JsonViews.ClientViews.class)
 	private int clientID;
+	@JsonView(JsonViews.ClientViews.class)
 	private List<Integer> serviceIDs;
+	@JsonView(JsonViews.ClientViews.class)
 	private String resCodeID;
-	
+
 	public int getID() {
 		return ID;
 	}

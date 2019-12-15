@@ -1,6 +1,9 @@
 package com.alomonshi.restwebservices.services;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.object.entity.ReserveTime;
+import com.alomonshi.object.views.JsonViews;
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -17,6 +20,7 @@ public class ReserveTimeWebService {
     @GET
     @Path("/getUnitReserveTime")
     @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(JsonViews.ClientViews.class)
     public Map<Enum, List<ReserveTime>> getReserveTime(@QueryParam("dateID") int dateID, @QueryParam("unitID") int unitID) {
         try {
             return TableReserveTime.getClientUnitReserveTimeInADay(dateID, unitID);
