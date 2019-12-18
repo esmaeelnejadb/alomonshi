@@ -25,5 +25,4 @@ public class AuthenticationCheck {
     public static boolean isTokenValid(Users user){
         return user.getExpirationDate().after(Calendar.getInstance().getTime());
     }
-
 }
