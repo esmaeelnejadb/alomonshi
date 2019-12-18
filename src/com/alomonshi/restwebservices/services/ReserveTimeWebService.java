@@ -17,6 +17,12 @@ import java.util.logging.Logger;
 @Path("/reserveTime")
 public class ReserveTimeWebService {
 
+    /**
+     * Getting list of reserve times in a single day and single unit
+     * @param dateID intended date
+     * @param unitID intended unit
+     * @return list of requested reserve times
+     */
     @GET
     @Path("/getUnitReserveTime")
     @Produces(MediaType.APPLICATION_JSON)

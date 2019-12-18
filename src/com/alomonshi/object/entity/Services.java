@@ -2,6 +2,7 @@ package com.alomonshi.object.entity;
 
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(namespace = " ")
 public class Services {
@@ -11,6 +12,7 @@ public class Services {
 	private String serviceTime;
 	private int servicePrice;
 	private boolean isActive;
+	private List<String> pictureURLs;
 	
 	public boolean getIsActive() {
 		return isActive;
@@ -53,5 +55,13 @@ public class Services {
 	public Services setIsActive(boolean isActive) {
 		this.isActive = isActive;
 		return this;
+	}
+
+	public List<String> getPictureURLs() {
+		return pictureURLs;
+	}
+
+	public void setPictureURLs(List<String> pictureURLs) {
+		this.pictureURLs = pictureURLs;
 	}
 }

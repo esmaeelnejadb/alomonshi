@@ -11,6 +11,10 @@ import java.util.logging.Logger;
 
 @Path("/companyCategories")
 public class CompanyCategoriesWebService{
+    /**
+     * Getting list of available categories
+     * @return list of categories in a specified category type
+     */
     @GET
     @Path("/getList")
     @Produces(MediaType.APPLICATION_JSON)

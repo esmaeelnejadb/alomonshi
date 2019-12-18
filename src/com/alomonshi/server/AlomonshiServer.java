@@ -163,7 +163,7 @@ public class AlomonshiServer {
                 			int newuserID = UtilityFunctions.phoneEncryption(phoneNo);
                 			if(!clientUtil.setUserID(newuserID).isRegistered())
                 				newuser.setPassword(password).setPhoneNo(phoneNo).setUserID(newuserID);
-                			clientUtil.insertNewUser(newuser);
+                			clientUtil.insert(newuser);
             			}
 
             			int newuserID = clientUtil.getUserIDByPhone(phoneNo);
@@ -229,7 +229,7 @@ public class AlomonshiServer {
                 	{
                 		if (clientUtil.getUserIDByPhone(phoneNo) != 0 )
                 		{
-                			clientUtil.setUserID(clientUtil.getUserIDByPhone(phoneNo)).deleteUser();
+                			clientUtil.setUserID(clientUtil.getUserIDByPhone(phoneNo)).delete();
                 		}
                     	String mngName = jsonMessage.getString("mngName");
                     	String mngPassword = jsonMessage.getString("mngPassword");                	
@@ -258,7 +258,7 @@ public class AlomonshiServer {
                         	int companyID = TableCompanies.getID(compName ,catID);
                         	Users newAdmin = new Users();
                         	newAdmin.setName(mngName).setPassword(mngPassword).setPhoneNo(phoneNo).setEmail(mngEmail)
-                        	.setCompanyID(companyID).setStatus(1).setUserID(newUserID);
+                        	.setCompanyID(companyID).setUserLevel(1).setUserID(newUserID);
                         	TableAdmin.insertUser(newAdmin);
                         	try {
                 				SessionUtils.sendToSession(session,sendmessage.setOK().setPageName(pageName)

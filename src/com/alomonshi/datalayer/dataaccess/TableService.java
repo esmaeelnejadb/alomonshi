@@ -548,6 +548,7 @@ public class TableService {
 			service.setServiceTime(resultSet.getString(4));
 			service.setServicePrice(resultSet.getInt(5));
 			service.setIsActive(resultSet.getBoolean(6));
+			service.setPictureURLs(TableServicePicture.getServicePictures(service.getID()));
 		}catch (SQLException e){
 			e.printStackTrace();
 		}

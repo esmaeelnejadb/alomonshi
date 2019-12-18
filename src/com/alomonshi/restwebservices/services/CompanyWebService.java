@@ -15,8 +15,11 @@ import java.util.logging.Logger;
 @Path("/company")
 public class CompanyWebService{
 
-    public CompanyWebService(){}
-
+    /**
+     * getting list of companies in a specified category
+     * @param categoryID intended category id for getting related companies
+     * @return list of companies
+     */
     @GET
     @Path("/getCategoryList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -28,6 +31,12 @@ public class CompanyWebService{
             return null;
         }
     }
+
+    /**
+     * Getting single company all properties
+     * @param companyID intended company
+     * @return company object with all related properties
+     */
 
     @GET
     @Path("/getCompany")
@@ -41,6 +50,11 @@ public class CompanyWebService{
         }
     }
 
+    /**
+     *
+     * return list of best companies
+     */
+
     @GET
     @Path("/getBestList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -53,6 +67,11 @@ public class CompanyWebService{
         }
     }
 
+    /**
+     *
+     * @return list of newest company list
+     */
+
     @GET
     @Path("/getNewestList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,6 +83,16 @@ public class CompanyWebService{
             return null;
         }
     }
+
+    /**
+     * Getting list of searched companies
+     * @param categoryID intended category
+     * @param companyName intended company
+     * @param serviceName intended service
+     * @param lat latitude of user
+     * @param lon longitude of user
+     * @return list of searched companies
+     */
 
     @GET
     @Path("/getSearchedList")

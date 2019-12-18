@@ -1,27 +1,24 @@
 package com.alomonshi.object.entity;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @XmlRootElement(namespace = " ")
 public class Users{
-	
+
+	private int ID;
 	private String name;
-	private String botUsername;
 	private String username;
 	private String password;
 	private String email;
 	private int companyID;
-	private int user_id;
-	private int ID;
-	private int user_action;
+	private int userID;
+	private int userVerificationCode;
 	private String phoneNo;
-	private int status;
-	
-	// Constructor
-	public Users() 
-	{ }
-	
-	
+	private int userLevel;	// Indicates level of the user
+	private String token;
+	private Date expirationDate;
+	private boolean isActive;
+
 	public int getCompanyID() {
 		return companyID;
 	}
@@ -31,9 +28,6 @@ public class Users{
 	public String getName() {
 		return name;
 	}
-	public String getBotUsername() {
-		return botUsername;
-	}
 	public String getPassword() {
 		return password;
 	}
@@ -41,19 +35,19 @@ public class Users{
 		return email;
 	}
 	public int getUserID() {
-		return user_id;
+		return userID;
 	}
 	public int getID() {
 		return ID;
 	}
-	public int getUserAction() {
-		return user_action;
+	public int getVerificationCode() {
+		return userVerificationCode;
 	}
 	public String getPhoneNo() {
 		return phoneNo;
 	}
-	public int getStatus() {
-		return status;
+	public int getUserLevel() {
+		return userLevel;
 	}
 	public Users setName(String name) {
 		this.name = name;
@@ -61,10 +55,6 @@ public class Users{
 	}
 	public Users setUsername(String username) {
 		this.username = username;
-		return this;		
-	}
-	public Users setBotUsername(String botUsername) {
-		this.botUsername = botUsername;
 		return this;
 	}
 	public Users setPassword(String password) {
@@ -76,27 +66,51 @@ public class Users{
 		return this;
 	}
 	public Users setUserID(int chat_id) {
-		this.user_id = chat_id;
+		this.userID = chat_id;
 		return this;
 	}
 	public Users setID(int ID) {
 		this.ID = ID;
 		return this;
 	}
-	public Users setUserAction(int user_action) {
-		this.user_action = user_action;
+	public Users setVerificationCode(int user_action) {
+		this.userVerificationCode = user_action;
 		return this;
 	}
 	public Users setPhoneNo(String phoneNo) {
 		this.phoneNo = phoneNo;
 		return this;
 	}
-	public Users setStatus(int status) {
-		this.status = status;
+	public Users setUserLevel(int userLevel) {
+		this.userLevel = userLevel;
 		return this;
 	}
 	public Users setCompanyID(int companyID) {
 		this.companyID = companyID;
 		return this;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
 	}
 }

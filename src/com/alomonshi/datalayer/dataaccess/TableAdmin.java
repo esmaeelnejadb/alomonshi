@@ -724,14 +724,13 @@ public abstract class TableAdmin {
 		try {
 			preparedStatement.setInt(1, user.getUserID());
 			preparedStatement.setString(2, user.getName());
-			preparedStatement.setString(3, user.getBotUsername());
 			preparedStatement.setString(4, user.getUsername());
 			preparedStatement.setString(5, user.getPassword());
 			preparedStatement.setString(6, user.getPhoneNo());
 			preparedStatement.setString(7, user.getEmail());
 			preparedStatement.setInt(8, user.getCompanyID());
-			preparedStatement.setInt(9, user.getUserAction());
-			preparedStatement.setInt(10, user.getStatus());
+			preparedStatement.setInt(9, user.getVerificationCode());
+			preparedStatement.setInt(10, user.getUserLevel());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -741,14 +740,13 @@ public abstract class TableAdmin {
 			user.setID(resultSet.getInt(1));
 			user.setUserID(resultSet.getInt(2));
 			user.setName(resultSet.getString(4));
-			user.setBotUsername(resultSet.getString(5));
 			user.setUsername(resultSet.getString(6));
 			user.setPassword(resultSet.getString(7));
 			user.setPhoneNo(resultSet.getString(8));
 			user.setEmail(resultSet.getString(9));
 			user.setCompanyID(resultSet.getInt(10));
-			user.setUserAction(resultSet.getInt(11));
-			user.setStatus(resultSet.getInt(12));
+			user.setVerificationCode(resultSet.getInt(11));
+			user.setUserLevel(resultSet.getInt(12));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
