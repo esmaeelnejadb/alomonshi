@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.datalayer.dataaccess.TableReserveTimeServices;
 import com.alomonshi.object.entity.Users;
 
@@ -20,7 +21,7 @@ public class RestimeServiceUtils extends TableReserveTimeServices {
 		clientIDs.addAll(hs);
 		Map<Users,Integer> clientLists = new LinkedHashMap<Users,Integer>();
 		for (int i = 0; i < clientIDs.size(); i++)
-			clientLists.put(new ClientUtils().setUserID(clientIDs.get(i)).getUser(),getClientReservedTimesInUnits(unitIDs, clientIDs.get(i)).size());
+			clientLists.put(TableClient.getUser(clientIDs.get(i)),getClientReservedTimesInUnits(unitIDs, clientIDs.get(i)).size());
 		return clientLists;
 	}
 	
@@ -32,7 +33,7 @@ public class RestimeServiceUtils extends TableReserveTimeServices {
 		clientIDs.addAll(hs);
 		Map<Users,Integer> clientLists = new LinkedHashMap<Users,Integer>();
 		for (int i = 0; i < clientIDs.size(); i++)
-			clientLists.put(new ClientUtils().setUserID(clientIDs.get(i)).getUser(),getClientReservedTimesInServices(serviceIDs, clientIDs.get(i)).size());
+			clientLists.put(TableClient.getUser(clientIDs.get(i)),getClientReservedTimesInServices(serviceIDs, clientIDs.get(i)).size());
 		return clientLists;	
 	}
 	

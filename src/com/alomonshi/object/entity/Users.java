@@ -94,23 +94,26 @@ public class Users{
 		return token;
 	}
 
-	public void setToken(String token) {
+	public Users setToken(String token) {
 		this.token = token;
+		return this;
 	}
 
 	public Date getExpirationDate() {
 		return expirationDate;
 	}
 
-	public void setExpirationDate(Date expirationDate) {
+	public Users setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
+		return this;
 	}
 
 	public boolean isActive() {
 		return isActive;
 	}
 
-	public void setActive(boolean active) {
+	public Users setActive(boolean active) {
 		isActive = active;
+		return this;
 	}
 }

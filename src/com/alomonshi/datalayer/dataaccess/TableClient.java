@@ -71,7 +71,7 @@ public abstract class TableClient {
 			{
 				try 
 				{
-						conn.close();		
+				    conn.close();
 				} catch (SQLException e)  
 				{	
 					e.printStackTrace();	
@@ -87,7 +87,7 @@ public abstract class TableClient {
 	 */
 	
 	public static Users getUser(int userID) {
-		String command="select * from CLIENTINFO where USER_ID = " + userID;
+		String command="select * from CLIENTINFO where USER_ID = " + userID ;
 		Connection conn = DBConnection.getConnection();
 		Users user = new Users();
 		try
@@ -101,14 +101,13 @@ public abstract class TableClient {
 		}catch(SQLException e)
 		{
 			e.printStackTrace();
-			return null;
 		}finally
 		{
 			if(conn != null)
 			{
 				try 
 				{
-						conn.close();		
+				    conn.close();
 				} catch (SQLException e)  
 				{	
 					e.printStackTrace();	
@@ -133,7 +132,6 @@ public abstract class TableClient {
 		}catch(SQLException e)
 		{
 			e.printStackTrace();
-			return null;
 		}finally
 		{
 			if(conn != null)

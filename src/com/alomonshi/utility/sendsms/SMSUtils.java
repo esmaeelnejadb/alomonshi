@@ -1,4 +1,4 @@
-package com.alomonshi.server.message.sendsms;
+package com.alomonshi.utility.sendsms;
 
 import java.rmi.RemoteException;
 import java.util.logging.Level;
@@ -13,18 +13,18 @@ import javax.xml.rpc.holders.ByteArrayHolder;
 
 public class SMSUtils {
 	
-	public boolean sendSMS(String[] toNumbers , String messageContent) {
+	public static boolean sendSMS(String[] toNumbers , String messageContent) {
 		//Sending SMS
 		ISendServiceProxy ss  = new ISendServiceProxy();
 		String userName = "esmaeelnejadb";
-		String smspass = "0000";
+		String smsPass = "0000";
 		String fromNumber = "Simcard";
 		boolean isFlash = false;
 		ArrayOflongHolder recId = new ArrayOflongHolder();
 		ByteArrayHolder smsstatus = new ByteArrayHolder();
 		
 		try {
-			int result = ss.sendSMS(userName, smspass, fromNumber, toNumbers, messageContent, isFlash, recId, null);
+			int result = ss.sendSMS(userName, smsPass, fromNumber, toNumbers, messageContent, isFlash, recId, null);
 			//if successfully sent
 			if (result == 0) {
 				return true;

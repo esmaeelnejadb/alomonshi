@@ -11,13 +11,14 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+
 import com.alomonshi.bussinesslayer.tableutils.*;
 import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.server.message.MessageDecoder;
 import com.alomonshi.server.message.MessageEncoder;
 import com.alomonshi.server.message.SendMessage;
 import com.alomonshi.server.message.ServerMessages;
-import com.alomonshi.server.message.sendsms.SMSUtils;
+import com.alomonshi.utility.sendsms.SMSUtils;
 import com.alomonshi.object.entity.Services;
 import com.alomonshi.object.entity.UnitPicture;
 import com.alomonshi.object.entity.Units;
@@ -171,7 +172,7 @@ public class AlomonshiServer {
             			String[] toNumbers = {phoneNo};
             			String messageContent = "به وب سایت الومنشی خوش آمدید. \n" + "کد امنیتی شما: " + formatted;
             			
-        				if (new SMSUtils().sendSMS(toNumbers, messageContent))
+        				if (SMSUtils.sendSMS(toNumbers, messageContent))
         				{
                 			clientUtil.setUserID(newuserID).setMessageID(Integer.parseInt(formatted));
                         	try {
