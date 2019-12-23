@@ -42,6 +42,16 @@ public class Authentication {
     }
 
     /**
+     * Verifying password
+     * @param password password entered by user
+     * @return true if entered password is valid
+     */
+
+    private boolean isPasswordValid(String password){
+        return user.getPassword().equals(password);
+    }
+
+    /**
      * new token code generation
      * @return generated new token code
      */
@@ -57,7 +67,7 @@ public class Authentication {
      * @return json web token as base url64 encoded string
      */
 
-    public String generateWebToken(){
+    private String generateWebToken(){
         JSONObject header = new JSONObject();
         JSONObject payLoad = new JSONObject();
         header.put("typ", "JWT");
@@ -69,17 +79,20 @@ public class Authentication {
     }
 
     /**
-     * Generating json web token
+     * Checking token is valid or not then generating json web token
      * @return json web token
      */
-    public String handleUserLogin(){
-        if (!isTokenValid()) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.YEAR, 1); // Set expiration time 1 year after now
-            user.setToken(generateNewToken()).setExpirationDate(calendar.getTime());
-            if(!TableClient.update(user))
-                return null;
-        }
-        return generateWebToken();
+    public String handleUserLogin(String password){
+        if (isClientRegistered() && isPasswordValid(password)) {
+            if (!isTokenValid()) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.YEAR, 1); // Set expiration time 1 year after now
+                user.setToken(generateNewToken()).setExpirationDate(calendar.getTime());
+                if(!TableClient.update(user))
+                    return null;
+            }
+            return generateWebToken();
+        }else
+            return null;
     }
 }

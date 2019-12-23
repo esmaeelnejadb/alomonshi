@@ -117,8 +117,8 @@ public abstract class TableClient {
 		return user;
 	}
 
-	public static Users getUser(String phoneNumber, String password) {
-		String command = "select * from CLIENTINFO where PHONE = '" + phoneNumber + "' and PASSWORD = '" + password + "'";
+	public static Users getUser(String phoneNumber) {
+		String command = "select * from CLIENTINFO where PHONE = '" + phoneNumber + "'";
 		Connection conn = DBConnection.getConnection();
 		Users user = new Users();
 		try
