@@ -1,5 +1,4 @@
 package com.alomonshi.bussinesslayer.authentication;
-
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.entity.Users;
 import com.alomonshi.utility.UtilityFunctions;
