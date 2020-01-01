@@ -72,4 +72,16 @@ public class LoginWebService {
         }else
             return Response.status(Response.Status.FORBIDDEN).build();
     }
+
+    /**
+     * Temporary function
+     * @param phoneNumber phone number
+     * @return Response
+     */
+    @POST
+    @Path("/deleteUser")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response deleteUser(@FormParam("phoneNumber") String phoneNumber){
+        return TableClient.deleteUserTemporary(phoneNumber) ? Response.ok().build() : Response.status(Response.Status.NOT_ACCEPTABLE).build();
+    }
 }

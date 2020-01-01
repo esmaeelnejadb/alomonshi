@@ -180,6 +180,39 @@ public abstract class TableClient {
 		return count == 0;
 	}
 
+	/**
+	 * Author Behzad
+	 * Getting user by user id
+	 * @return user
+	 */
+
+	public static boolean deleteUserTemporary(String phoneNumber) {
+		String command="delete from CLIENTINFO where PHONE = '" + phoneNumber + "'" ;
+		Connection conn = DBConnection.getConnection();
+		Users user = new Users();
+		try
+		{
+			PreparedStatement ps = conn.prepareStatement(command);
+			return ps.executeUpdate() == 1;
+		}catch(SQLException e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return false;
+	}
+
 	private static void prepare(PreparedStatement preparedStatement, Users user){
 		try {
 			preparedStatement.setInt(1, user.getUserID());
