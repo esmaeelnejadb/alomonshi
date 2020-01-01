@@ -4,8 +4,13 @@ import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.entity.Users;
 import org.json.JSONObject;
 import java.security.SecureRandom;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * this class perform all actions related to authentication process including
@@ -38,7 +43,7 @@ public class Authentication {
      */
 
     private boolean isTokenValid(){
-            return user.getExpirationDate() != null && user.getExpirationDate().after(Calendar.getInstance().getTime());
+            return user.getExpirationDate() != null && user.getExpirationDate().isAfter(LocalDateTime.now());
     }
 
     /**
@@ -78,6 +83,17 @@ public class Authentication {
                 + base64Encoder.encodeToString(payLoad.toString().getBytes());
     }
 
+
+    /**
+     * Generating new expiration date
+     * @return new expiration date
+     */
+
+    private LocalDateTime generateExpirationDate(){
+        LocalDateTime dateTime = LocalDateTime.now();
+        return dateTime.plusYears(1);
+    }
+
     /**
      * Checking token is valid or not then generating json web token
      * @return json web token
@@ -85,9 +101,7 @@ public class Authentication {
     public String handleUserLogin(String password){
         if (isClientRegistered() && isPasswordValid(password)) {
             if (!isTokenValid()) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.YEAR, 1); // Set expiration time 1 year after now
-                user.setToken(generateNewToken()).setExpirationDate(calendar.getTime());
+                user.setToken(generateNewToken()).setExpirationDate(generateExpirationDate());
                 if(!TableClient.update(user))
                     return null;
             }

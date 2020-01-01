@@ -1,4 +1,6 @@
 package com.alomonshi.utility;
+import com.alomonshi.datalayer.dataaccess.TableClient;
+
 import java.security.SecureRandom;
 public class UtilityFunctions {
 	
@@ -83,5 +85,14 @@ public class UtilityFunctions {
 		SecureRandom random = new SecureRandom();
 		int num = random.nextInt(100000);
 		return String.format("%05d", num);
+	}
+
+	public static int generateUserID(){
+		SecureRandom random = new SecureRandom();
+		int userID = random.nextInt(10000000);
+		while (!TableClient.isUserIDUnique(userID)){
+			userID = random.nextInt(10000000);
+		}
+		return userID;
 	}
 }

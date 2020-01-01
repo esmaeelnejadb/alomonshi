@@ -158,7 +158,7 @@ public class SendMessageUtils {
 				.add("status", restime.getStatus());
 		if(restime.getResCodeID() != null) {
 			data.add("reserveCode", restime.getResCodeID());
-			data.add("client", createJsonObjectFromUser(new ClientUtils().setUserID(restime.getClientID()).getUser()));
+			data.add("client", createJsonObjectFromUser(TableClient.getUser(restime.getClientID())));
 			data.add("services", createJsonArrayFromServiceList(services));
 			data.add("servsPrice", servsPrice);
 		}
@@ -167,7 +167,7 @@ public class SendMessageUtils {
 
 	public JsonObject createJsonObjectFromComment(Comments comment) {
 		JsonObjectBuilder data = JsonProvider.provider().createObjectBuilder();
-		String name = new ClientUtils().setUserID(comment.getClientID()).getName();
+		String name = TableClient.getUser(comment.getClientID()).getName();
 		name = name == null ? "کاربر " + comment.getClientID() : name;
 		data.add("ID", comment.getID()).add("comment", comment.getComment()).add("name", name)
 				.add("date", comment.getCommentDate());

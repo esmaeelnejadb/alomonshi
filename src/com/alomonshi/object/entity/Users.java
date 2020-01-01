@@ -1,5 +1,6 @@
 package com.alomonshi.object.entity;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @XmlRootElement(namespace = " ")
@@ -16,7 +17,7 @@ public class Users{
 	private String phoneNo;
 	private int userLevel;	// Indicates level of the user
 	private String token;
-	private Date expirationDate;
+	private LocalDateTime expirationDate;
 	private boolean isActive;
 
 	public int getCompanyID() {
@@ -99,11 +100,11 @@ public class Users{
 		return this;
 	}
 
-	public Date getExpirationDate() {
+	public LocalDateTime getExpirationDate() {
 		return expirationDate;
 	}
 
-	public Users setExpirationDate(Date expirationDate) {
+	public Users setExpirationDate(LocalDateTime expirationDate) {
 		this.expirationDate = expirationDate;
 		return this;
 	}

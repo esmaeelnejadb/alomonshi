@@ -4,6 +4,7 @@ import com.alomonshi.bussinesslayer.authentication.Authentication;
 import com.alomonshi.bussinesslayer.authentication.HandleRegistration;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.enums.UserLevels;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -28,7 +29,7 @@ public class LoginWebService {
         Users user = TableClient.getUser(phoneNumber);
         authentication = new Authentication(user);
         return authentication.handleUserLogin(password) != null ? Response.ok(authentication.handleUserLogin(password)).build()
-                : Response.serverError().build();
+                : Response.status(Response.Status.FORBIDDEN).build();
     }
 
     /**
@@ -44,11 +45,11 @@ public class LoginWebService {
         Users user = TableClient.getUser(phoneNumber);
         authentication = new Authentication(user);
         if (authentication.isClientRegistered())
-            return Response.serverError().build();
+            return Response.status(Response.Status.FORBIDDEN).build();
         else{
             user.setPassword(password).setPhoneNo(phoneNumber);
             handleRegistration = new HandleRegistration(user);
-            return handleRegistration.handleRegistration() ? Response.ok().build() : Response.serverError().build();
+            return handleRegistration.handleRegistration() ? Response.ok().build() : Response.status(Response.Status.FORBIDDEN).build();
         }
     }
 
@@ -64,7 +65,11 @@ public class LoginWebService {
     public Response registerVerification(@FormParam("verificationCode") String verificationCode, @FormParam("phoneNumber") String phoneNumber){
         Users user = TableClient.getUser(phoneNumber);
         handleRegistration = new HandleRegistration(user);
-        return handleRegistration.checkVerificationCode(verificationCode) ? Response.ok().build() :
-                Response.serverError().build();
+        authentication = new Authentication(user);
+        if(!authentication.isClientRegistered() && handleRegistration.checkVerificationCode(verificationCode)) {
+            user.setActive(true).setUserLevel(UserLevels.CLIENT.getValue());
+            return Response.ok(authentication.handleUserLogin(user.getPassword())).build();
+        }else
+            return Response.status(Response.Status.FORBIDDEN).build();
     }
 }

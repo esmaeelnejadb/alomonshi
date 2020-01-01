@@ -18,13 +18,13 @@ public class SMSUtils {
 		ISendServiceProxy ss  = new ISendServiceProxy();
 		String userName = "esmaeelnejadb";
 		String smsPass = "0000";
-		String fromNumber = "Simcard";
+		String fromNumber = "2100090119012";
 		boolean isFlash = false;
 		ArrayOflongHolder recId = new ArrayOflongHolder();
 		ByteArrayHolder smsstatus = new ByteArrayHolder();
 		
 		try {
-			int result = ss.sendSMS(userName, smsPass, fromNumber, toNumbers, messageContent, isFlash, recId, null);
+			int result = ss.sendSMS(userName, smsPass, fromNumber, toNumbers, messageContent, isFlash, recId, smsstatus);
 			//if successfully sent
 			if (result == 0) {
 				return true;

@@ -1,6 +1,7 @@
 package com.alomonshi.datalayer.dataaccess;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public abstract class TableClient {
 	public static boolean insert(Users user) {
 		String command = "insert into CLIENTINFO (USER_ID, VERIFICATION_CODE, NAME, USERNAME, PASSWORD, PHONE, EMAIL," +
 				" CLIENT_STAT, TOKEN, EXPIRATION_DATE, IS_ACTIVE) "
-				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdate(user, command);
 	}
 
@@ -30,7 +31,7 @@ public abstract class TableClient {
 
 	public static boolean update(Users user) {
 		String command = "update CLIENTINFO set USER_ID = ?, VERIFICATION_CODE = ?, NAME = ?, USERNAME = ?, PASSWORD = ?" +
-				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ?) ";
+				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? ";
 		return executeInsertUpdate(user, command);
 	}
 
@@ -123,8 +124,8 @@ public abstract class TableClient {
 		Users user = new Users();
 		try
 		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
 			while(rs.next())
 			{
 				fillUser(rs, user);
@@ -148,6 +149,37 @@ public abstract class TableClient {
 		return user;
 	}
 
+	public static boolean isUserIDUnique(int newUserID) {
+		String command = "select 1 ID from CLIENTINFO where USER_ID = " + newUserID;
+		Connection conn = DBConnection.getConnection();
+		int count = 0;
+		try
+		{
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			while(rs.next())
+			{
+				count ++;
+			}
+		}catch(SQLException e)
+		{
+			e.printStackTrace();
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		return count == 0;
+	}
+
 	private static void prepare(PreparedStatement preparedStatement, Users user){
 		try {
 			preparedStatement.setInt(1, user.getUserID());
@@ -158,8 +190,9 @@ public abstract class TableClient {
 			preparedStatement.setString(6, user.getPhoneNo());
 			preparedStatement.setString(7, user.getEmail());
 			preparedStatement.setInt(8, user.getUserLevel());
-			preparedStatement.setString(8, user.getToken());
-			preparedStatement.setDate(9, (Date) user.getExpirationDate());
+			preparedStatement.setString(9, user.getToken());
+			preparedStatement.setObject(10, user.getExpirationDate());
+			preparedStatement.setBoolean(11, user.isActive());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
 		}
@@ -177,7 +210,7 @@ public abstract class TableClient {
 			user.setEmail(resultSet.getString(8));
 			user.setUserLevel(resultSet.getInt(9));
 			user.setToken(resultSet.getString(10));
-			user.setExpirationDate(resultSet.getDate(11));
+			user.setExpirationDate(resultSet.getObject( 11 , LocalDateTime.class ));
 			user.setActive(resultSet.getBoolean(12));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);

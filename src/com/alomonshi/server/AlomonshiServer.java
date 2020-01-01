@@ -73,8 +73,8 @@ public class AlomonshiServer {
     }
 
     @OnMessage
-    public void handleMessage(String message, Session session) 
-    {
+    public void handleMessage(String message, Session session) {}
+    /*{
     	if(message.equals("ping"))
     	{
     		try {
@@ -85,7 +85,7 @@ public class AlomonshiServer {
 		}
     	else
     	{
-    		try (JsonReader reader = Json.createReader(new StringReader(message))) 
+    		try (JsonReader reader = Json.createReader(new StringReader(message)))
             {
                 SendMessage sendmessage = new SendMessage();
                 JsonObject jsonMessage = reader.readObject();                        
@@ -97,7 +97,7 @@ public class AlomonshiServer {
                 {
                 	String phone_no = UtilityFunctions.convertToEnglishDigits(jsonMessage.getString("phoneNo"));
                 	String password = jsonMessage.getString("password");
-                	if(TableAdmin.getUserIDByPhone(phone_no) == 0 && clientUtil.getUserIDByPhone(phone_no) == 0)
+                	if(TableAdmin.getUserIDByPhone(phone_no) == 0 && TableClient.getUser(phone_no).getUserID() == 0)
                 	{
                     	try {
             				SessionUtils.sendToSession(session,sendmessage.setNotOK().setPageName(pageName)
@@ -126,17 +126,16 @@ public class AlomonshiServer {
                 				Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 			}
                 		}
-                	}else if (clientUtil.getUserIDByPhone(phone_no) != 0)
+                	}else if (TableClient.getUser(phone_no).getUserID() != 0)
                 	{
-                		userID = clientUtil.getUserIDByPhone(phone_no);
-                		clientUtil.setUserID(userID);
+                		userID = TableClient.getUser(phone_no).getUserID();
                 		if(clientUtil.isRegistered() && clientUtil.getPassword().equals(password))
                 		{
                 			Users user  = clientUtil.getUser();
                         	try {
                 				SessionUtils.sendToSession(session,sendmessage.setOK().setPageName(pageName)
                 						.setSingleData(sendmessage.createJsonObjectFromUser(user)).setClient().messageBuild());
-                				
+
                         	} catch (Exception e) {
                 				Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 			}
@@ -149,7 +148,7 @@ public class AlomonshiServer {
                 				Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 			}
                 		}
-                	}            	
+                	}
                 }
                 else if(pageName.equals("Pg_register_1"))
                 {
@@ -157,7 +156,7 @@ public class AlomonshiServer {
                 	String password = jsonMessage.getString("password");
                 	if(!clientUtil.setUserID(clientUtil.getUserIDByPhone(phoneNo)).isRegistered() &&
                 			!TableAdmin.isRegistered(TableAdmin.getUserIDByPhone(phoneNo)))
-                	{               		
+                	{
             			if(clientUtil.getUserIDByPhone(phoneNo) == 0)
             			{
                 			Users newuser = new Users();
@@ -171,7 +170,7 @@ public class AlomonshiServer {
             			String formatted = UtilityFunctions.generateFiveDigitRandomNum();
             			String[] toNumbers = {phoneNo};
             			String messageContent = "به وب سایت الومنشی خوش آمدید. \n" + "کد امنیتی شما: " + formatted;
-            			
+
         				if (SMSUtils.sendSMS(toNumbers, messageContent))
         				{
                 			clientUtil.setUserID(newuserID).setMessageID(Integer.parseInt(formatted));
@@ -202,7 +201,7 @@ public class AlomonshiServer {
                 }
                 else if(pageName.equals("Pg_register_2"))
                 {
-                	//int userID = Integer.parseInt(jsonMessage.getString("userID"));            	
+                	//int userID = Integer.parseInt(jsonMessage.getString("userID"));
                 	int enteredCode = Integer.parseInt(UtilityFunctions.convertToEnglishDigits(jsonMessage.getString("smscode")));
                 	if(clientUtil.setUserID(userID).getMessageID() == enteredCode)
                 	{
@@ -210,7 +209,7 @@ public class AlomonshiServer {
                 		try {
             				SessionUtils.sendToSession(session,sendmessage.setOK().setPageName(pageName)
             						.setSingleData(sendmessage.createJsonObjectFromUser(clientUtil.getUser())).setClient().messageBuild());
-            				
+
                 		} catch (Exception e) {
             				Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
             			}
@@ -233,10 +232,10 @@ public class AlomonshiServer {
                 			clientUtil.setUserID(clientUtil.getUserIDByPhone(phoneNo)).delete();
                 		}
                     	String mngName = jsonMessage.getString("mngName");
-                    	String mngPassword = jsonMessage.getString("mngPassword");                	
+                    	String mngPassword = jsonMessage.getString("mngPassword");
                     	int newUserID = UtilityFunctions.phoneEncryption(phoneNo);
                     	String mngEmail = jsonMessage.getString("mngEmail");
-                    	String logoURL = jsonMessage.getString("logoURL");            	
+                    	String logoURL = jsonMessage.getString("logoURL");
                     	String compName = jsonMessage.getString("compName");
                     	String compAddress = jsonMessage.getString("compAddress");
                     	String compPhone = jsonMessage.getString("compPhone").equals("") ? null : jsonMessage.getString("compPhone");
@@ -266,7 +265,7 @@ public class AlomonshiServer {
                 						.setMessage(serverMessage.message_main_01).messageBuild()); //
                 			} catch (Exception e) {
                 				Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-                			}               	
+                			}
                     	}else
                     	{
                         	try {
@@ -275,7 +274,7 @@ public class AlomonshiServer {
                 			} catch (Exception e) {
                 				Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 			}
-                    	}                    	
+                    	}
                 	}else
                 	{
                     	try {
@@ -1851,5 +1850,5 @@ public class AlomonshiServer {
     			}
             }    		
     	}
-    }    
+    }*/
 }
