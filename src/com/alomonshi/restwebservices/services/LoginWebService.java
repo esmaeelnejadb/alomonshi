@@ -68,13 +68,15 @@ public class LoginWebService {
         authentication = new Authentication(user);
         if(!authentication.isClientRegistered() && handleRegistration.checkVerificationCode(verificationCode)) {
             user.setActive(true).setUserLevel(UserLevels.CLIENT.getValue());
-            return Response.ok(authentication.handleUserLogin(user.getPassword())).build();
+            String token = authentication.handleUserLogin(user.getPassword());
+            return token != null ? Response.ok(token).build() :
+                    Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }else
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
     }
 
     /**
-     * Temporary function
+     * Temporary function for deleting user
      * @param phoneNumber phone number
      * @return Response
      */

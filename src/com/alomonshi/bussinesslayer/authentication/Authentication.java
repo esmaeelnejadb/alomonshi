@@ -11,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * this class perform all actions related to authentication process including
@@ -102,6 +104,7 @@ public class Authentication {
         if (isClientRegistered() && isPasswordValid(password)) {
             if (!isTokenValid()) {
                 user.setToken(generateNewToken()).setExpirationDate(generateExpirationDate());
+                Logger.getLogger("Information").log(Level.INFO, "token is generated");
                 if(!TableClient.update(user))
                     return null;
             }

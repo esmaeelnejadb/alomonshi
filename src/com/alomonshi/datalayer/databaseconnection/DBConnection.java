@@ -14,8 +14,8 @@ import java.util.ResourceBundle;
 public class DBConnection {
     private static String databaseName = "alomonshi";
 	private static String dbUsername =  "root";
-	private static String dbPass = "bB1!3259622";
-//    private static String dbPass = "aloroot009";
+//	private static String dbPass = "bB1!3259622";
+    private static String dbPass = "aloroot009";
 	private static String url = "jdbc:mysql://localhost:3306/" + databaseName + "?useSSL=false&&useUnicode=true&amp;characterEncoding=utf8mb4&amp";
 
     /**

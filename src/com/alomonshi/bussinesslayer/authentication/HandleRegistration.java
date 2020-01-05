@@ -1,7 +1,6 @@
 package com.alomonshi.bussinesslayer.authentication;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.entity.Users;
-import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.utility.UtilityFunctions;
 import com.alomonshi.utility.sendsms.SMSUtils;
 
