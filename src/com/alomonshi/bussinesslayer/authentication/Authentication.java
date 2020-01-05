@@ -104,7 +104,6 @@ public class Authentication {
         if (isClientRegistered() && isPasswordValid(password)) {
             if (!isTokenValid()) {
                 user.setToken(generateNewToken()).setExpirationDate(generateExpirationDate());
-                Logger.getLogger("Information").log(Level.INFO, "token is generated");
                 if(!TableClient.update(user))
                     return null;
             }

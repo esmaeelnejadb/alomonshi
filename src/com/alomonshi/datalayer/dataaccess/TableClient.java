@@ -31,7 +31,7 @@ public abstract class TableClient {
 
 	public static boolean update(Users user) {
 		String command = "update CLIENTINFO set USER_ID = ?, VERIFICATION_CODE = ?, NAME = ?, USERNAME = ?, PASSWORD = ?" +
-				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? ";
+				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? WHERE ID = " + user.getID();
 		return executeInsertUpdate(user, command);
 	}
 
@@ -189,7 +189,6 @@ public abstract class TableClient {
 	public static boolean deleteUserTemporary(String phoneNumber) {
 		String command="delete from CLIENTINFO where PHONE = '" + phoneNumber + "'" ;
 		Connection conn = DBConnection.getConnection();
-		Users user = new Users();
 		try
 		{
 			PreparedStatement ps = conn.prepareStatement(command);
