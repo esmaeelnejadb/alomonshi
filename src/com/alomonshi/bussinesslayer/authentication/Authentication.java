@@ -30,7 +30,6 @@ public class Authentication {
     public Authentication(Users user){
         this.user = user;
     }
-
     /**
      * check if user is registered
      * @return true if user is registered
@@ -55,7 +54,12 @@ public class Authentication {
      */
 
     private boolean isPasswordValid(String password){
-        return user.getPassword().equals(password);
+        try{
+            return user.getPassword().equals(password);
+        }catch (NullPointerException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
+            return false;
+        }
     }
 
     /**
@@ -63,7 +67,7 @@ public class Authentication {
      * @return generated new token code
      */
 
-    private static String generateNewToken() {
+    static String generateNewToken() {
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
@@ -74,7 +78,7 @@ public class Authentication {
      * @return json web token as base url64 encoded string
      */
 
-    private String generateWebToken(){
+    String generateWebToken(){
         JSONObject header = new JSONObject();
         JSONObject payLoad = new JSONObject();
         header.put("typ", "JWT");
@@ -91,7 +95,7 @@ public class Authentication {
      * @return new expiration date
      */
 
-    private LocalDateTime generateExpirationDate(){
+    static LocalDateTime generateExpirationDate(){
         LocalDateTime dateTime = LocalDateTime.now();
         return dateTime.plusYears(1);
     }

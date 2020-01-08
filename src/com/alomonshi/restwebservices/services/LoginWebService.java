@@ -49,7 +49,7 @@ public class LoginWebService {
         else{
             user.setPassword(password).setPhoneNo(phoneNumber);
             handleRegistration = new HandleRegistration(user);
-            return handleRegistration.handleRegistration() ? Response.ok().build() : Response.status(Response.Status.FORBIDDEN).build();
+            return handleRegistration.handleVerification() ? Response.ok().build() : Response.status(Response.Status.FORBIDDEN).build();
         }
     }
 
@@ -65,10 +65,9 @@ public class LoginWebService {
     public Response registerVerification(@FormParam("verificationCode") String verificationCode, @FormParam("phoneNumber") String phoneNumber){
         Users user = TableClient.getUser(phoneNumber);
         handleRegistration = new HandleRegistration(user);
-        authentication = new Authentication(user);
-        if(!authentication.isClientRegistered() && handleRegistration.checkVerificationCode(verificationCode)) {
+        if(handleRegistration.checkVerificationCode(verificationCode)) {
             user.setActive(true).setUserLevel(UserLevels.CLIENT.getValue());
-            String token = authentication.handleUserLogin(user.getPassword());
+            String token = handleRegistration.handleFinalRegistration();
             return token != null ? Response.ok(token).build() :
                     Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }else

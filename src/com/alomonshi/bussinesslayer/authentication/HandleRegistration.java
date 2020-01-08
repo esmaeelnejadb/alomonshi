@@ -6,8 +6,10 @@ import com.alomonshi.utility.sendsms.SMSUtils;
 
 public class HandleRegistration {
     private Users newUser;
+    Authentication authentication;
     public HandleRegistration(Users user){
         this.newUser = user;
+        authentication = new Authentication(user);
     }
 
     /**
@@ -41,7 +43,7 @@ public class HandleRegistration {
      * checking registered client and then sending message to client
      * @return true if message send to client
      */
-    public boolean handleRegistration(){
+    public boolean handleVerification(){
         String verificationCode = generateVerificationCode();
         if(newUser.getUserID() == 0) {
             newUser.setUserID(UtilityFunctions.generateUserID());
@@ -59,5 +61,16 @@ public class HandleRegistration {
      */
     public boolean checkVerificationCode(String verificationCode){
         return Integer.parseInt(verificationCode) == newUser.getVerificationCode();
+    }
+
+    /**
+     * Checking token is valid or not then generating json web token
+     * @return json web token
+     */
+    public String handleFinalRegistration(){
+        newUser.setToken(Authentication.generateNewToken()).setExpirationDate(Authentication.generateExpirationDate());
+        if(!TableClient.update(newUser))
+            return null;
+        return authentication.generateWebToken();
     }
 }
