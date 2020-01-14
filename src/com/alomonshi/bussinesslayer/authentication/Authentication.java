@@ -85,6 +85,9 @@ public class Authentication {
         payLoad.put("uID", user.getUserID());
         payLoad.put("token", user.getToken());
         payLoad.put("exp", user.getExpirationDate());
+        payLoad.put("phoneNumber", user.getPhoneNo());
+        payLoad.put("name", user.getName());
+        payLoad.put("email", user.getEmail());
         return base64Encoder.encodeToString(header.toString().getBytes()) + "."
                 + base64Encoder.encodeToString(payLoad.toString().getBytes());
     }

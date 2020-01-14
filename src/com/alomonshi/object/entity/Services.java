@@ -13,6 +13,7 @@ public class Services {
 	private int servicePrice;
 	private boolean isActive;
 	private List<String> pictureURLs;
+	private String remark;
 	
 	public boolean getIsActive() {
 		return isActive;
@@ -63,5 +64,23 @@ public class Services {
 
 	public void setPictureURLs(List<String> pictureURLs) {
 		this.pictureURLs = pictureURLs;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public Services setActive(boolean active) {
+		isActive = active;
+		return this;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public Services setRemark(String remark) {
+		this.remark = remark;
+		return this;
 	}
 }

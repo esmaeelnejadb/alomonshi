@@ -6,7 +6,7 @@ import com.alomonshi.utility.sendsms.SMSUtils;
 
 public class HandleRegistration {
     private Users newUser;
-    Authentication authentication;
+    private Authentication authentication;
     public HandleRegistration(Users user){
         this.newUser = user;
         authentication = new Authentication(user);
