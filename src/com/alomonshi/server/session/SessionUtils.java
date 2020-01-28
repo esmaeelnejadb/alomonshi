@@ -9,7 +9,7 @@ import javax.json.JsonObject;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
-import com.alomonshi.object.entity.ReserveTime;
+import com.alomonshi.object.tableobjects.ReserveTime;
 
 public class SessionUtils extends SessionHandler {
 	

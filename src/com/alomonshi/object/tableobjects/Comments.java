@@ -1,4 +1,4 @@
-package com.alomonshi.object.entity;
+package com.alomonshi.object.tableobjects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

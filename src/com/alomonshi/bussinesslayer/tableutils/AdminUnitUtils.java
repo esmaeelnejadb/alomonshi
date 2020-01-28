@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.alomonshi.datalayer.dataaccess.TableAdminUnit;
 import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.object.entity.Units;
+import com.alomonshi.object.tableobjects.Units;
 
 
 public class AdminUnitUtils extends TableAdminUnit {

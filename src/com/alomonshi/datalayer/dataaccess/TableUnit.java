@@ -5,24 +5,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalTime;
 import java.util.*;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.Units;
+import com.alomonshi.object.tableobjects.Units;
 
 public abstract class TableUnit {
 
 	public static boolean insertUnit(Units unit){
-		String command = "insert into UNITS(Comp_ID, unit_name, unit_step_time, IS_ACTIVE) values(?, ?, ?, ?)";
+		String command = "insert into UNITS(Comp_ID, unit_name, unit_step_time, IS_ACTIVE, PICTURE_URL, REMARK) values(?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdate(unit, command);
 	}
 
 	public static boolean updateUnit(Units unit){
-		String command = "update UNITS set Comp_ID = ?, unit_name = ?, unit_step_time = ?, IS_ACTIVE = ?";
+		String command = "update UNITS set Comp_ID = ?, unit_name = ?, unit_step_time = ?, IS_ACTIVE =  ?, PICTURE_URL = ?, REMARK = ?";
 		return executeInsertUpdate(unit, command);
 	}
 
 	public static boolean delete(Units unit){
-		unit.setIsActive(false);
+		unit.setActive(false);
 		return updateUnit(unit);
 	}
 
@@ -252,7 +253,7 @@ public abstract class TableUnit {
 		Connection conn = DBConnection.getConnection(); 
 		try
 		{
-			Statement stmt =conn.createStatement();
+			Statement stmt = conn.createStatement();
 			String command = "select ID from UNITS where IS_ACTIVE IS TRUE and Comp_ID=" + companyID+" and unit_name = '" + unitName + "'";
 			ResultSet rs = stmt.executeQuery(command);
 			while(rs.next())
@@ -285,7 +286,7 @@ public abstract class TableUnit {
 		Connection conn = DBConnection.getConnection(); 
 		try
 		{
-			Statement stmt =conn.createStatement();
+			Statement stmt = conn.createStatement();
 			String command = "select Comp_ID from UNITS where IS_ACTIVE IS TRUE and ID = " + unitID;
 			ResultSet rs=stmt.executeQuery(command);
 			while(rs.next())
@@ -318,7 +319,7 @@ public abstract class TableUnit {
 		Connection conn = DBConnection.getConnection(); 
 		try
 		{
-			Statement stmt =conn.createStatement();
+			Statement stmt = conn.createStatement();
 			String command = "select unit_name from UNITS where ID = " + unitID;
 			ResultSet rs=stmt.executeQuery(command);
 			while(rs.next())
@@ -348,17 +349,18 @@ public abstract class TableUnit {
 	
 	public static String getStepTime(int unitID)
 	{
-		Connection conn = DBConnection.getConnection(); 
+		Connection conn = DBConnection.getConnection();
+		String stepTime = "";
 		try
 		{
-			Statement stmt =conn.createStatement();
+			Statement stmt = conn.createStatement();
 			String command = "select unit_step_time from UNITS where ID = " + unitID;
 			ResultSet rs=stmt.executeQuery(command);
 			while(rs.next())
 			{
-				return rs.getString(1);
+				stepTime = rs.getString(1);
 			}
-			
+
 		}catch(SQLException e)
 		{
 			e.printStackTrace();
@@ -376,15 +378,17 @@ public abstract class TableUnit {
 				}
 			}	
 		}
-		return null;
+		return stepTime;
 	}
 
 	private static void prepare(PreparedStatement preparedStatement, Units unit){
 		try {
 			preparedStatement.setInt(1, unit.getCompanyID());
 			preparedStatement.setString(2, unit.getUnitName());
-			preparedStatement.setString(3, unit.getUnitStepTime());
-			preparedStatement.setBoolean(4, unit.getIsActive());
+			preparedStatement.setObject(3, unit.getUnitStepTime());
+			preparedStatement.setBoolean(4, unit.getActive());
+			preparedStatement.setString(5, unit.getPictureURL());
+			preparedStatement.setString(6, unit.getRemark());
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -395,10 +399,11 @@ public abstract class TableUnit {
 			unit.setID(resultSet.getInt(1));
 			unit.setCompanyID(resultSet.getInt(2));
 			unit.setUnitName(resultSet.getString(3));
-			unit.setUnitStepTime(resultSet.getString(4));
-			unit.setIsActive(resultSet.getBoolean(5));
+			unit.setUnitStepTime(resultSet.getObject(4, LocalTime.class));
+			unit.setActive(resultSet.getBoolean(5));
+			unit.setPictureURL(resultSet.getString(6));
+			unit.setRemark(resultSet.getString(7));
 			unit.setServices(TableService.getUnitServices(unit.getID()));
-			unit.setUnitPics(TableUnitPics.getUnitPictures(unit.getID()));
 			unit.setUnitComments(TableComment.getUnitComments(unit.getID()));
 		}catch(SQLException e){
 			e.printStackTrace();

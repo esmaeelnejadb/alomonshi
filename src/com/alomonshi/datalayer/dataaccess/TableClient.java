@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.tableobjects.Users;
 
 public abstract class TableClient {
 
@@ -17,9 +17,9 @@ public abstract class TableClient {
 	 * @return true if executes properly
 	 */
 	public static boolean insert(Users user) {
-		String command = "insert into CLIENTINFO (USER_ID, VERIFICATION_CODE, NAME, USERNAME, PASSWORD, PHONE, EMAIL," +
+		String command = "insert into CLIENTINFO (VERIFICATION_CODE, NAME, USERNAME, PASSWORD, PHONE, EMAIL," +
 				" CLIENT_STAT, TOKEN, EXPIRATION_DATE, IS_ACTIVE) "
-				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdate(user, command);
 	}
 
@@ -30,7 +30,7 @@ public abstract class TableClient {
 	 */
 
 	public static boolean update(Users user) {
-		String command = "update CLIENTINFO set USER_ID = ?, VERIFICATION_CODE = ?, NAME = ?, USERNAME = ?, PASSWORD = ?" +
+		String command = "update CLIENTINFO set VERIFICATION_CODE = ?, NAME = ?, USERNAME = ?, PASSWORD = ?" +
 				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? WHERE ID = " + user.getID();
 		return executeInsertUpdate(user, command);
 	}
@@ -214,17 +214,16 @@ public abstract class TableClient {
 
 	private static void prepare(PreparedStatement preparedStatement, Users user){
 		try {
-			preparedStatement.setInt(1, user.getUserID());
-			preparedStatement.setInt(2, user.getVerificationCode());
-			preparedStatement.setString(3, user.getName());
-			preparedStatement.setString(4, user.getUsername());
-			preparedStatement.setString(5, user.getPassword());
-			preparedStatement.setString(6, user.getPhoneNo());
-			preparedStatement.setString(7, user.getEmail());
-			preparedStatement.setInt(8, user.getUserLevel());
-			preparedStatement.setString(9, user.getToken());
-			preparedStatement.setObject(10, user.getExpirationDate());
-			preparedStatement.setBoolean(11, user.isActive());
+			preparedStatement.setInt(1, user.getVerificationCode());
+			preparedStatement.setString(2, user.getName());
+			preparedStatement.setString(3, user.getUsername());
+			preparedStatement.setString(4, user.getPassword());
+			preparedStatement.setString(5, user.getPhoneNo());
+			preparedStatement.setString(6, user.getEmail());
+			preparedStatement.setInt(7, user.getUserLevel());
+			preparedStatement.setString(8, user.getToken());
+			preparedStatement.setObject(9, user.getExpirationDate());
+			preparedStatement.setBoolean(10, user.isActive());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
 		}
@@ -233,17 +232,16 @@ public abstract class TableClient {
 	private static void fillUser(ResultSet resultSet, Users user){
 		try {
 			user.setID(resultSet.getInt(1));
-			user.setUserID(resultSet.getInt(2));
-			user.setVerificationCode(resultSet.getInt(3));
-			user.setName(resultSet.getString(4));
-			user.setUsername(resultSet.getString(5));
-			user.setPassword(resultSet.getString(6));
-			user.setPhoneNo(resultSet.getString(7));
-			user.setEmail(resultSet.getString(8));
-			user.setUserLevel(resultSet.getInt(9));
-			user.setToken(resultSet.getString(10));
-			user.setExpirationDate(resultSet.getObject( 11 , LocalDateTime.class ));
-			user.setActive(resultSet.getBoolean(12));
+			user.setVerificationCode(resultSet.getInt(2));
+			user.setName(resultSet.getString(3));
+			user.setUsername(resultSet.getString(4));
+			user.setPassword(resultSet.getString(5));
+			user.setPhoneNo(resultSet.getString(6));
+			user.setEmail(resultSet.getString(7));
+			user.setUserLevel(resultSet.getInt(8));
+			user.setToken(resultSet.getString(9));
+			user.setExpirationDate(resultSet.getObject( 10, LocalDateTime.class ));
+			user.setActive(resultSet.getBoolean(11));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
 		}

@@ -1,6 +1,10 @@
-package com.alomonshi.object.entity;
+package com.alomonshi.object.tableobjects;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.LocalTime;
 import java.util.List;
 
 @XmlRootElement(namespace = " ")
@@ -8,33 +12,47 @@ public class Units {
 	private int ID;
 	private int companyID;
 	private String unitName;
-	private String unitStepTime;
+	private LocalTime unitStepTime;
 	private Boolean isActive;
 	private List<Services> services;
-	private List<UnitPicture> unitPics;
+	private String pictureURL;
 	private List<Comments> unitComments;
-	
+	private String remark;
+
 	public int getID() {
 		return ID;
 	}
+	@JsonIgnore
 	public int getCompanyID() {
 		return companyID;
 	}
 	public String getUnitName() {
 		return unitName;
 	}
-	public String getUnitStepTime() {
+	public LocalTime getUnitStepTime() {
 		return unitStepTime;
 	}
+	@XmlAttribute(name = "services")
 	public List<Services> getServices() {
 		return services;
 	}
-	public List<UnitPicture> getUnitPics() {
-		return unitPics;
+	public String getPictureURL() {
+		return pictureURL;
 	}
-	public boolean getIsActive() {
+	@JsonIgnore
+	public boolean getActive() {
 		return isActive;
 	}
+
+	@XmlAttribute(name = "comments")
+	public List<Comments> getUnitComments() {
+		return unitComments;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
 	public Units setID(int iD) {
 		ID = iD;
 		return this;		
@@ -47,7 +65,7 @@ public class Units {
 		this.unitName = unitName;
 		return this;
 	}
-	public Units setUnitStepTime(String unitStepTime) {
+	public Units setUnitStepTime(LocalTime unitStepTime) {
 		this.unitStepTime = unitStepTime;
 		return this;
 	}
@@ -55,20 +73,20 @@ public class Units {
 		this.services = services;
 		return this;
 	}
-	public Units setUnitPics(List<UnitPicture> unitpics) {
-		this.unitPics = unitpics;
+	public Units setPictureURL(String unitpics) {
+		this.pictureURL = unitpics;
 		return this;
 	}
-	public Units setIsActive(boolean isActive) {
+	public Units setActive(boolean isActive) {
 		this.isActive = isActive;
 		return this;
 	}
 
-	public List<Comments> getUnitComments() {
-		return unitComments;
-	}
-
 	public void setUnitComments(List<Comments> unitComments) {
 		this.unitComments = unitComments;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 }

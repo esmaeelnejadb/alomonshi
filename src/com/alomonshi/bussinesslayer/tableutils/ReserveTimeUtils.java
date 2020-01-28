@@ -11,7 +11,7 @@ import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 
 import com.alomonshi.datalayer.dataaccess.TableService;
 import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.object.entity.ReserveTime;
+import com.alomonshi.object.tableobjects.ReserveTime;
 
 public class ReserveTimeUtils extends TableReserveTime {
 	

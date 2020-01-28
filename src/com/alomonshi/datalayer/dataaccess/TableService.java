@@ -4,23 +4,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.Services;
+import com.alomonshi.object.tableobjects.Services;
 
 public class TableService {
 
 	public static boolean insertService(Services service){
-		String command="insert into SERVICES(unit_id, service_name, service_time, service_price, IS_ACTIVE) values(?, ?, ?, ?, ?)";
+		String command="insert into SERVICES(UNIT_ID, SERVICE_NAME, SERVICE_TIME, SERVICE_PRICE, IS_ACTIVE, REMARK ) values(?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdate(service, command);
 	}
 
 	public static boolean updateService(Services service){
-		String command="update SERVICES set unit_id = ?, service_name = ?, service_time = ?, service_price = ?" +
+		String command="update SERVICES set UNIT_ID = ?, SERVICE_NAME = ?, SERVICE_TIME = ?, SERVICE_PRICE = ?, IS_ACTIVE = ?, REMARK = ? " +
 				", IS_ACTIVE = ?";
 		return executeInsertUpdate(service, command);
 	}
@@ -533,9 +534,10 @@ public class TableService {
 		try {
 			preparedStatement.setInt(1, service.getUnitID());
 			preparedStatement.setString(2, service.getServiceName());
-			preparedStatement.setString(3, service.getServiceTime());
+			preparedStatement.setObject(3, service.getServiceTime());
 			preparedStatement.setInt(4, service.getServicePrice());
-			preparedStatement.setBoolean(5, service.getIsActive());
+			preparedStatement.setBoolean(5, service.isActive());
+			preparedStatement.setString(6, service.getRemark());
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -545,9 +547,10 @@ public class TableService {
 			service.setID(resultSet.getInt(1));
 			service.setUnitID(resultSet.getInt(2));
 			service.setServiceName(resultSet.getString(3));
-			service.setServiceTime(resultSet.getString(4));
+			service.setServiceTime(resultSet.getObject(4, LocalTime.class));
 			service.setServicePrice(resultSet.getInt(5));
 			service.setIsActive(resultSet.getBoolean(6));
+			service.setRemark(resultSet.getString(7));
 			service.setPictureURLs(TableServicePicture.getServicePictures(service.getID()));
 		}catch (SQLException e){
 			e.printStackTrace();

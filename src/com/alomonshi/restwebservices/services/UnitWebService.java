@@ -1,6 +1,6 @@
 package com.alomonshi.restwebservices.services;
 import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.object.entity.Units;
+import com.alomonshi.object.tableobjects.Units;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

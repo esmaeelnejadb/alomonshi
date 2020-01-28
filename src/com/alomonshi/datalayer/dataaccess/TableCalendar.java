@@ -93,7 +93,7 @@ public abstract class TableCalendar {
 	public String getDayName(int dateID)
 	{
 		String command="select dayname from CALENDAR where ID = " + dateID;
-		Connection conn = DBConnection.getConnection(); 
+		Connection conn = DBConnection.getConnection();
 		try
 		{
 			Statement stmt =conn.createStatement();
@@ -103,19 +103,19 @@ public abstract class TableCalendar {
 				switch(rs.getString("dayname"))
 				{
 					case "Saturday":
-						return "شنبه";
+						return "????";
 					case "Sunday":
-						return "یکشنبه";
+						return "??????";
 					case "Monday":
-						return "دوشنبه";						
+						return "??????";
 					case "Tuesday":
-						return "سه شنبه";				
+						return "?? ????";
 					case "Wednesday":
-						return "چهارشنبه";						
+						return "????????";
 					case "Thursday":
-						return "پنجشنبه";						
+						return "???????";
 					case "Friday":
-						return "جمعه";						
+						return "????";
 					default: return "";
 				}
 			}

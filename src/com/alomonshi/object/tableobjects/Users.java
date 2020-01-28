@@ -1,7 +1,6 @@
-package com.alomonshi.object.entity;
+package com.alomonshi.object.tableobjects;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @XmlRootElement(namespace = " ")
 public class Users{
@@ -11,8 +10,6 @@ public class Users{
 	private String username;
 	private String password;
 	private String email;
-	private int companyID;
-	private int userID;
 	private int userVerificationCode;
 	private String phoneNo;
 	private int userLevel;	// Indicates level of the user
@@ -20,9 +17,6 @@ public class Users{
 	private LocalDateTime expirationDate;
 	private boolean isActive;
 
-	public int getCompanyID() {
-		return companyID;
-	}
 	public String getUsername() {
 		return username;
 	}
@@ -34,9 +28,6 @@ public class Users{
 	}
 	public String getEmail() {
 		return email;
-	}
-	public int getUserID() {
-		return userID;
 	}
 	public int getID() {
 		return ID;
@@ -66,10 +57,7 @@ public class Users{
 		this.email = email;
 		return this;
 	}
-	public Users setUserID(int chat_id) {
-		this.userID = chat_id;
-		return this;
-	}
+
 	public Users setID(int ID) {
 		this.ID = ID;
 		return this;
@@ -84,10 +72,6 @@ public class Users{
 	}
 	public Users setUserLevel(int userLevel) {
 		this.userLevel = userLevel;
-		return this;
-	}
-	public Users setCompanyID(int companyID) {
-		this.companyID = companyID;
 		return this;
 	}
 

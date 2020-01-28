@@ -16,21 +16,10 @@ import com.alomonshi.bussinesslayer.tableutils.*;
 import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.server.message.MessageDecoder;
 import com.alomonshi.server.message.MessageEncoder;
-import com.alomonshi.server.message.SendMessage;
 import com.alomonshi.server.message.ServerMessages;
-import com.alomonshi.utility.sendsms.SMSUtils;
-import com.alomonshi.object.entity.Services;
-import com.alomonshi.object.entity.UnitPicture;
-import com.alomonshi.object.entity.Units;
-import com.alomonshi.object.entity.Users;
 import com.alomonshi.server.config.HandShakeConfiguration;
 import com.alomonshi.server.session.SessionHandler;
 import com.alomonshi.server.session.SessionUtils;
-import com.alomonshi.utility.UtilityFunctions;
-import com.alomonshi.object.entity.Comments;
-import com.alomonshi.object.entity.Company;
-import com.alomonshi.object.entity.CompanyCategories;
-import com.alomonshi.object.entity.ReserveTime;
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -62,6 +51,7 @@ public class AlomonshiServer {
     @OnError
     public void onError(Throwable error) 
     {
+/*
         SendMessage sendmessage = new SendMessage();
         Logger.getLogger("Error").log(Level.SEVERE, "Error on websocket connection", error);
     	try {
@@ -70,6 +60,7 @@ public class AlomonshiServer {
     		} catch (Exception e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
+*/
     }
 
     @OnMessage

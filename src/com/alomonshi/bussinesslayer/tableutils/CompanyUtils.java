@@ -9,7 +9,7 @@ import com.alomonshi.datalayer.dataaccess.TableCompanies;
 
 import com.alomonshi.datalayer.dataaccess.TableService;
 import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.object.entity.Company;
+import com.alomonshi.object.tableobjects.Company;
 
 public class CompanyUtils extends TableCompanies {
 	

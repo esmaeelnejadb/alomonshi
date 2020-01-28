@@ -1,4 +1,4 @@
-package com.alomonshi.object.entity;
+package com.alomonshi.object.tableobjects;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -9,9 +9,9 @@ public class Company {
 	private int companyCatID;
 	private String companyName;
 	private String companyAddress;
-	private String companyPhoneNo;
-	private String username;
-	private String password;
+	private String companyPhoneNo1;
+	private String companyPhoneNo2;
+	private String companyPhoneNo3;
 	private float LocationLon;
 	private float LocationLat;
 	private String locality;
@@ -20,9 +20,9 @@ public class Company {
 	private String website;
 	private List<Units> units;
 	private float rate;
-	private int status;
-	private String pic_url;
+	private String logoURL;
 	private boolean isActive;
+	private String commertialCode;
 	
 	
 	public int getCityID() {
@@ -39,9 +39,11 @@ public class Company {
 		this.districtID = districtID;
 		return this;
 	}
+
 	public String getLocality() {
 		return locality;
 	}
+
 	public Company setLocality(String locality) {
 		this.locality = locality;
 		return this;		
@@ -49,50 +51,60 @@ public class Company {
 	public int getID() {
 		return ID;
 	}
+
 	public int getCompanyCatID() {
 		return companyCatID;
 	}
+
 	public String getCompanyName() {
 		return companyName;
 	}
+
 	public String getCompanyAddress() {
 		return companyAddress;
 	}
-	public String getCompanyPhoneNo() {
-		return companyPhoneNo;
+
+	public String getCompanyPhoneNo1() {
+		return companyPhoneNo1;
 	}
-	public String getUsername() {
-		return username;
+
+	public String getCompanyPhoneNo2() {
+		return companyPhoneNo2;
 	}
-	public String getPassword() {
-		return password;
+
+	public String getCompanyPhoneNo3() {
+		return companyPhoneNo3;
 	}
+
 	public float getLocationLon() {
 		return LocationLon;
 	}
+
 	public float getLocationLat() {
 		return LocationLat;
 	}
+
 	public String getWebsite() {
 		return website;
 	}
+
 	public float getRate() {
 		return rate;
 	}
-	public int getStatus() {
-		return status;
-	}
+
 	public String getPicURL() {
-		return pic_url;
+		return logoURL;
 	}
+
+	public String getCommertialCode() {
+		return commertialCode;
+	}
+
 	public Company setID(int iD) {
 		ID = iD;
 		return this;
 	}
-	public Company setStatus(int stat) {
-		status = stat;
-		return this;
-	}
+
 	public Company setCompanyCatID(int companyCatID) {
 		this.companyCatID = companyCatID;
 		return this;
@@ -105,16 +117,16 @@ public class Company {
 		this.companyAddress = companyAddress;
 		return this;
 	}
-	public Company setCompanyPhoneNo(String companyPhoneNo) {
-		this.companyPhoneNo = companyPhoneNo;
+	public Company setCompanyPhoneNo1(String companyPhoneNo1) {
+		this.companyPhoneNo1 = companyPhoneNo1;
 		return this;
 	}
-	public Company setUsername(String username) {
-		this.username = username;
+	public Company setCompanyPhoneNo2(String companyPhoneNo2) {
+		this.companyPhoneNo2 = companyPhoneNo2;
 		return this;
 	}
-	public Company setPassword(String password) {
-		this.password = password;
+	public Company setCompanyPhoneNo3(String companyPhoneNo3) {
+		this.companyPhoneNo3 = companyPhoneNo3;
 		return this;
 	}
 	public Company setLocationLon(float locationLon) {
@@ -141,16 +153,16 @@ public class Company {
 		return this;
 	}
 	public Company setPicURL(String url) {
-		this.pic_url = url;
+		this.logoURL = url;
 		return this;
 	}
 
-	public String getPic_url() {
-		return pic_url;
+	public String getLogoURL() {
+		return logoURL;
 	}
 
-	public Company setPic_url(String pic_url) {
-		this.pic_url = pic_url;
+	public Company setLogoURL(String logoURL) {
+		this.logoURL = logoURL;
 		return this;
 	}
 
@@ -161,5 +173,9 @@ public class Company {
 	public Company setActive(boolean active) {
 		isActive = active;
 		return this;
+	}
+
+	public void setCommertialCode(String commertialCode) {
+		this.commertialCode = commertialCode;
 	}
 }

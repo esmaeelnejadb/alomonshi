@@ -1,8 +1,7 @@
 package com.alomonshi.datalayer.dataaccess;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.ServicePicture;
-import com.alomonshi.object.entity.UnitPicture;
+import com.alomonshi.object.tableobjects.ServicePicture;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -33,10 +32,8 @@ public class TableServicePicture {
         try
         {
             PreparedStatement ps = conn.prepareStatement(command);
-            for(String URL : servicePicture.getPicURL()){
-                prepare(ps, servicePicture, URL);
-                ps.executeUpdate();
-            }
+            prepare(ps, servicePicture);
+            ps.executeUpdate();
 
         }catch(SQLException e)
         {
@@ -56,17 +53,15 @@ public class TableServicePicture {
         }
     }
 
-    public static List<String> getServicePictures(int serviceID){
-        String command="select pictureURL from servicepictures where serviceID = " + serviceID + " AND isActive IS TRUE";
+    public static List<ServicePicture> getServicePictures(int serviceID){
+        String command="select * from servicepictures where serviceID = " + serviceID + " AND isActive IS TRUE";
         Connection conn = DBConnection.getConnection();
-        List<String> servicePictures = new ArrayList<>();
+        List<ServicePicture> servicePictures = new ArrayList<>();
         try
         {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(command);
-            while (rs.next()){
-                servicePictures.add(rs.getString(1));
-            }
+            fillServicePictures(rs, servicePictures);
             return servicePictures;
         }catch(SQLException e)
         {
@@ -88,13 +83,46 @@ public class TableServicePicture {
 
     }
 
-    private static void prepare(PreparedStatement preparedStatement, ServicePicture servicePicture, String URL){
+    private static void prepare(PreparedStatement preparedStatement, ServicePicture servicePicture){
         try{
             preparedStatement.setInt(2, servicePicture.getServiceID());
-            preparedStatement.setString(3, URL);
+            preparedStatement.setString(3, servicePicture.getPicURL());
             preparedStatement.setBoolean(4, servicePicture.isActive());
         }catch (SQLException e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
+        }
+    }
+
+    private static void fillServicePicture(ResultSet resultSet, ServicePicture servicePicture){
+        try {
+            servicePicture.setID(resultSet.getInt(1));
+            servicePicture.setServiceID(resultSet.getInt(2));
+            servicePicture.setPicURL(resultSet.getString(3));
+            servicePicture.setActive(resultSet.getBoolean(4));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void fillSingleServicePicture(ResultSet resultSet, ServicePicture servicePicture) {
+        try {
+            while (resultSet.next()){
+                fillServicePicture(resultSet, servicePicture);
+            }
+        }catch (SQLException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception :" + e);
+        }
+    }
+
+    private static void fillServicePictures(ResultSet resultSet, List<ServicePicture> servicePictures){
+        try {
+            while (resultSet.next()){
+                ServicePicture servicePicture = new ServicePicture();
+                fillServicePicture(resultSet, servicePicture);
+                servicePictures.add(servicePicture);
+            }
+        }catch (SQLException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception :" + e);
         }
     }
 }

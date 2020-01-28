@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.ClientReserveTime;
+import com.alomonshi.object.tableobjects.ClientReserveTime;
 
 public class TableClientReserve {
 

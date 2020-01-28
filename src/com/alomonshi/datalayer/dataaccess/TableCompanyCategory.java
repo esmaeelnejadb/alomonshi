@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.CompanyCategories;
+import com.alomonshi.object.tableobjects.CompanyCategories;
 
 public class TableCompanyCategory {
 

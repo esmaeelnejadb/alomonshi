@@ -1,6 +1,7 @@
 package com.alomonshi.bussinesslayer.authentication;
 import com.alomonshi.datalayer.dataaccess.TableClient;
-import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.enums.UserLevels;
+import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.utility.UtilityFunctions;
 import com.alomonshi.utility.sendsms.SMSUtils;
 
@@ -45,8 +46,8 @@ public class HandleRegistration {
      */
     public boolean handleVerification(){
         String verificationCode = generateVerificationCode();
-        if(newUser.getUserID() == 0) {
-            newUser.setUserID(UtilityFunctions.generateUserID());
+        if(newUser.getID() == 0) {
+            newUser.setUserLevel(UserLevels.CLIENT.getValue());
             if(!TableClient.insert(newUser.setVerificationCode(Integer.parseInt(verificationCode))))
                 return false;
         }else if (!TableClient.update(newUser.setVerificationCode(Integer.parseInt(verificationCode))))

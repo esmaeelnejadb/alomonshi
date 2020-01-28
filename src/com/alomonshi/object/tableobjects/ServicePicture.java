@@ -1,13 +1,14 @@
-package com.alomonshi.object.entity;
+package com.alomonshi.object.tableobjects;
 
-import java.util.List;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class ServicePicture {
     private int ID;
     private int serviceID;
-    private List<String> picURL;
+    private String picURL;
     private boolean isActive;
 
+    @JsonIgnore
     public int getID() {
         return ID;
     }
@@ -16,6 +17,7 @@ public class ServicePicture {
         this.ID = ID;
     }
 
+    @JsonIgnore
     public int getServiceID() {
         return serviceID;
     }
@@ -24,17 +26,19 @@ public class ServicePicture {
         this.serviceID = serviceID;
     }
 
-    public List<String> getPicURL() {
+    public String getPicURL() {
         return picURL;
     }
 
-    public void setPicURL(List<String> picURL) {
+    public void setPicURL(String picURL) {
         this.picURL = picURL;
     }
 
+    @JsonIgnore
     public boolean isActive() {
         return isActive;
     }
+
 
     public void setActive(boolean active) {
         isActive = active;

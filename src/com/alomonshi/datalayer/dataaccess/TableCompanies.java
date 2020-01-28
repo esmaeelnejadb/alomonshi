@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.entity.Company;
+import com.alomonshi.object.tableobjects.Company;
 
 public class TableCompanies {
 
@@ -20,19 +20,19 @@ public class TableCompanies {
 	{}
 
 	public static boolean insert(Company company){
-		String command="insert into COMPANIES (COMP_CAT_ID, COMP_NAME, COMP_ADDRESS, COMP_USERNAME, COMP_PASSWORD"
-				+ ", COMP_PHONE, LOCATION_LAT, LOCATION_LON, " +
+		String command="insert into COMPANIES (COMP_CAT_ID, COMP_NAME, COMP_ADDRESS, COMP_PHONE1, COMP_PHONE2"
+				+ ", COMP_PHONE3, LOCATION_LAT, LOCATION_LON, " +
 				"COMP_WEBSITE, COMP_RATE, COMP_STAT, COMP_PICURL," +
-				" COMP_LOCALITY, CITY_ID, DISTRICT_ID, IS_ACTIVE)"
-				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				" COMP_LOCALITY, CITY_ID, DISTRICT_ID, IS_ACTIVE, COMP_COMMERTIALCODE)"
+				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdateCommand(company, command);
 	}
 
 	public static boolean update(Company company){
 		String command = "UPDATE COMPANIES SET COMP_CAT_ID = ?, COMP_NAME = ?, COMP_ADDRESS = ?, " +
-				"COMP_USERNAME = ?, COMP_PASSWORD = ? , COMP_PHONE = ?, LOCATION_LAT = ?, LOCATION_LON = ?," +
+				"COMP_PHONE1 = ?, COMP_PHONE2 = ? , COMP_PHONE3 = ?, LOCATION_LAT = ?, LOCATION_LON = ?," +
 				"COMP_WEBSITE = ?, COMP_RATE = ?, COMP_STAT = ?, COMP_PICURL = ?, COMP_LOCALITY = ?, " +
-				"CITY_ID = ?, DISTRICT_ID = ?, IS_ACTIVE = ? WHERE ID = "  + company.getID();
+				"CITY_ID = ?, DISTRICT_ID = ?, IS_ACTIVE = ? , COMP_COMMERTIALCODE = ? WHERE ID = "  + company.getID();
 		return executeInsertUpdateCommand(company, command);
 	}
 
@@ -531,19 +531,19 @@ public class TableCompanies {
 			preparedStatement.setInt(1, company.getCompanyCatID());
 			preparedStatement.setString(2, company.getCompanyName());
 			preparedStatement.setString(3, company.getCompanyAddress());
-			preparedStatement.setString(4, company.getUsername());
-			preparedStatement.setString(5, company.getPassword());
-			preparedStatement.setString(6, company.getCompanyPhoneNo());
+			preparedStatement.setString(4, company.getCompanyPhoneNo1());
+			preparedStatement.setString(5, company.getCompanyPhoneNo2());
+			preparedStatement.setString(6, company.getCompanyPhoneNo3());
 			preparedStatement.setFloat(7, company.getLocationLat());
 			preparedStatement.setFloat(8, company.getLocationLon());
 			preparedStatement.setString(9, company.getWebsite());
 			preparedStatement.setFloat(10, company.getRate());
-			preparedStatement.setInt(11, company.getStatus());
-			preparedStatement.setString(12, company.getPicURL());
-			preparedStatement.setString(13, company.getLocality());
-			preparedStatement.setInt(14, company.getCityID());
-			preparedStatement.setInt(15, company.getDistrictID());
-			preparedStatement.setBoolean(16, company.isActive());
+			preparedStatement.setString(11, company.getPicURL());
+			preparedStatement.setString(12, company.getLocality());
+			preparedStatement.setInt(13, company.getCityID());
+			preparedStatement.setInt(14, company.getDistrictID());
+			preparedStatement.setBoolean(15, company.isActive());
+			preparedStatement.setString(16, company.getCommertialCode());
 		}catch (SQLException e){
 			e.printStackTrace();
 		}
@@ -555,19 +555,19 @@ public class TableCompanies {
 			company.setCompanyCatID(resultSet.getInt(2));
 			company.setCompanyName(resultSet.getString(3));
 			company.setCompanyAddress(resultSet.getString(4));
-			company.setUsername(resultSet.getString(5));
-			company.setPassword(resultSet.getString(6));
-			company.setCompanyPhoneNo(resultSet.getString(7));
+			company.setCompanyPhoneNo1(resultSet.getString(5));
+			company.setCompanyPhoneNo2(resultSet.getString(6));
+			company.setCompanyPhoneNo3(resultSet.getString(7));
 			company.setLocationLat(resultSet.getFloat(8));
 			company.setLocationLon(resultSet.getFloat(9));
 			company.setWebsite(resultSet.getString(10));
 			company.setRate(resultSet.getFloat(11));
-			company.setStatus(resultSet.getInt(12));
-			company.setPicURL(resultSet.getString(13));
-			company.setLocality(resultSet.getString(14));
-			company.setCityID(resultSet.getInt(15));
-			company.setDistrictID(resultSet.getInt(16));
-			company.setActive(resultSet.getBoolean(17));
+			company.setPicURL(resultSet.getString(12));
+			company.setLocality(resultSet.getString(13));
+			company.setCityID(resultSet.getInt(14));
+			company.setDistrictID(resultSet.getInt(15));
+			company.setActive(resultSet.getBoolean(16));
+			company.setCommertialCode(resultSet.getString(17));
 			company.setUnits(TableUnit.getUnits(company.getID()));
 		}catch (SQLException e){
 			e.printStackTrace();

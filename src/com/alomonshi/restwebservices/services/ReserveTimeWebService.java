@@ -1,6 +1,6 @@
 package com.alomonshi.restwebservices.services;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
-import com.alomonshi.object.entity.ReserveTime;
+import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.views.JsonViews;
 import org.codehaus.jackson.map.annotate.JsonView;
 

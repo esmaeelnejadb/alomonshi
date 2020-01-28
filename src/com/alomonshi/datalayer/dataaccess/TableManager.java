@@ -1,184 +1,163 @@
 package com.alomonshi.datalayer.dataaccess;
 
+
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.enums.UserLevels;
+import com.alomonshi.object.tableobjects.Manager;
 
-import java.sql.Connection;
-
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class TableManager {
-	
-	private int mngID;
-	
-	public TableManager()
-	{}
-	
-	public TableManager setMngID(int mngID)
-	{
-		this.mngID = mngID;
-		return this;
+
+	/**
+	 * insert a manager into manager table
+	 * @param manager manager to be inserted
+	 * @return true if inserted correctly
+	 */
+	public static boolean insertManager(Manager manager){
+		String command = "insert into manager (MNG_ID, COMPANY_ID, MANAGER_LEVEL, IS_ACTIVE) "
+				+ "values(?, ?, ?, ?)";
+		return executeInsertUpdate(manager, command);
 	}
-	
-	public boolean setManager()
+
+	public static boolean updateManager(Manager manager){
+		String command = "update manager set MNG_ID = ?, COMPANY_ID= ?, MANAGER_LEVEL= ?, IS_ACTIVE = ? where ID = " + manager.getID();
+		return executeInsertUpdate(manager, command);
+	}
+
+	public static boolean deleteManager(Manager manager){
+	    manager.setActive(false);
+	    return updateManager(manager);
+    }
+
+	private static boolean executeInsertUpdate(Manager manager, String command)
 	{
-		String command="insert into MANAGER(mng_id) values(?)";
 		Connection conn = DBConnection.getConnection();
 		try
 		{
 			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, mngID);
-			int i=ps.executeUpdate();
-			return i==1?true:false;
-			
+			prepare(ps, manager);
+			return ps.executeUpdate() == 1;
+
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					e.printStackTrace();	
-				}
-			}	
-		}
-	}
-	
-	public boolean setAdminID(int modmngID)
-	{
-		String command="update MANAGER set mng_tobe_mod=? where mng_id=?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, modmngID);
-			ps.setInt(2, mngID);
-			int i=ps.executeUpdate();
-			return i==1?true:false;
-			
-		}catch(SQLException e)
-		{
-			e.printStackTrace();
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
+					conn.close();
+				} catch (SQLException e)
 				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
-		}
-	}
-	
-	public boolean setUnitNameTobeMod(String unitName)
-	{
-		String command="update MANAGER set unitname_tobe_mod = ? where mng_id = ?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setString(1, unitName);
-			ps.setInt(2, mngID);
-			int i = ps.executeUpdate();
-			
-			return i==1?true:false;
-			
-		}catch(SQLException e)
-		{
-			e.printStackTrace();
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					e.printStackTrace();	
-				}
-			}	
-		}
-	}
-			
-	public int getAdminID()
-	{
-		String command="select mng_tobe_mod from MANAGER where mng_id = " + mngID;
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				return rs.getInt(1);
 			}
-			
-		}catch(SQLException e)
-		{
-			e.printStackTrace();
-			return 0;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					e.printStackTrace();	
-				}
-			}	
 		}
-		return 0;
-	}	
-	
-	public String getUnitNameTobeMod()
-	{
-		String command="select unitname_tobe_mod from MANAGER where mng_id =" + mngID;
-		Connection conn = DBConnection.getConnection(); 
+	}
+
+	public static Manager getManager(int managerID){
+		String command = "select * from manager where MNG_ID = " + managerID ;
+		Connection conn = DBConnection.getConnection();
+		Manager manager = new Manager();
 		try
 		{
-			Statement stmt =conn.createStatement();
+			Statement stmt = conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				return rs.getString(1);
-			}
-			
+            fillSingleManager(rs, manager);
 		}catch(SQLException e)
 		{
 			e.printStackTrace();
-			return null;
 		}finally
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					e.printStackTrace();	
+					conn.close();
+				} catch (SQLException e)
+				{
+					e.printStackTrace();
 				}
-			}	
+			}
 		}
-		return null;
+		return manager;
+	}
+
+    public static List<Manager> getManagers(int companyID){
+        String command = "select * from manager where COMPANY_ID = " + companyID ;
+        Connection conn = DBConnection.getConnection();
+        List<Manager> managers = new ArrayList<>();
+        try
+        {
+            Statement stmt = conn.createStatement();
+            ResultSet rs=stmt.executeQuery(command);
+            fillManagers(rs, managers);
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+        }finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return managers;
+    }
+
+	private static void fillManager(ResultSet resultSet, Manager manager){
+		try {
+			manager.setID(resultSet.getInt(1));
+			manager.setManagerID(resultSet.getInt(2));
+			manager.setCompanyID(resultSet.getInt(3));
+			manager.setManagerLevel(UserLevels.getByValue(resultSet.getInt(4)));
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	public static void fillSingleManager(ResultSet resultSet, Manager manager){
+	    try{
+            while (resultSet.next()){
+                fillManager(resultSet, manager);
+            }
+        }catch (SQLException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }
+    }
+
+    public static void fillManagers(ResultSet resultSet, List<Manager> managers){
+        try{
+            while (resultSet.next()){
+                Manager manager = new Manager();
+                fillManager(resultSet, manager);
+                managers.add(manager);
+            }
+        }catch (SQLException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }
+    }
+
+	private static void prepare(PreparedStatement preparedStatement, Manager manager){
+		try {
+			preparedStatement.setInt(1, manager.getManagerID());
+			preparedStatement.setInt(2, manager.getCompanyID());
+			preparedStatement.setInt(3, manager.getManagerLevel().getValue());
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
 	}
 }

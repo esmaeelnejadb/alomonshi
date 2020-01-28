@@ -1,7 +1,11 @@
-package com.alomonshi.object.entity;
+package com.alomonshi.object.tableobjects;
 
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.LocalTime;
 import java.util.List;
 
 @XmlRootElement(namespace = " ")
@@ -9,25 +13,23 @@ public class Services {
 	private int ID;
 	private int unitID;
 	private String serviceName;
-	private String serviceTime;
+	private LocalTime serviceTime;
 	private int servicePrice;
 	private boolean isActive;
-	private List<String> pictureURLs;
+	private List<ServicePicture> pictureURLs;
 	private String remark;
-	
-	public boolean getIsActive() {
-		return isActive;
-	}
+
 	public int getID() {
 		return ID;
 	}
+    @JsonIgnore
 	public int getUnitID() {
 		return unitID;
 	}
 	public String getServiceName() {
 		return serviceName;
 	}
-	public String getServiceTime() {
+	public LocalTime getServiceTime() {
 		return serviceTime;
 	}
 	public int getServicePrice() {
@@ -41,7 +43,7 @@ public class Services {
 		this.serviceName = serviceName;
 		return this;
 	}
-	public Services setServiceTime(String serviceTime) {
+	public Services setServiceTime(LocalTime serviceTime) {
 		this.serviceTime = serviceTime;
 		return this;
 	}
@@ -58,14 +60,16 @@ public class Services {
 		return this;
 	}
 
-	public List<String> getPictureURLs() {
+	@XmlAttribute(name = "servicePictures")
+	public List<ServicePicture> getPictureURLs() {
 		return pictureURLs;
 	}
 
-	public void setPictureURLs(List<String> pictureURLs) {
+	public void setPictureURLs(List<ServicePicture> pictureURLs) {
 		this.pictureURLs = pictureURLs;
 	}
 
+    @JsonIgnore
 	public boolean isActive() {
 		return isActive;
 	}

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.datalayer.dataaccess.TableReserveTimeServices;
-import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.tableobjects.Users;
 
 public class RestimeServiceUtils extends TableReserveTimeServices {
 	

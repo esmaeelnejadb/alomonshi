@@ -85,6 +85,5 @@ public class ServerMessages {
 	public String message_report_02 = "در بازه زمانی وارد شده، نوبتی رزرو نشده است.";
 	
 	public String message_comment_01 = "کاربر گرامی، نظر شما با موفقیت ثبت شد.";
-	
-	
+
 }

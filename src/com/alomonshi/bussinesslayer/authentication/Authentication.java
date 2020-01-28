@@ -1,16 +1,11 @@
 package com.alomonshi.bussinesslayer.authentication;
 
 import com.alomonshi.datalayer.dataaccess.TableClient;
-import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.tableobjects.Users;
 import org.json.JSONObject;
 import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,7 +30,7 @@ public class Authentication {
      * @return true if user is registered
      */
     public boolean isClientRegistered(){
-        return user.getUserID() != 0 && user.isActive();
+        return user.getID() != 0 && user.isActive();
     }
 
     /**
@@ -82,7 +77,7 @@ public class Authentication {
         JSONObject header = new JSONObject();
         JSONObject payLoad = new JSONObject();
         header.put("typ", "JWT");
-        payLoad.put("uID", user.getUserID());
+        payLoad.put("uID", user.getID());
         payLoad.put("token", user.getToken());
         payLoad.put("exp", user.getExpirationDate());
         payLoad.put("phoneNumber", user.getPhoneNo());

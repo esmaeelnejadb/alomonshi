@@ -3,7 +3,7 @@ package com.alomonshi.restwebservices.services;
 import com.alomonshi.bussinesslayer.authentication.Authentication;
 import com.alomonshi.bussinesslayer.authentication.HandleRegistration;
 import com.alomonshi.datalayer.dataaccess.TableClient;
-import com.alomonshi.object.entity.Users;
+import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.enums.UserLevels;
 
 import javax.ws.rs.*;
