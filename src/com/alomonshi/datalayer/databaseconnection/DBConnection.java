@@ -1,9 +1,13 @@
 package com.alomonshi.datalayer.databaseconnection;
 
+import com.alomonshi.server.AlomonshiServer;
+
 import java.sql.Connection;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Connect to Database
@@ -29,5 +33,26 @@ public class DBConnection {
       } catch (SQLException | ClassNotFoundException ex) {
           throw new RuntimeException("Error connecting to the database", ex);
       }
-    }	
+    }
+
+    /**
+     * Closing a connection
+     * @param connection to be closed
+     * @return true if closed correctly
+     */
+
+    public static boolean closeConnection(Connection connection){
+        if(connection != null)
+        {
+            try
+            {
+                connection.close();
+            } catch (SQLException e)
+            {
+                Logger.getLogger(AlomonshiServer.class.getName()).log(Level.SEVERE, "Exception" + e);
+                return false;
+            }
+        }
+        return true;
+    }
 }

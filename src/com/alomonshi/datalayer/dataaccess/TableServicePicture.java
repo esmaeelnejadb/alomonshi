@@ -65,7 +65,7 @@ public class TableServicePicture {
             return servicePictures;
         }catch(SQLException e)
         {
-            e.printStackTrace();
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
             return null;
         }finally
         {
@@ -76,7 +76,7 @@ public class TableServicePicture {
                     conn.close();
                 } catch (SQLException e)
                 {
-                    e.printStackTrace();
+                    Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 }
             }
         }
@@ -100,7 +100,7 @@ public class TableServicePicture {
             servicePicture.setPicURL(resultSet.getString(3));
             servicePicture.setActive(resultSet.getBoolean(4));
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }
     }
 

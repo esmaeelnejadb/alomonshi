@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.services;
+package com.alomonshi.restwebservices.clientservices;
 
 import com.alomonshi.bussinesslayer.authentication.Authentication;
 import com.alomonshi.bussinesslayer.authentication.HandleRegistration;
@@ -66,7 +66,7 @@ public class LoginWebService {
         Users user = TableClient.getUser(phoneNumber);
         handleRegistration = new HandleRegistration(user);
         if(handleRegistration.checkVerificationCode(verificationCode)) {
-            user.setActive(true).setUserLevel(UserLevels.CLIENT.getValue());
+            user.setActive(true).setUserLevel(UserLevels.CLIENT);
             String token = handleRegistration.handleFinalRegistration();
             return token != null ? Response.ok(token).build() :
                     Response.status(Response.Status.NOT_ACCEPTABLE).build();

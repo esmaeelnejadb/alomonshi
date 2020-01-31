@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.Units;
 
@@ -38,7 +41,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -49,7 +52,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -69,7 +72,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -80,7 +83,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -100,7 +103,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -111,7 +114,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}		
 		}
@@ -131,7 +134,7 @@ public abstract class TableUnit {
 			return units;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -142,7 +145,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -164,7 +167,7 @@ public abstract class TableUnit {
 			return unitList;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -175,7 +178,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -197,7 +200,7 @@ public abstract class TableUnit {
 			return unitlist;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -208,7 +211,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -230,7 +233,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -241,7 +244,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -263,7 +266,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -274,7 +277,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -296,7 +299,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -307,7 +310,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -329,7 +332,7 @@ public abstract class TableUnit {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -340,7 +343,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -363,7 +366,7 @@ public abstract class TableUnit {
 
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -374,7 +377,7 @@ public abstract class TableUnit {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -385,12 +388,12 @@ public abstract class TableUnit {
 		try {
 			preparedStatement.setInt(1, unit.getCompanyID());
 			preparedStatement.setString(2, unit.getUnitName());
-			preparedStatement.setObject(3, unit.getUnitStepTime());
+			preparedStatement.setInt(3, unit.getUnitStepTime());
 			preparedStatement.setBoolean(4, unit.getActive());
 			preparedStatement.setString(5, unit.getPictureURL());
 			preparedStatement.setString(6, unit.getRemark());
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -399,14 +402,14 @@ public abstract class TableUnit {
 			unit.setID(resultSet.getInt(1));
 			unit.setCompanyID(resultSet.getInt(2));
 			unit.setUnitName(resultSet.getString(3));
-			unit.setUnitStepTime(resultSet.getObject(4, LocalTime.class));
+			unit.setUnitStepTime(resultSet.getInt(4));
 			unit.setActive(resultSet.getBoolean(5));
 			unit.setPictureURL(resultSet.getString(6));
 			unit.setRemark(resultSet.getString(7));
 			unit.setServices(TableService.getUnitServices(unit.getID()));
 			unit.setUnitComments(TableComment.getUnitComments(unit.getID()));
 		}catch(SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -418,7 +421,7 @@ public abstract class TableUnit {
 				units.add(unit);
 			}
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 }

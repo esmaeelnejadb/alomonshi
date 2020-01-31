@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.Services;
@@ -41,7 +43,7 @@ public class TableService {
 			return i == 1;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -52,7 +54,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -71,7 +73,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -82,7 +84,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -102,7 +104,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -113,7 +115,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -133,7 +135,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -144,7 +146,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -164,7 +166,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -175,7 +177,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -197,7 +199,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -208,7 +210,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -230,7 +232,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -241,7 +243,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -259,7 +261,7 @@ public class TableService {
 			}
 			
 		}catch(SQLException e) {
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -270,7 +272,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -292,7 +294,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -303,7 +305,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -325,7 +327,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -336,7 +338,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -358,7 +360,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -369,7 +371,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -387,7 +389,7 @@ public class TableService {
 			return service;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -398,7 +400,7 @@ public class TableService {
 					conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -417,7 +419,7 @@ public class TableService {
 			return services;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -428,7 +430,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -451,7 +453,7 @@ public class TableService {
 			return unitIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -462,7 +464,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -482,7 +484,7 @@ public class TableService {
 			return services;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -493,7 +495,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -512,7 +514,7 @@ public class TableService {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -523,7 +525,7 @@ public class TableService {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -534,12 +536,12 @@ public class TableService {
 		try {
 			preparedStatement.setInt(1, service.getUnitID());
 			preparedStatement.setString(2, service.getServiceName());
-			preparedStatement.setObject(3, service.getServiceTime());
+			preparedStatement.setInt(3, service.getServiceTime());
 			preparedStatement.setInt(4, service.getServicePrice());
 			preparedStatement.setBoolean(5, service.isActive());
 			preparedStatement.setString(6, service.getRemark());
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 	private static void fillService(ResultSet resultSet, Services service){
@@ -547,13 +549,13 @@ public class TableService {
 			service.setID(resultSet.getInt(1));
 			service.setUnitID(resultSet.getInt(2));
 			service.setServiceName(resultSet.getString(3));
-			service.setServiceTime(resultSet.getObject(4, LocalTime.class));
+			service.setServiceTime(resultSet.getInt(4));
 			service.setServicePrice(resultSet.getInt(5));
 			service.setIsActive(resultSet.getBoolean(6));
 			service.setRemark(resultSet.getString(7));
 			service.setPictureURLs(TableServicePicture.getServicePictures(service.getID()));
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 	private static void fillServices(ResultSet resultSet, List<Services> services){
@@ -564,7 +566,7 @@ public class TableService {
 				services.add(service);
 			}
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.services;
+package com.alomonshi.restwebservices.clientservices;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.views.JsonViews;
@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/reserveTime")
-public class ReserveTimeWebService {
+public class ClientReserveTimes {
 
     /**
      * Getting list of reserve times in a single day and single unit

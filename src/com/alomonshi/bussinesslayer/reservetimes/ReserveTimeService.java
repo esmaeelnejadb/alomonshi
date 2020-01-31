@@ -1,54 +1,59 @@
-package com.alomonshi.bussinesslayer.tableutils;
+package com.alomonshi.bussinesslayer.reservetimes;
 
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.alomonshi.datalayer.dataaccess.TableCalendar;
+import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 
-import com.alomonshi.datalayer.dataaccess.TableService;
-import com.alomonshi.datalayer.dataaccess.TableUnit;
 import com.alomonshi.object.tableobjects.ReserveTime;
+import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
 
-public class ReserveTimeUtils extends TableReserveTime {
-	
-	public static List<ReserveTime> generateReserveTime(int unitID, int startDay, int endDay, int middayID, String startTime, String endTime)
-	{
-		List<ReserveTime> allReserveTimes = new ArrayList<>();
-		List<Integer> dates = TableCalendar.getDates(startDay, endDay);
-		long startTimeOfButton = CalendarUtils.stringToTime(startTime);
-		long duration = CalendarUtils.stringToTime(TableUnit.getStepTime(unitID));
-		for(Integer dateID : dates)
-		{
-			while(startTimeOfButton <= CalendarUtils.stringToTime(endTime) - duration)
-			{
-				ReserveTime reservetime = new ReserveTime();
-				reservetime.setUnitID(unitID);
-				reservetime.setStartTime(new Time(CalendarUtils.stringToTimeForDB(CalendarUtils.timeToString(startTimeOfButton))));
-				reservetime.setDuration(new Time(CalendarUtils.stringToTimeForDB(TableUnit.getStepTime(unitID))));
-				reservetime.setStatus(1);
-				reservetime.setMiddayID(middayID);
-				reservetime.setDateID(dateID);
-				startTimeOfButton += duration;
-				allReserveTimes.add(reservetime);
-			}
-			startTimeOfButton = CalendarUtils.stringToTime(startTime);
-		}
-		return allReserveTimes;
-	}
-	
-	public static boolean insertReserveTimes(List<ReserveTime> reserveTimes)
-	{
-		for (ReserveTime reserveTime : reserveTimes)
-		{
-			insertReserveTime(reserveTime);
-		}
-		return true;
+public class ReserveTimeService{
+
+    private GenerateReserveTimeForm generateReserveTimeForm;
+    private ReserveTimeGenerator reserveTimeGenerator;
+    private ReserveTimeDeletor reserveTimeDeletor;
+    private ServiceResponse serviceRespone;
+
+    public ReserveTimeService(GenerateReserveTimeForm generateReserveTimeForm, ServiceResponse serviceRespone){
+        this.generateReserveTimeForm = generateReserveTimeForm;
+        this.serviceRespone = serviceRespone;
+        reserveTimeGenerator = new ReserveTimeGenerator(generateReserveTimeForm);
+        reserveTimeDeletor = new ReserveTimeDeletor(serviceRespone);
+    }
+
+    /**
+     * Handling reserve times to be inserted in data base, for inserting a list of reserve times
+     * firstly all old times will be deleted if no time has been reserved in that duration, if there was a time
+     * service response is returned with setting response to false and list of reserved time for showing to user
+     * if there was not, inserting process will be started and if all times insert correctly, server response
+     * will be returned with true response, otherwise response will set to false with empty response data
+     * @return service response
+     */
+
+	public ServiceResponse handleGeneratingReserveTime(){
+	    serviceRespone = reserveTimeDeletor.deleteUnitReserveTimeBetweenDays(
+                generateReserveTimeForm.getUnitID(),
+                generateReserveTimeForm.getStartDate(),
+                generateReserveTimeForm.getEndDate());
+	    if (serviceRespone.getResponse()){
+            List<ReserveTime> reserveTimes = reserveTimeGenerator.generateAllDayReserveTimes();
+            serviceRespone.setResponse(reserveTimes != null && insertReserveTimes(reserveTimes));
+        }
+	    return serviceRespone;
 	}
 
+    /**
+     * Inserting reserve times in database
+     * @param reserveTimes to be inserted in database
+     * @return true if all reserve times inserted truly in database
+     */
+
+	private static boolean insertReserveTimes(List<ReserveTime> reserveTimes)
+	{
+        return TableReserveTime.insertReserveTimeList(reserveTimes);
+	}
+/*
 	public static boolean setClientNewReserveTime(ReserveTime reservetime)
 	{
 		List<Integer> serviceIDs = reservetime.getServiceIDs();
@@ -532,6 +537,6 @@ public class ReserveTimeUtils extends TableReserveTime {
 	public static boolean setFreeReserveTime(Integer restimeID)
 	{
 			return setStatus(restimeID, 1);
-	}
+	}*/
 }
 

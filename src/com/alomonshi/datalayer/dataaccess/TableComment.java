@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.Comments;
 
@@ -41,7 +44,7 @@ public class TableComment {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -52,7 +55,7 @@ public class TableComment {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -73,7 +76,7 @@ public class TableComment {
 			return comment;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return comment;
 		}finally
 		{
@@ -84,7 +87,7 @@ public class TableComment {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -103,7 +106,7 @@ public class TableComment {
 			return comments;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return comments;
 		}finally
 		{
@@ -114,7 +117,7 @@ public class TableComment {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -133,7 +136,7 @@ public class TableComment {
 			return comments;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return comments;
 		}finally
 		{
@@ -144,7 +147,7 @@ public class TableComment {
 					conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -163,7 +166,7 @@ public class TableComment {
 			return comments;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return comments;
 		}finally
 		{
@@ -174,7 +177,7 @@ public class TableComment {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -192,7 +195,7 @@ public class TableComment {
 			comment.setIsACtive(rs.getBoolean(8));
 			comment.setCommentDate(rs.getString(9));
 		}catch(SQLException e) {
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -204,7 +207,7 @@ public class TableComment {
 				comments.add(comment);
 			}
 		}catch(SQLException e) {
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -219,7 +222,7 @@ public class TableComment {
 			ps.setBoolean(7, comment.getIsACtive());
 			ps.setString(8,comment.getCommentDate());
 		}catch(SQLException e) {
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 }

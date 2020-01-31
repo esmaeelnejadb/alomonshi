@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.object.tableobjects.Users;
 
 public abstract class TableClient {
@@ -64,7 +65,7 @@ public abstract class TableClient {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -75,7 +76,7 @@ public abstract class TableClient {
 				    conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -88,7 +89,7 @@ public abstract class TableClient {
 	 */
 	
 	public static Users getUser(int userID) {
-		String command="select * from CLIENTINFO where USER_ID = " + userID ;
+		String command="select * from CLIENTINFO where ID = " + userID ;
 		Connection conn = DBConnection.getConnection();
 		Users user = new Users();
 		try
@@ -101,7 +102,7 @@ public abstract class TableClient {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally
 		{
 			if(conn != null)
@@ -111,7 +112,7 @@ public abstract class TableClient {
 				    conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -132,7 +133,7 @@ public abstract class TableClient {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally
 		{
 			if(conn != null)
@@ -142,42 +143,11 @@ public abstract class TableClient {
 					conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
 		return user;
-	}
-
-	public static boolean isUserIDUnique(int newUserID) {
-		String command = "select 1 ID from CLIENTINFO where USER_ID = " + newUserID;
-		Connection conn = DBConnection.getConnection();
-		int count = 0;
-		try
-		{
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(command);
-			while(rs.next())
-			{
-				count ++;
-			}
-		}catch(SQLException e)
-		{
-			e.printStackTrace();
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		return count == 0;
 	}
 
 	/**
@@ -195,7 +165,7 @@ public abstract class TableClient {
 			return ps.executeUpdate() == 1;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally
 		{
 			if(conn != null)
@@ -205,7 +175,7 @@ public abstract class TableClient {
 					conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -220,7 +190,7 @@ public abstract class TableClient {
 			preparedStatement.setString(4, user.getPassword());
 			preparedStatement.setString(5, user.getPhoneNo());
 			preparedStatement.setString(6, user.getEmail());
-			preparedStatement.setInt(7, user.getUserLevel());
+			preparedStatement.setInt(7, user.getUserLevel().getValue());
 			preparedStatement.setString(8, user.getToken());
 			preparedStatement.setObject(9, user.getExpirationDate());
 			preparedStatement.setBoolean(10, user.isActive());
@@ -238,7 +208,7 @@ public abstract class TableClient {
 			user.setPassword(resultSet.getString(5));
 			user.setPhoneNo(resultSet.getString(6));
 			user.setEmail(resultSet.getString(7));
-			user.setUserLevel(resultSet.getInt(8));
+			user.setUserLevel(UserLevels.getByValue(resultSet.getInt(8)));
 			user.setToken(resultSet.getString(9));
 			user.setExpirationDate(resultSet.getObject( 10, LocalDateTime.class ));
 			user.setActive(resultSet.getBoolean(11));

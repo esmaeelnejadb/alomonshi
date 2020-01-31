@@ -73,7 +73,7 @@ public abstract class TableManager {
             fillSingleManager(rs, manager);
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally
 		{
 			if(conn != null)
@@ -83,7 +83,7 @@ public abstract class TableManager {
 					conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public abstract class TableManager {
             fillManagers(rs, managers);
         }catch(SQLException e)
         {
-            e.printStackTrace();
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }finally
         {
             if(conn != null)
@@ -111,7 +111,7 @@ public abstract class TableManager {
                     conn.close();
                 } catch (SQLException e)
                 {
-                    e.printStackTrace();
+                    Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 }
             }
         }

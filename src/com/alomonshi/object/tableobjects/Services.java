@@ -13,7 +13,7 @@ public class Services {
 	private int ID;
 	private int unitID;
 	private String serviceName;
-	private LocalTime serviceTime;
+	private int serviceTime;	// Service duration has been considered in minute
 	private int servicePrice;
 	private boolean isActive;
 	private List<ServicePicture> pictureURLs;
@@ -29,7 +29,7 @@ public class Services {
 	public String getServiceName() {
 		return serviceName;
 	}
-	public LocalTime getServiceTime() {
+	public int getServiceTime() {
 		return serviceTime;
 	}
 	public int getServicePrice() {
@@ -43,7 +43,7 @@ public class Services {
 		this.serviceName = serviceName;
 		return this;
 	}
-	public Services setServiceTime(LocalTime serviceTime) {
+	public Services setServiceTime(int serviceTime) {
 		this.serviceTime = serviceTime;
 		return this;
 	}

@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices;
+package com.alomonshi.restwebservices.filters;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebFilter(filterName = "Filter", urlPatterns = { "/*" })
-public class Filter implements javax.servlet.Filter {
+@WebFilter(filterName = "Main Filter", urlPatterns = { "/*" })
+public class MainFilter implements javax.servlet.Filter {
 
     @Override
     public void init(FilterConfig filterConfig){

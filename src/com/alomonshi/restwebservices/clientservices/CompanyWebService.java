@@ -1,6 +1,6 @@
-package com.alomonshi.restwebservices.services;
+package com.alomonshi.restwebservices.clientservices;
 
-import com.alomonshi.bussinesslayer.tableutils.CompanyUtils;
+import com.alomonshi.bussinesslayer.company.CompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.tableobjects.Company;
 import javax.ws.rs.GET;
@@ -101,9 +101,9 @@ public class CompanyWebService{
                                          @QueryParam("serviceName") String serviceName, @QueryParam("lat") float lat,
                                          @QueryParam("lon") float lon){
         try {
-            List<Company> companies = CompanyUtils.getSearchedCompanies(categoryID, companyName, serviceName);
+            List<Company> companies = CompanyService.getSearchedCompanies(categoryID, companyName, serviceName);
             if(lat != 0 && lon != 0)
-                companies = CompanyUtils.getNearestCompanies(companies, lat, lon);
+                companies = CompanyService.getNearestCompanies(companies, lat, lon);
             return companies;
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);

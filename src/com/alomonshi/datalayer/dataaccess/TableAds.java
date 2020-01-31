@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TableAds {
 
@@ -49,7 +51,7 @@ public class TableAds {
 
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -60,7 +62,7 @@ public class TableAds {
 						conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -79,7 +81,7 @@ public class TableAds {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -90,7 +92,7 @@ public class TableAds {
 						conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -110,7 +112,7 @@ public class TableAds {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -121,7 +123,7 @@ public class TableAds {
 						conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -141,7 +143,7 @@ public class TableAds {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -152,7 +154,7 @@ public class TableAds {
 						conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -173,7 +175,7 @@ public class TableAds {
 
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -184,7 +186,7 @@ public class TableAds {
 						conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -204,7 +206,7 @@ public class TableAds {
 
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -215,7 +217,7 @@ public class TableAds {
 						conn.close();
 				} catch (SQLException e)
 				{
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -235,7 +237,7 @@ public class TableAds {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -246,7 +248,7 @@ public class TableAds {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}

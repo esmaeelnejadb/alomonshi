@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 
@@ -37,7 +40,7 @@ public class TableCompanyCategory {
             return i == 1;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -48,7 +51,7 @@ public class TableCompanyCategory {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -67,7 +70,7 @@ public class TableCompanyCategory {
 			return companyCategories;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -78,7 +81,7 @@ public class TableCompanyCategory {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -98,7 +101,7 @@ public class TableCompanyCategory {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return category;
 		}finally
 		{
@@ -109,7 +112,7 @@ public class TableCompanyCategory {
 					conn.close();
 				} catch (SQLException e)
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -131,7 +134,7 @@ public class TableCompanyCategory {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -142,7 +145,7 @@ public class TableCompanyCategory {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -164,7 +167,7 @@ public class TableCompanyCategory {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -175,7 +178,7 @@ public class TableCompanyCategory {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -186,7 +189,7 @@ public class TableCompanyCategory {
 	    try{
 	        ps.setString(1, companyCats.getCategoryName());
         }catch (SQLException e){
-	        e.printStackTrace();
+	        Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }
 	}
 
@@ -197,7 +200,7 @@ public class TableCompanyCategory {
 			companyCats.setActive(resultSet.getBoolean(3));
 			companyCats.setCompanySize(TableCompanies.getCompanyNumbers(companyCats.getID()));
         }catch (SQLException e){
-	        e.printStackTrace();
+	        Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }
     }
 
@@ -209,7 +212,7 @@ public class TableCompanyCategory {
                 companyCats.add(companyCat);
             }
         }catch (SQLException e){
-            e.printStackTrace();
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }
     }
 }

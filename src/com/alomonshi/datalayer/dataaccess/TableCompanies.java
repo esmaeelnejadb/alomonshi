@@ -447,7 +447,7 @@ public class TableCompanies {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -478,7 +478,7 @@ public class TableCompanies {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -489,7 +489,7 @@ public class TableCompanies {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -509,7 +509,7 @@ public class TableCompanies {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -520,7 +520,7 @@ public class TableCompanies {
 					conn.close();
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}
@@ -545,7 +545,7 @@ public class TableCompanies {
 			preparedStatement.setBoolean(15, company.isActive());
 			preparedStatement.setString(16, company.getCommertialCode());
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -570,7 +570,7 @@ public class TableCompanies {
 			company.setCommertialCode(resultSet.getString(17));
 			company.setUnits(TableUnit.getUnits(company.getID()));
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -582,7 +582,7 @@ public class TableCompanies {
 				companies.add(company);
 			}
 		}catch (SQLException e){
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 }

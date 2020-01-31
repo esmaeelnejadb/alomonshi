@@ -1,9 +1,8 @@
 package com.alomonshi.object.tableobjects;
 
-import com.alomonshi.object.views.JsonViews;
-import org.codehaus.jackson.map.annotate.JsonView;
+import com.alomonshi.object.enums.ReserveTimeStatus;
 
-import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -13,23 +12,14 @@ import java.util.List;
 public class ReserveTime {
 
 	private int ID;
-	@JsonView(JsonViews.HiddenViews.class)
 	private int unitID;
-	@JsonView(JsonViews.HiddenViews.class)
 	private int middayID;
-	@JsonView(JsonViews.HiddenViews.class)
 	private int dateID;
-	@JsonView(JsonViews.NormalViews.class)
-	private Time startTime;
-	@JsonView(JsonViews.HiddenViews.class)
-	private Time duration;
-	@JsonView(JsonViews.AdminViews.class)
-	private int status; // 1: not reserved ; 2: reserved; 3 : canceled; 4: hold; 5 : deleted;
-	@JsonView(JsonViews.ClientViews.class)
+	private LocalTime startTime;
+	private int duration;
+	private ReserveTimeStatus status; // 1: not reserved ; 2: reserved; 3 : canceled; 4: hold; 5 : deleted;
 	private int clientID;
-	@JsonView(JsonViews.ClientViews.class)
 	private List<Integer> serviceIDs;
-	@JsonView(JsonViews.ClientViews.class)
 	private String resCodeID;
 
 	public int getID() {
@@ -44,13 +34,13 @@ public class ReserveTime {
 	public int getDateID() {
 		return dateID;
 	}
-	public Time getStartTime() {
+	public LocalTime getStartTime() {
 		return startTime;
 	}
-	public Time getDuration() {
+	public int getDuration() {
 		return duration;
 	}
-	public int getStatus() {
+	public ReserveTimeStatus getStatus() {
 		return status;
 	}
 	public int getClientID() {
@@ -78,15 +68,15 @@ public class ReserveTime {
 		this.dateID = dateID;
 		return this;
 	}
-	public ReserveTime setStartTime(Time startTime) {
+	public ReserveTime setStartTime(LocalTime startTime) {
 		this.startTime = startTime;
 		return this;
 	}
-	public ReserveTime setDuration(Time duration) {
+	public ReserveTime setDuration(int duration) {
 		this.duration = duration;
 		return this;
 	}
-	public ReserveTime setStatus(int status) {
+	public ReserveTime setStatus(ReserveTimeStatus status) {
 		this.status = status;
 		return this;
 	}

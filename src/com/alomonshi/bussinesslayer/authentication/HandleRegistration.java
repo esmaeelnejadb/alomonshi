@@ -8,6 +8,7 @@ import com.alomonshi.utility.sendsms.SMSUtils;
 public class HandleRegistration {
     private Users newUser;
     private Authentication authentication;
+
     public HandleRegistration(Users user){
         this.newUser = user;
         authentication = new Authentication(user);
@@ -47,7 +48,7 @@ public class HandleRegistration {
     public boolean handleVerification(){
         String verificationCode = generateVerificationCode();
         if(newUser.getID() == 0) {
-            newUser.setUserLevel(UserLevels.CLIENT.getValue());
+            newUser.setUserLevel(UserLevels.CLIENT);
             if(!TableClient.insert(newUser.setVerificationCode(Integer.parseInt(verificationCode))))
                 return false;
         }else if (!TableClient.update(newUser.setVerificationCode(Integer.parseInt(verificationCode))))

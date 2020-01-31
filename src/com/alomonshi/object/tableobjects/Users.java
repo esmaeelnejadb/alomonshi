@@ -1,4 +1,6 @@
 package com.alomonshi.object.tableobjects;
+import com.alomonshi.object.enums.UserLevels;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
@@ -12,7 +14,7 @@ public class Users{
 	private String email;
 	private int userVerificationCode;
 	private String phoneNo;
-	private int userLevel;	// Indicates level of the user
+	private UserLevels userLevel;	// Indicates level of the user
 	private String token;
 	private LocalDateTime expirationDate;
 	private boolean isActive;
@@ -38,7 +40,7 @@ public class Users{
 	public String getPhoneNo() {
 		return phoneNo;
 	}
-	public int getUserLevel() {
+	public UserLevels getUserLevel() {
 		return userLevel;
 	}
 	public Users setName(String name) {
@@ -70,7 +72,7 @@ public class Users{
 		this.phoneNo = phoneNo;
 		return this;
 	}
-	public Users setUserLevel(int userLevel) {
+	public Users setUserLevel(UserLevels userLevel) {
 		this.userLevel = userLevel;
 		return this;
 	}

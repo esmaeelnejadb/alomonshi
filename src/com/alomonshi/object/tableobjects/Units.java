@@ -12,7 +12,7 @@ public class Units {
 	private int ID;
 	private int companyID;
 	private String unitName;
-	private LocalTime unitStepTime;
+	private int unitStepTime;// Unit duration has been considered in minute
 	private Boolean isActive;
 	private List<Services> services;
 	private String pictureURL;
@@ -29,7 +29,7 @@ public class Units {
 	public String getUnitName() {
 		return unitName;
 	}
-	public LocalTime getUnitStepTime() {
+	public int getUnitStepTime() {
 		return unitStepTime;
 	}
 	@XmlAttribute(name = "services")
@@ -65,7 +65,7 @@ public class Units {
 		this.unitName = unitName;
 		return this;
 	}
-	public Units setUnitStepTime(LocalTime unitStepTime) {
+	public Units setUnitStepTime(int unitStepTime) {
 		this.unitStepTime = unitStepTime;
 		return this;
 	}

@@ -1,6 +1,7 @@
 package com.alomonshi.bussinesslayer.authentication;
 
 import com.alomonshi.datalayer.dataaccess.TableClient;
+import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.object.tableobjects.Users;
 import org.json.JSONObject;
 import java.security.SecureRandom;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
  * - check user registration
  *  - check user token is expired or not
  *  - generate new token for user
+ *  - check admin authentication
  */
 
 public class Authentication {
@@ -22,9 +24,14 @@ public class Authentication {
     private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
 
+    /**
+     * Constructor Authentication
+     * @param user injected to object
+     */
     public Authentication(Users user){
         this.user = user;
     }
+
     /**
      * check if user is registered
      * @return true if user is registered
@@ -37,7 +44,6 @@ public class Authentication {
      * Check if user token is valid or not
      * @return true if user token is valid
      */
-
     private boolean isTokenValid(){
             return user.getExpirationDate() != null && user.getExpirationDate().isAfter(LocalDateTime.now());
     }
@@ -87,7 +93,6 @@ public class Authentication {
                 + base64Encoder.encodeToString(payLoad.toString().getBytes());
     }
 
-
     /**
      * Generating new expiration date
      * @return new expiration date
@@ -112,5 +117,13 @@ public class Authentication {
             return generateWebToken();
         }else
             return null;
+    }
+
+    /**
+     * Getting level of user
+     * @return level of user
+     */
+    public UserLevels getUserLevels(){
+        return user.getUserLevel();
     }
 }

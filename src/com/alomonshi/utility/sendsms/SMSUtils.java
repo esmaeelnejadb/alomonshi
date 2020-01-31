@@ -33,7 +33,7 @@ public class SMSUtils {
 				return false;
         	}
 		} catch (RemoteException e) {
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}
 	}

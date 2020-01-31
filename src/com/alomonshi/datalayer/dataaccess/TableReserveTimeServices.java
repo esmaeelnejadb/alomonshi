@@ -11,6 +11,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class TableReserveTimeServices {
@@ -44,7 +46,7 @@ public class TableReserveTimeServices {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -55,7 +57,7 @@ public class TableReserveTimeServices {
 					conn.close();		
 				} catch (SQLException e)  
 				{
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -74,7 +76,7 @@ public class TableReserveTimeServices {
 			
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}finally
 		{
@@ -85,7 +87,7 @@ public class TableReserveTimeServices {
 					conn.close();		
 				} catch (SQLException e)  
 				{
-					e.printStackTrace();	
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
@@ -107,7 +109,7 @@ public class TableReserveTimeServices {
 			return serviceIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -118,7 +120,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return null;
 				}
 			}	
@@ -139,7 +141,7 @@ public class TableReserveTimeServices {
 			}
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return 0;
 		}finally
 		{
@@ -150,7 +152,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return 0;
 				}
 			}	
@@ -175,7 +177,7 @@ public class TableReserveTimeServices {
 			return clientIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -186,7 +188,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return null;
 				}
 			}	
@@ -209,7 +211,7 @@ public class TableReserveTimeServices {
 			return clientIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -220,7 +222,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return null;
 				}
 			}	
@@ -243,7 +245,7 @@ public class TableReserveTimeServices {
 			return clientIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -254,7 +256,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return null;
 				}
 			}	
@@ -277,7 +279,7 @@ public class TableReserveTimeServices {
 			return rescodeIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -288,7 +290,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return null;
 				}
 			}	
@@ -311,7 +313,7 @@ public class TableReserveTimeServices {
 			return rescodeIDs;
 		}catch(SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally
 		{
@@ -322,7 +324,7 @@ public class TableReserveTimeServices {
 						conn.close();		
 				} catch (SQLException e)  
 				{	
-					e.printStackTrace();
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 					return null;
 				}
 			}	
