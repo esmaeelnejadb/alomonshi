@@ -1,7 +1,9 @@
 package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.object.enums.ReserveTimeStatus;
+import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -34,6 +36,8 @@ public class ReserveTime {
 	public int getDateID() {
 		return dateID;
 	}
+
+	@XmlJavaTypeAdapter(LocalTimeAdaptor.class)
 	public LocalTime getStartTime() {
 		return startTime;
 	}

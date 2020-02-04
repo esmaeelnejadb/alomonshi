@@ -1,6 +1,6 @@
-package com.alomonshi.restwebservices.clientservices;
+package com.alomonshi.restwebservices.servicesclient;
 
-import com.alomonshi.bussinesslayer.authentication.Authentication;
+import com.alomonshi.bussinesslayer.authentication.LoginAuthentication;
 import com.alomonshi.bussinesslayer.authentication.HandleRegistration;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 @Path("/userLogin")
 public class LoginWebService {
 
-   private Authentication authentication;
+   private LoginAuthentication authentication;
    private HandleRegistration handleRegistration;
 
     /**
@@ -27,8 +27,9 @@ public class LoginWebService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response confirmLoginRequest(@FormParam("phoneNumber") String phoneNumber, @FormParam("password") String password){
         Users user = TableClient.getUser(phoneNumber);
-        authentication = new Authentication(user);
-        return authentication.handleUserLogin(password) != null ? Response.ok(authentication.handleUserLogin(password)).build()
+        authentication = new LoginAuthentication(user);
+        String token = authentication.handleUserLogin(password);
+        return token != null ? Response.ok(token).build()
                 : Response.status(Response.Status.FORBIDDEN).build();
     }
 
@@ -43,7 +44,7 @@ public class LoginWebService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response registerRequest(@FormParam("phoneNumber") String phoneNumber, @FormParam("password") String password){
         Users user = TableClient.getUser(phoneNumber);
-        authentication = new Authentication(user);
+        authentication = new LoginAuthentication(user);
         if (authentication.isClientRegistered())
             return Response.status(Response.Status.FORBIDDEN).build();
         else{

@@ -1,4 +1,4 @@
-﻿package com.alomonshi.bussinesslayer.company;
+package com.alomonshi.bussinesslayer.company;
 
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.datalayer.dataaccess.TableService;

@@ -1,6 +1,6 @@
 package com.alomonshi.server.message;
 
-public class ServerMessages {
+public class ServerWebSocketMessages {
 	
 	// errors
 	public String error_notaccess = "برای دسترسی به این قسمت باید ابتدا  وارد سایت شوید.";

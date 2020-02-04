@@ -1,4 +1,4 @@
-﻿package com.alomonshi.object.tableobjects;
+package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.object.enums.UserLevels;
 

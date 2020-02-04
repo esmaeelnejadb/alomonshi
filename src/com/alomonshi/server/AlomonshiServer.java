@@ -1,25 +1,15 @@
 package com.alomonshi.server;
-import java.io.IOException;
-import java.io.StringReader;
-import java.sql.Time;
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 
-import com.alomonshi.bussinesslayer.tableutils.*;
-import com.alomonshi.datalayer.dataaccess.*;
+/*import com.alomonshi.bussinesslayer.tableutils.*;*/
 import com.alomonshi.server.message.MessageDecoder;
 import com.alomonshi.server.message.MessageEncoder;
-import com.alomonshi.server.message.ServerMessages;
 import com.alomonshi.server.config.HandShakeConfiguration;
 import com.alomonshi.server.session.SessionHandler;
-import com.alomonshi.server.session.SessionUtils;
+
 import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -27,19 +17,19 @@ import javax.enterprise.context.ApplicationScoped;
 decoders = MessageDecoder.class, configurator = HandShakeConfiguration.class)
 public class AlomonshiServer {
 
-	private Session session;
+/*	private Session session;
 	private String pageName;
 	private ServerMessages serverMessage = new ServerMessages();
 	private ClientUtils clientUtil = new ClientUtils();
 	private AdminUnitUtils adminUnit = new AdminUnitUtils();
 	private TableAds adUtil = new TableAds();
-	private TableReserveTimeServices resTimeServices = new TableReserveTimeServices();
+	private TableReserveTimeServices resTimeServices = new TableReserveTimeServices();*/
 
 	@OnOpen
     public void open(Session session, EndpointConfig config)
     {		
-    	SessionHandler.addSession(session);
-    	this.session = session; 
+/*    	SessionHandler.addSession(session);
+    	this.session = session; */
     }
     @OnClose
     public void close(Session session) 

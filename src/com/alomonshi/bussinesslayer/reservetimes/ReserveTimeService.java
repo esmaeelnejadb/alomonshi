@@ -1,12 +1,15 @@
 package com.alomonshi.bussinesslayer.reservetimes;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
+import com.alomonshi.restwebservices.message.ServerMessage;
 
 public class ReserveTimeService{
 
@@ -32,13 +35,26 @@ public class ReserveTimeService{
      */
 
 	public ServiceResponse handleGeneratingReserveTime(){
-	    serviceRespone = reserveTimeDeletor.deleteUnitReserveTimeBetweenDays(
-                generateReserveTimeForm.getUnitID(),
-                generateReserveTimeForm.getStartDate(),
-                generateReserveTimeForm.getEndDate());
-	    if (serviceRespone.getResponse()){
-            List<ReserveTime> reserveTimes = reserveTimeGenerator.generateAllDayReserveTimes();
-            serviceRespone.setResponse(reserveTimes != null && insertReserveTimes(reserveTimes));
+	    try {
+            //delete previous reserve times if exited
+            serviceRespone = reserveTimeDeletor.deleteUnitReserveTimeBetweenDays(
+                    generateReserveTimeForm.getUnitID(),
+                    generateReserveTimeForm.getStartDate(),
+                    generateReserveTimeForm.getEndDate());
+            //If there are no reserved times in requested days
+            if (serviceRespone.getResponse()){
+                List<ReserveTime> reserveTimes = reserveTimeGenerator.generateAllDayReserveTimes();
+                boolean response = reserveTimes != null && insertReserveTimes(reserveTimes);
+                serviceRespone.setResponse(response);
+                if (response)
+                    serviceRespone.setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    serviceRespone.setMessage(ServerMessage.FAULTMESSAGE);
+            }else
+                serviceRespone.setMessage(ServerMessage.RESERVETIMEERROR_01);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception in generating reserve times " + e);
+            serviceRespone.setMessage(ServerMessage.FAULTMESSAGE);
         }
 	    return serviceRespone;
 	}

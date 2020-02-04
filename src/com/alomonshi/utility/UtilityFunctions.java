@@ -86,13 +86,4 @@ public class UtilityFunctions {
 		int num = random.nextInt(100000);
 		return String.format("%05d", num);
 	}
-
-	public static int generateUserID(){
-		SecureRandom random = new SecureRandom();
-		int userID = random.nextInt(10000000);
-		while (!TableClient.isUserIDUnique(userID)){
-			userID = random.nextInt(10000000);
-		}
-		return userID;
-	}
 }

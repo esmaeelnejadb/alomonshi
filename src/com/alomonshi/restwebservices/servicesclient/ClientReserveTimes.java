@@ -1,8 +1,9 @@
-package com.alomonshi.restwebservices.clientservices;
+package com.alomonshi.restwebservices.servicesclient;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.views.JsonViews;
-import org.codehaus.jackson.map.annotate.JsonView;
+import com.fasterxml.jackson.annotation.JsonView;
+//import org.codehaus.jackson.map.annotate.JsonView;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

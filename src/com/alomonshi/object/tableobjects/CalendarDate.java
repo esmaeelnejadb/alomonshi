@@ -1,4 +1,4 @@
-﻿package com.alomonshi.object.tableobjects;
+package com.alomonshi.object.tableobjects;
 
 public class CalendarDate {
     private int ID;

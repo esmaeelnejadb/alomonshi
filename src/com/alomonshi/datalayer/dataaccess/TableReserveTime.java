@@ -100,7 +100,7 @@ public class TableReserveTime {
             ps.setInt(2, endDate);
             ps.setInt(3, unitID);
             int i = ps.executeUpdate();
-            return i == 1;
+            return i >=0 ;
         }catch(SQLException e)
         {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

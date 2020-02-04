@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.clientservices;
+package com.alomonshi.restwebservices.servicesclient;
 
 import com.alomonshi.bussinesslayer.company.CompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;

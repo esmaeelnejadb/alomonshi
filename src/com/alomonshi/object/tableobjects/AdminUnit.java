@@ -1,4 +1,4 @@
-﻿package com.alomonshi.object.tableobjects;
+package com.alomonshi.object.tableobjects;
 
 public class AdminUnit {
     private int id;

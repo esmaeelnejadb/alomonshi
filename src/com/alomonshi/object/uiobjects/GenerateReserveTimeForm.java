@@ -1,5 +1,8 @@
-﻿package com.alomonshi.object.uiobjects;
+package com.alomonshi.object.uiobjects;
 
+import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
+
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalTime;
 
 public class GenerateReserveTimeForm {
@@ -23,18 +26,22 @@ public class GenerateReserveTimeForm {
         return endDate;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdaptor.class)
     public LocalTime getStartTime1() {
         return startTime1;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdaptor.class)
     public LocalTime getEndTime1() {
         return endTime1;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdaptor.class)
     public LocalTime getStartTime2() {
         return startTime2;
     }
 
+    @XmlJavaTypeAdapter(LocalTimeAdaptor.class)
     public LocalTime getEndTime2() {
         return endTime2;
     }

@@ -1,11 +1,12 @@
 package com.alomonshi.object.tableobjects;
 
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+//import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.time.LocalTime;
 import java.util.List;
 
 @XmlRootElement(namespace = " ")

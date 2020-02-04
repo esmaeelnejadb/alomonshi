@@ -1,4 +1,4 @@
-﻿package com.alomonshi.bussinesslayer.reservetimes;
+package com.alomonshi.bussinesslayer.reservetimes;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
@@ -7,16 +7,20 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import java.util.Collections;
 import java.util.List;
 
-public class ReserveTimeDeletor {
-    private ServiceResponse serviceRespone;
+class ReserveTimeDeletor {
+    private ServiceResponse serviceResponse;
 
-    public ReserveTimeDeletor(ServiceResponse serviceRespone){
-        this.serviceRespone = serviceRespone;
+    ReserveTimeDeletor(ServiceResponse serviceResponse){
+        this.serviceResponse = serviceResponse;
     }
 
-    public ServiceResponse deleteUnitReserveTimeBetweenDays(int unitID, int startDay, int endDay){
+    ServiceResponse deleteUnitReserveTimeBetweenDays(int unitID, int startDay, int endDay){
         List<ReserveTime> reserveTimes = checkReservedTimes(unitID, startDay, endDay);
-        return reserveTimes == null ? serviceRespone.setResponse(true) : serviceRespone.setResponse(false).setResponseData(Collections.singletonList(reserveTimes));
+        if (reserveTimes == null )
+            return serviceResponse.setResponse(TableReserveTime.deleteBetweenDays(startDay,endDay, unitID));
+        else
+            return serviceResponse.setResponse(false)
+                .setResponseData(Collections.singletonList(reserveTimes));
     }
 
     private static List<ReserveTime> checkReservedTimes(int unitID, int startDay, int endDay){

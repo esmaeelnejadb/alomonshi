@@ -7,11 +7,11 @@ import com.alomonshi.utility.sendsms.SMSUtils;
 
 public class HandleRegistration {
     private Users newUser;
-    private Authentication authentication;
+    private WebTokenHandler webTokenHandler;
 
     public HandleRegistration(Users user){
         this.newUser = user;
-        authentication = new Authentication(user);
+        webTokenHandler = new WebTokenHandler();
     }
 
     /**
@@ -70,9 +70,9 @@ public class HandleRegistration {
      * @return json web token
      */
     public String handleFinalRegistration(){
-        newUser.setToken(Authentication.generateNewToken()).setExpirationDate(Authentication.generateExpirationDate());
+        newUser.setToken(WebTokenHandler.generateNewToken()).setExpirationDate(LoginAuthentication.generateExpirationDate());
         if(!TableClient.update(newUser))
             return null;
-        return authentication.generateWebToken();
+        return webTokenHandler.setUser(newUser).generateWebToken();
     }
 }

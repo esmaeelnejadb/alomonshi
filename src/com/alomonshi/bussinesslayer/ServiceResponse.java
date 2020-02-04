@@ -1,4 +1,4 @@
-﻿package com.alomonshi.bussinesslayer;
+package com.alomonshi.bussinesslayer;
 
 import java.util.List;
 

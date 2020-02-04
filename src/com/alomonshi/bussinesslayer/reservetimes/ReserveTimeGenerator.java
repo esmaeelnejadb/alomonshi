@@ -1,4 +1,4 @@
-﻿package com.alomonshi.bussinesslayer.reservetimes;
+package com.alomonshi.bussinesslayer.reservetimes;
 
 import com.alomonshi.datalayer.dataaccess.TableCalendar;
 import com.alomonshi.datalayer.dataaccess.TableUnit;
@@ -26,7 +26,7 @@ public class ReserveTimeGenerator {
      * @return List of generated reserve time
      */
 
-    public List<ReserveTime> generateAllDayReserveTimes(){
+    List<ReserveTime> generateAllDayReserveTimes(){
         List<ReserveTime> reserveTimes = new ArrayList<>();
         if (primaryCheck()){
             if (checkMorningTime())
@@ -42,7 +42,7 @@ public class ReserveTimeGenerator {
                         generateMiddayReserveTimes(generateReserveTimeForm.getUnitID(),
                                 generateReserveTimeForm.getStartDate(),
                                 generateReserveTimeForm.getEndDate(),
-                                MiddayID.MORNING.getValue(),
+                                MiddayID.AFTERNOON.getValue(),
                                 generateReserveTimeForm.getStartTime2(),
                                 generateReserveTimeForm.getEndTime2()));
         }

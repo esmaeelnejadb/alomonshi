@@ -1,4 +1,4 @@
-﻿package com.alomonshi.object.enums;
+package com.alomonshi.object.enums;
 
 public enum ReserveTimeStatus {
     RESERVABLE(1), RESERVED(2), CANCELED(3), HOLD(4), DELETED(5);
