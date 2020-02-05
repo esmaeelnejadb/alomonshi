@@ -10,11 +10,11 @@ import java.util.List;
 class ReserveTimeDeletor {
     private ServiceResponse serviceResponse;
 
-    ReserveTimeDeletor(ServiceResponse serviceResponse){
+    ReserveTimeDeletor(ServiceResponse serviceResponse) {
         this.serviceResponse = serviceResponse;
     }
 
-    ServiceResponse deleteUnitReserveTimeBetweenDays(int unitID, int startDay, int endDay){
+    ServiceResponse deleteUnitReserveTimeBetweenDays(int unitID, int startDay, int endDay) {
         List<ReserveTime> reserveTimes = checkReservedTimes(unitID, startDay, endDay);
         if (reserveTimes == null )
             return serviceResponse.setResponse(TableReserveTime.deleteBetweenDays(startDay,endDay, unitID));
@@ -23,7 +23,7 @@ class ReserveTimeDeletor {
                 .setResponseData(Collections.singletonList(reserveTimes));
     }
 
-    private static List<ReserveTime> checkReservedTimes(int unitID, int startDay, int endDay){
+    private static List<ReserveTime> checkReservedTimes(int unitID, int startDay, int endDay) {
         return TableReserveTime.getUnitReservedtimesBetweenDays(unitID,startDay, endDay);
     }
 }

@@ -1,11 +1,9 @@
-package com.alomonshi.bussinesslayer.authentication;
+package com.alomonshi.bussinesslayer.accesscheck;
 
 import com.alomonshi.object.tableobjects.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
 //import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.DataInput;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -15,13 +13,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-class WebTokenHandler {
+public class WebTokenHandler {
     private Users user;
     private String token;
     private ObjectMapper objectMapper = new ObjectMapper();
     private static final SecureRandom secureRandom = new SecureRandom(); //threadsafe
     private static final Base64.Encoder base64Encoder = Base64.getUrlEncoder(); //threadsafe
     private static final Base64.Decoder base64Decoder = Base64.getUrlDecoder(); //threadsafe
+
+    /**
+     * Constructor
+     */
+    public WebTokenHandler() {}
 
     public WebTokenHandler setUser(Users user){
         this.user = user;
@@ -37,7 +40,7 @@ class WebTokenHandler {
      * Generating web token from user information
      * @return generated web token
      */
-    String generateWebToken() {
+    public String generateWebToken() {
         try {
             String header = objectMapper.writeValueAsString(new WebTokenHeader());
             String payLoad = objectMapper.writeValueAsString(new WebTokenPayLoad(user));
@@ -53,7 +56,7 @@ class WebTokenHandler {
      * New token generator
      * @return generated random token
      */
-    static String generateNewToken() {
+    public static String generateNewToken() {
         byte[] randomBytes = new byte[24];
         secureRandom.nextBytes(randomBytes);
         return base64Encoder.encodeToString(randomBytes);
@@ -65,7 +68,7 @@ class WebTokenHandler {
      *
      * @return parsed object WebTokenPayload
      */
-    WebTokenPayLoad getWebTokenPayload(){
+    public WebTokenPayLoad getWebTokenPayload(){
         WebTokenParser webTokenParser = new WebTokenParser(token);
         try {
             return objectMapper.readValue(webTokenParser.parsPayload(), WebTokenPayLoad.class);
@@ -100,7 +103,7 @@ class WebTokenHandler {
         /**
          * Default constructor
          */
-        public WebTokenHeader() {}
+        WebTokenHeader() {}
 
         public String getType() {
             return type;

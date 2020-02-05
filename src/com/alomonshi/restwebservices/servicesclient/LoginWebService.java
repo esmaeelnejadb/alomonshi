@@ -1,7 +1,8 @@
 package com.alomonshi.restwebservices.servicesclient;
 
-import com.alomonshi.bussinesslayer.authentication.LoginAuthentication;
-import com.alomonshi.bussinesslayer.authentication.HandleRegistration;
+import com.alomonshi.bussinesslayer.accesscheck.ClientInformationCheck;
+import com.alomonshi.bussinesslayer.accesscheck.authentication.LoginAuthentication;
+import com.alomonshi.bussinesslayer.accesscheck.authentication.HandleRegistration;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.enums.UserLevels;
@@ -15,6 +16,7 @@ public class LoginWebService {
 
    private LoginAuthentication authentication;
    private HandleRegistration handleRegistration;
+   private ClientInformationCheck clientPrimaryCheck;
 
     /**
      * check client request for login
@@ -44,8 +46,8 @@ public class LoginWebService {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response registerRequest(@FormParam("phoneNumber") String phoneNumber, @FormParam("password") String password){
         Users user = TableClient.getUser(phoneNumber);
-        authentication = new LoginAuthentication(user);
-        if (authentication.isClientRegistered())
+        clientPrimaryCheck = new ClientInformationCheck(user);
+        if (clientPrimaryCheck.isClientRegistered())
             return Response.status(Response.Status.FORBIDDEN).build();
         else{
             user.setPassword(password).setPhoneNo(phoneNumber);

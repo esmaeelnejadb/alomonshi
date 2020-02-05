@@ -2,7 +2,7 @@ package com.alomonshi.restwebservices.servicesadmin;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
-import com.alomonshi.restwebservices.annotation.AdminSecured;
+import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -17,7 +17,7 @@ public class AdminReserveTimes {
      * @param generateReserveTimeForm input data
      * @return true id all time generated truly
      */
-    @AdminSecured
+    @CompanyAdminSecured
     @POST
     @Path("/generateReserveTime")
     @Produces(MediaType.APPLICATION_JSON)

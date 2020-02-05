@@ -1,7 +1,7 @@
 package com.alomonshi.object.enums;
 
 public enum UserLevels {
-    CLIENT(1), COMPANY_ADMIN(2), COMPANY_SUB_ADMIN(3), SITE_MANAGER(4);
+    CLIENT(1), COMPANY_SUB_ADMIN(2), COMPANY_ADMIN(3), SITE_MANAGER(4);
     int value;
     UserLevels(int value){
         this.value = value;

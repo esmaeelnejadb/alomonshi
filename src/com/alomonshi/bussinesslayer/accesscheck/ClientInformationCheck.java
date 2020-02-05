@@ -1,15 +1,19 @@
-package com.alomonshi.bussinesslayer.authentication;
+package com.alomonshi.bussinesslayer.accesscheck;
 
 import com.alomonshi.object.tableobjects.Users;
 
 import java.time.LocalDateTime;
 
-public class ClientPrimaryCheck {
+public class ClientInformationCheck {
 
-    Users user;
+    private Users user;
 
-    ClientPrimaryCheck(Users user) {
+    public ClientInformationCheck(Users user) {
         this.user = user;
+    }
+
+    public boolean isPrimaryCheckPass(){
+        return isClientRegistered() && isTokenValid();
     }
 
     /**
@@ -24,7 +28,7 @@ public class ClientPrimaryCheck {
      * Check if user token is valid or not
      * @return true if user token is valid
      */
-    boolean isTokenValid(){
+    public boolean isTokenValid(){
         return user.getExpirationDate() != null && user.getExpirationDate().isAfter(LocalDateTime.now());
     }
 

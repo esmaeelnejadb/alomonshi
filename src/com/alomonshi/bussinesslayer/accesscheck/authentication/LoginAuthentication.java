@@ -1,7 +1,10 @@
-package com.alomonshi.bussinesslayer.authentication;
+package com.alomonshi.bussinesslayer.accesscheck.authentication;
 
+import com.alomonshi.bussinesslayer.accesscheck.ClientInformationCheck;
+import com.alomonshi.bussinesslayer.accesscheck.WebTokenHandler;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
+
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,17 +17,19 @@ import java.util.logging.Logger;
  *  - check admin authentication
  */
 
-public class LoginAuthentication extends ClientPrimaryCheck{
-
+public class LoginAuthentication {
+    private Users user;
     private WebTokenHandler webTokenHandler;
+    private ClientInformationCheck clientPrimaryCheck;
 
     /**
      * Constructor Authentication
      * @param user injected to object
      */
     public LoginAuthentication(Users user){
-        super(user);
+        this.user = user;
         webTokenHandler = new WebTokenHandler().setUser(user);
+        clientPrimaryCheck = new ClientInformationCheck(user);
     }
 
     /**
@@ -47,7 +52,7 @@ public class LoginAuthentication extends ClientPrimaryCheck{
      * @return new expiration date
      */
 
-    static LocalDateTime generateExpirationDate(){
+    public static LocalDateTime generateExpirationDate(){
         LocalDateTime dateTime = LocalDateTime.now();
         return dateTime.plusYears(1);
     }
@@ -57,8 +62,8 @@ public class LoginAuthentication extends ClientPrimaryCheck{
      * @return json web token
      */
     public String handleUserLogin(String password){
-        if (isClientRegistered() && isPasswordValid(password)) {
-            if (!isTokenValid()) {
+        if (clientPrimaryCheck.isClientRegistered() && isPasswordValid(password)) {
+            if (!clientPrimaryCheck.isTokenValid()) {
                 user.setToken(WebTokenHandler.generateNewToken()).setExpirationDate(generateExpirationDate());
                 if(!TableClient.update(user))
                     return null;
