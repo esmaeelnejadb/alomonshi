@@ -62,15 +62,15 @@ public abstract class TableManager {
 		}
 	}
 
-	public static Manager getManager(int managerID){
+	public static List<Manager> getManager(int managerID){
 		String command = "select * from manager where MNG_ID = " + managerID ;
 		Connection conn = DBConnection.getConnection();
-		Manager manager = new Manager();
+		List<Manager> managers = new ArrayList<>();
 		try
 		{
 			Statement stmt = conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
-            fillSingleManager(rs, manager);
+            fillManagers(rs, managers);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -87,7 +87,7 @@ public abstract class TableManager {
 				}
 			}
 		}
-		return manager;
+		return managers;
 	}
 
     public static List<Manager> getManagers(int companyID){

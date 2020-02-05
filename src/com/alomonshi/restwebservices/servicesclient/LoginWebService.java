@@ -1,8 +1,8 @@
 package com.alomonshi.restwebservices.servicesclient;
 
-import com.alomonshi.bussinesslayer.accesscheck.ClientInformationCheck;
-import com.alomonshi.bussinesslayer.accesscheck.authentication.LoginAuthentication;
-import com.alomonshi.bussinesslayer.accesscheck.authentication.HandleRegistration;
+import com.alomonshi.bussinesslayer.webrequestaccesscheck.ClientInformationCheck;
+import com.alomonshi.bussinesslayer.webrequestaccesscheck.authentication.LoginAuthentication;
+import com.alomonshi.bussinesslayer.webrequestaccesscheck.authentication.HandleRegistration;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.enums.UserLevels;

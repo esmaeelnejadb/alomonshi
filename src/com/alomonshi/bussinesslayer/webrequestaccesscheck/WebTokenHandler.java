@@ -1,4 +1,4 @@
-package com.alomonshi.bussinesslayer.accesscheck;
+package com.alomonshi.bussinesslayer.webrequestaccesscheck;
 
 import com.alomonshi.object.tableobjects.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;

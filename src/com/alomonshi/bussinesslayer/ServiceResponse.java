@@ -29,7 +29,8 @@ public class ServiceResponse {
         return this;
     }
 
-    public void setMessage(String message) {
+    public ServiceResponse setMessage(String message) {
         this.message = message;
+        return this;
     }
 }

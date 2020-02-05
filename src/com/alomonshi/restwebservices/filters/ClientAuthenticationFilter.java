@@ -1,6 +1,6 @@
 package com.alomonshi.restwebservices.filters;
 
-import com.alomonshi.bussinesslayer.accesscheck.authorization.Authorization;
+import com.alomonshi.bussinesslayer.webrequestaccesscheck.authorization.Authorization;
 import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 

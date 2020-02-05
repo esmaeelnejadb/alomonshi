@@ -596,7 +596,7 @@ public class TableReserveTime {
 			List<ReserveTime> reserveTimes = new ArrayList<>();
 			Statement stmt = conn.createStatement();
 			String command = "SELECT * FROM RESERVETIMES WHERE "
-					+ "STATUS = " + ReserveTimeStatus.RESERVED + " AND UNIT_ID = " + unitID + " AND DAY_ID BETWEEN " + stDate + " AND " + endDate;
+					+ "STATUS = " + ReserveTimeStatus.RESERVED.getValue() + " AND UNIT_ID = " + unitID + " AND DAY_ID BETWEEN " + stDate + " AND " + endDate;
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimes(rs, reserveTimes);
 			return reserveTimes;

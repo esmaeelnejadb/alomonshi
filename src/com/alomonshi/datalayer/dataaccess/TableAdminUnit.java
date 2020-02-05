@@ -89,7 +89,7 @@ public class TableAdminUnit {
 	 * @param unitID intended unit id that should be deleted
 	 * @return true if process has been done properly
 	 */
-	protected boolean deleteUnit(int unitID)
+	private static boolean deleteUnit(int unitID)
 	{
 		String command = "update adminunits set IS_ACTIVE = false where unit_id = ?";
 		Connection conn = DBConnection.getConnection();
@@ -125,7 +125,7 @@ public class TableAdminUnit {
 	 * Deleting an admin form company
 	 * @return true if process has been done properly
 	 */
-	public boolean deleteAdmin(int managerID)
+	public static boolean deleteAdmin(int managerID)
 	{
 		String command="update adminunits set IS_ACTIVE = false where mng_id = ?";
 		Connection conn = DBConnection.getConnection();
@@ -162,7 +162,7 @@ public class TableAdminUnit {
 	 * @return list of unit belong to an admin in a company
 	 */
 
-	public List<AdminUnit> getManagerUnits(int managerID)
+	public static List<AdminUnit> getManagerUnits(int managerID)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<AdminUnit> adminUnits = new ArrayList<>();
@@ -198,7 +198,7 @@ public class TableAdminUnit {
 	 * @return list of admins of a unit
 	 */
 
-	public List<AdminUnit> getUnitManagers(int unitID)
+	public static List<AdminUnit> getUnitManagers(int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<AdminUnit> adminUnits = new ArrayList<>();

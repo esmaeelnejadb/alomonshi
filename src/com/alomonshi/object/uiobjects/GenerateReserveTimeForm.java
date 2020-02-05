@@ -2,10 +2,12 @@ package com.alomonshi.object.uiobjects;
 
 import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalTime;
 
 public class GenerateReserveTimeForm {
+    private int userID;
     private int unitID;
     private int startDate;
     private int endDate;
@@ -14,6 +16,12 @@ public class GenerateReserveTimeForm {
     private LocalTime startTime2;
     private LocalTime endTime2;
 
+    @NotNull
+    public int getUserID() {
+        return userID;
+    }
+
+    @NotNull
     public int getUnitID() {
         return unitID;
     }
@@ -44,6 +52,10 @@ public class GenerateReserveTimeForm {
     @XmlJavaTypeAdapter(LocalTimeAdaptor.class)
     public LocalTime getEndTime2() {
         return endTime2;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
     public void setUnitID(int unitID) {
