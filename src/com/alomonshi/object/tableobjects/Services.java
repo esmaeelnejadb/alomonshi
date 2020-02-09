@@ -14,7 +14,7 @@ public class Services {
 	private int ID;
 	private int unitID;
 	private String serviceName;
-	private int serviceTime;	// Service duration has been considered in minute
+	private int serviceDuration;	// Service duration has been considered in minute
 	private int servicePrice;
 	private boolean isActive;
 	private List<ServicePicture> pictureURLs;
@@ -30,8 +30,8 @@ public class Services {
 	public String getServiceName() {
 		return serviceName;
 	}
-	public int getServiceTime() {
-		return serviceTime;
+	public int getServiceDuration() {
+		return serviceDuration;
 	}
 	public int getServicePrice() {
 		return servicePrice;
@@ -44,8 +44,8 @@ public class Services {
 		this.serviceName = serviceName;
 		return this;
 	}
-	public Services setServiceTime(int serviceTime) {
-		this.serviceTime = serviceTime;
+	public Services setServiceDuration(int serviceDuration) {
+		this.serviceDuration = serviceDuration;
 		return this;
 	}
 	public Services setServicePrice(int servicePrice) {

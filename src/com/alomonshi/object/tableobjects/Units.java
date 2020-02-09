@@ -12,7 +12,7 @@ public class Units {
 	private int ID;
 	private int companyID;
 	private String unitName;
-	private int unitStepTime;// Unit duration has been considered in minute
+	private int unitDuration;// Unit duration has been considered in minute
 	private Boolean isActive;
 	private List<Services> services;
 	private String pictureURL;
@@ -29,8 +29,8 @@ public class Units {
 	public String getUnitName() {
 		return unitName;
 	}
-	public int getUnitStepTime() {
-		return unitStepTime;
+	public int getUnitDuration() {
+		return unitDuration;
 	}
 	@XmlAttribute(name = "services")
 	public List<Services> getServices() {
@@ -65,8 +65,8 @@ public class Units {
 		this.unitName = unitName;
 		return this;
 	}
-	public Units setUnitStepTime(int unitStepTime) {
-		this.unitStepTime = unitStepTime;
+	public Units setUnitDuration(int unitDuration) {
+		this.unitDuration = unitDuration;
 		return this;
 	}
 	public Units setServices(List<Services> services) {

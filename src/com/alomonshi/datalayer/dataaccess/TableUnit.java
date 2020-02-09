@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -388,7 +387,7 @@ public abstract class TableUnit {
 		try {
 			preparedStatement.setInt(1, unit.getCompanyID());
 			preparedStatement.setString(2, unit.getUnitName());
-			preparedStatement.setInt(3, unit.getUnitStepTime());
+			preparedStatement.setInt(3, unit.getUnitDuration());
 			preparedStatement.setBoolean(4, unit.getActive());
 			preparedStatement.setString(5, unit.getPictureURL());
 			preparedStatement.setString(6, unit.getRemark());
@@ -402,7 +401,7 @@ public abstract class TableUnit {
 			unit.setID(resultSet.getInt(1));
 			unit.setCompanyID(resultSet.getInt(2));
 			unit.setUnitName(resultSet.getString(3));
-			unit.setUnitStepTime(resultSet.getInt(4));
+			unit.setUnitDuration(resultSet.getInt(4));
 			unit.setActive(resultSet.getBoolean(5));
 			unit.setPictureURL(resultSet.getString(6));
 			unit.setRemark(resultSet.getString(7));

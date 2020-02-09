@@ -1,4 +1,4 @@
-package com.alomonshi.bussinesslayer.webrequestaccesscheck;
+package com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck;
 
 import com.alomonshi.object.tableobjects.Users;
 

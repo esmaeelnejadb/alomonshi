@@ -1,9 +1,8 @@
 package com.alomonshi.restwebservices.servicesadmin;
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.changeaccesscheck.CheckAuthority;
+import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAuthority;
 import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
-import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
@@ -31,7 +30,8 @@ public class AdminReserveTimes {
         checkAuthority = new CheckAuthority(generateReserveTimeForm.getUserID(), generateReserveTimeForm.getUnitID());
         ServiceResponse serviceResponse = new ServiceResponse();
         if (checkAuthority.isUserUnitAuthorized()) {
-            reserveTimeService = new ReserveTimeService(generateReserveTimeForm, serviceResponse);
+            reserveTimeService = new ReserveTimeService(serviceResponse)
+                    .setGenerateReserveTimeForm(generateReserveTimeForm);
             return reserveTimeService.handleGeneratingReserveTime();
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);

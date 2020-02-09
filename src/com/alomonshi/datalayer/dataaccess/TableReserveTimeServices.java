@@ -1,112 +1,199 @@
 package com.alomonshi.datalayer.dataaccess;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.tableobjects.ReserveTime;
+import com.alomonshi.object.tableobjects.ReserveTimeServices;
+import com.alomonshi.object.tableobjects.Services;
 
-import java.sql.Connection;
+import java.sql.*;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class TableReserveTimeServices {
-	
-	private int resTimeID;
-	public TableReserveTimeServices()
-	{}
-	
-	public TableReserveTimeServices setRestimeID(int resCodeID)
-	{
-		this.resTimeID = resCodeID;
-		return this;
+
+	private static final String insertCommand = "insert into RESERVETIMESERVICES(RES_TIME_ID, SERVICE_ID, UNIT_ID, CLIENT_ID, IS_ACTIVE)" +
+			" values(?, ?, ?, ?, ?)";
+	private static final String updateCommand = "update RESERVETIMESERVICES set " +
+			"RES_TIME_ID = ?, SERVICE_ID = ?, UNIT_ID = ?, CLIENT_ID = ?, IS_ACTIVE = ?" +
+			" where id = ";
+	/**
+	 * Insert a reserve time service object into database
+	 * @param reserveTimeService to be injected into database
+	 * @return true id correctly br inserted
+	 */
+	public static boolean insert(ReserveTimeServices reserveTimeService){
+		Connection connection = DBConnection.getConnection();
+		boolean response = executeInsertUpdate(reserveTimeService, connection, insertCommand);
+		DBConnection.closeConnection(connection);
+		return response;
+	}
+
+	/**
+	 * Insert a list of reserve time services
+	 * @param reserveTimeServices to be inserted
+	 * @return true if ok
+	 */
+
+	public static synchronized boolean insertList(List<ReserveTimeServices> reserveTimeServices) {
+		Connection connection = DBConnection.getConnection();
+		for (ReserveTimeServices reserveTimeService: reserveTimeServices) {
+			if (!executeInsertUpdate(reserveTimeService, connection, insertCommand)) {
+				DBConnection.closeConnection(connection);
+				return false;
+			}
+		}
+		DBConnection.closeConnection(connection);
+		return true;
+	}
+
+	/**
+	 * update a reserve time service object into database
+	 * @param reserveTimeService to be injected into database
+	 * @return true id correctly br updated
+	 */
+	public static boolean update(ReserveTimeServices reserveTimeService) {
+		Connection connection = DBConnection.getConnection();
+		boolean response = executeInsertUpdate(reserveTimeService, connection, updateCommand + reserveTimeService.getId());
+		DBConnection.closeConnection(connection);
+		return response;
+	}
+
+	/**
+	 * Update a list of reserve time services
+	 * @param reserveTimeServices to be updated
+	 * @return true if ok
+	 */
+
+	public static synchronized boolean updateList(List<ReserveTimeServices> reserveTimeServices) {
+		Connection connection = DBConnection.getConnection();
+		for (ReserveTimeServices reserveTimeService: reserveTimeServices) {
+			if (!executeInsertUpdate(reserveTimeService, connection
+					, updateCommand + reserveTimeService.getId())) {
+				DBConnection.closeConnection(connection);
+				return false;
+			}
+		}
+		DBConnection.closeConnection(connection);
+		return true;
+	}
+
+	/**
+	 * Delete a reserve time services
+	 * @param reserveTimeServices object to be deleted
+	 * @return true if delete correctly
+	 */
+
+	public static boolean delete(ReserveTimeServices reserveTimeServices){
+		reserveTimeServices.setActive(false);
+		return update(reserveTimeServices);
+	}
+
+	/**
+	 * Delete a list of reserve time services
+	 * @param reserveTimeServices to be deleted
+	 * @return true if ok
+	 */
+
+	public static synchronized boolean deleteList(List<ReserveTimeServices> reserveTimeServices) {
+		Connection connection = DBConnection.getConnection();
+		for (ReserveTimeServices reserveTimeService: reserveTimeServices) {
+			reserveTimeService.setActive(false);
+			if (!executeInsertUpdate(reserveTimeService, connection
+					, updateCommand + reserveTimeService.getId())) {
+				DBConnection.closeConnection(connection);
+				return false;
+			}
+		}
+		DBConnection.closeConnection(connection);
+		return true;
+	}
+
+	public static boolean deleteReserveTimeServices(ReserveTime reserveTime) {
+		Connection connection = DBConnection.getConnection();
+		String command = "update RESERVETIMESERVICES set IS_ACTIVE = false where RES_TIME_ID = ?";
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(command);
+			preparedStatement.setInt(1, reserveTime.getID());
+			return preparedStatement.executeUpdate() > 0;
+		}catch (SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			DBConnection.closeConnection(connection);
+		}
+		return false;
+	}
+
+
+	private static boolean executeInsertUpdate(ReserveTimeServices reserveTimeService, Connection connection, String command) {
+		try {
+			PreparedStatement ps = connection.prepareStatement(command);
+			prepare(ps, reserveTimeService);
+			int i = ps.executeUpdate();
+			return i >= 1;
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+			return false;
+		}
 	}
 	
-	public boolean insertRestimeServ(int dateID, int serviceID, int unitID, int companyID, int clientID)
+
+	public static List<Services> getServices(int reserveTimeID)
 	{
-		String command="insert into RESERVETIMESERVICES(RES_TIME_ID, DAY_ID, SERVICE_ID, UNIT_ID, COMP_ID, CLIENT_ID, STATUS) values(?, ?, ?, ?, ?, ?, ?)";
+		String command = "SELECT " +
+				"    rs.SERVICE_ID AS serviceID," +
+				"    s.SERVICE_NAME AS serviceName," +
+				"    s.SERVICE_TIME AS duration," +
+				"    s.SERVICE_PRICE AS cost" +
+				" FROM" +
+				"    alomonshi.reservetimeservices rs," +
+				"    alomonshi.services s " +
+				"WHERE" +
+				"    rs.is_active IS TRUE" +
+				"        AND rs.service_id = s.id" +
+				"        AND rs.res_time_id = " + reserveTimeID +
+				" order by rs.ID desc";
 		Connection conn = DBConnection.getConnection();
+		List<Services> services = new ArrayList<>();
 		try
 		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, resTimeID);
-			ps.setInt(2, dateID);
-			ps.setInt(3, serviceID);
-			ps.setInt(4, unitID);
-			ps.setInt(5, companyID);			
-			ps.setInt(6, clientID);			
-			ps.setInt(7	, 1);
-			int i=ps.executeUpdate();
-			return i==1?true:false;
-			
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+		 	fillServiceList(rs, services);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
+			return null;
 		}finally
 		{
 			if(conn != null)
 			{
 				try 
 				{
-					conn.close();		
+					conn.close();
 				} catch (SQLException e)  
-				{
+				{	
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}
+			}	
 		}
-	}
-	
-	public boolean deleteRestimeServ()
-	{
-		String command="update RESERVETIMESERVICES set status = 5 where RES_TIME_ID=?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, resTimeID);
-			int i=ps.executeUpdate();
-			return i==1?true:false;
-			
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();		
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
-		}
+		return services;
 	}
 
-	public List<Integer> getService()
+	public static List<ReserveTimeServices> getClientInAService(int serviceID)
 	{
-		String command="select SERVICE_ID from RESERVETIMESERVICES where STATUS = 1 AND RES_TIME_ID = " + resTimeID;
-		Connection conn = DBConnection.getConnection(); 
+		String command = "select * from RESERVETIMESERVICES where IS_ACTIVE is true AND SERVICE_ID = " + serviceID;
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTimeServices> reserveTimeServices = new ArrayList<>();
 		try
 		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			List<Integer> serviceIDs = new ArrayList<Integer>();			
-			while(rs.next())
-			{
-				serviceIDs.add(rs.getInt(1));				
-			}
-			return serviceIDs;
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillObjectList(rs, reserveTimeServices);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -121,28 +208,26 @@ public class TableReserveTimeServices {
 				} catch (SQLException e)  
 				{	
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return null;
 				}
 			}	
 		}
+		return reserveTimeServices;
 	}
 	
-	public Integer getCompany()
+	public static List<ReserveTimeServices> getReservedServicesInAUnit(int unitID)
 	{
-		String command="select COMP_ID from RESERVETIMESERVICES where STATUS = 1 AND RES_TIME_ID = " + resTimeID;
-		Connection conn = DBConnection.getConnection(); 
+		String command = "select * from RESERVETIMESERVICES where IS_ACTIVE is true AND UNIT_ID = " + unitID;
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTimeServices> reserveTimeServices = new ArrayList<>();
 		try
 		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				return rs.getInt(1);
-			}
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillObjectList(rs, reserveTimeServices);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return 0;
+			return null;
 		}finally
 		{
 			if(conn != null)
@@ -153,28 +238,23 @@ public class TableReserveTimeServices {
 				} catch (SQLException e)  
 				{	
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return 0;
 				}
 			}	
 		}
-		return 0;
+		return reserveTimeServices;
 	}
 
 	
-	public LinkedHashSet<Integer> getClientInAService(int serviceID)
+	public List<ReserveTimeServices> getClientReservedServicesInAUnit(int unitID, int clientID)
 	{
-		String command="select CLIENT_ID from RESERVETIMESERVICES where STATUS = 1 AND SERVICE_ID = " + serviceID;
-		Connection conn = DBConnection.getConnection(); 
+		String command="select * from RESERVETIMESERVICES where IS_ACTIVE is true AND UNIT_ID = " + unitID + " AND CLIENT_ID = " + clientID;
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTimeServices> reserveTimeServices = new ArrayList<>();
 		try
 		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			LinkedHashSet<Integer> clientIDs = new LinkedHashSet<Integer>();			
-			while(rs.next())
-			{
-				clientIDs.add(rs.getInt(1));				
-			}
-			return clientIDs;
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillObjectList(rs, reserveTimeServices);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -189,26 +269,22 @@ public class TableReserveTimeServices {
 				} catch (SQLException e)  
 				{	
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return null;
 				}
 			}	
 		}
+		return reserveTimeServices;
 	}
 	
-	public LinkedHashSet<Integer> getClientInAUnit(int unitID)
+	public List<ReserveTimeServices> getClientReservedTimesInAService(int serviceID, int clientID)
 	{
-		String command="select CLIENT_ID from RESERVETIMESERVICES where STATUS = 1 AND UNIT_ID = " + unitID;
-		Connection conn = DBConnection.getConnection(); 
+		String command = "select RES_TIME_ID from RESERVETIMESERVICES where IS_ACTIVE is true AND SERVICE_ID = " + serviceID + " AND CLIENT_ID = " + clientID;
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTimeServices> reserveTimeServices = new ArrayList<>();
 		try
 		{
 			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			LinkedHashSet<Integer> clientIDs = new LinkedHashSet<Integer>();			
-			while(rs.next())
-			{
-				clientIDs.add(rs.getInt(1));				
-			}
-			return clientIDs;
+			ResultSet rs = stmt.executeQuery(command);
+			fillObjectList(rs, reserveTimeServices);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -223,112 +299,79 @@ public class TableReserveTimeServices {
 				} catch (SQLException e)  
 				{	
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return null;
 				}
 			}	
+		}
+		return reserveTimeServices;
+	}
+
+	public static void prepare(PreparedStatement preparedStatement, ReserveTimeServices reserveTimeService) {
+		try {
+			preparedStatement.setInt(1, reserveTimeService.getReserveTimeID());
+			preparedStatement.setInt(2, reserveTimeService.getServiceID());
+			preparedStatement.setInt(3, reserveTimeService.getUnitID());
+			preparedStatement.setInt(4, reserveTimeService.getClientID());
+			preparedStatement.setBoolean(5, reserveTimeService.isActive());
+		}catch (SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Error in preparation statement " + e);
 		}
 	}
-	
-	public LinkedHashSet<Integer> getClientInACompany(int companyID)
-	{
-		String command="select CLIENT_ID from RESERVETIMESERVICES where STATUS = 1 AND COMP_ID = " + companyID;
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			LinkedHashSet<Integer> clientIDs = new LinkedHashSet<Integer>();	
-			while(rs.next())
-			{
-				clientIDs.add(rs.getInt(1));				
-			}
-			return clientIDs;
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return null;
-				}
-			}	
-		}
-	}	
-	
-	public LinkedHashSet<Integer> getClientReservedTimesInAUnit(int unitID, int clientID)
-	{
-		String command="select RES_TIME_ID from RESERVETIMESERVICES where STATUS = 1 AND UNIT_ID = " + unitID + " AND CLIENT_ID = " + clientID;
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			LinkedHashSet<Integer> rescodeIDs = new LinkedHashSet<Integer>();	
-			while(rs.next())
-			{
-				rescodeIDs.add(rs.getInt(1));				
-			}
-			return rescodeIDs;
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return null;
-				}
-			}	
+
+	private static void fillReserveTimeServices(ResultSet resultSet, ReserveTimeServices reserveTimeService){
+		try {
+			reserveTimeService.setId(resultSet.getInt(1));
+			reserveTimeService.setReserveTimeID(resultSet.getInt(2));
+			reserveTimeService.setServiceID(resultSet.getInt(3));
+			reserveTimeService.setUnitID(resultSet.getInt(4));
+			reserveTimeService.setActive(resultSet.getBoolean(5));
+		}catch (SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Error in filling result  " + e);
 		}
 	}
-	
-	public LinkedHashSet<Integer> getClientReservedTimesInAService(int serviceID, int clientID)
-	{
-		String command="select RES_TIME_ID from RESERVETIMESERVICES where STATUS = 1 AND SERVICE_ID = " + serviceID + " AND CLIENT_ID = " + clientID;
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			LinkedHashSet<Integer> rescodeIDs = new LinkedHashSet<Integer>();	
-			while(rs.next())
-			{
-				rescodeIDs.add(rs.getInt(1));				
+
+	private static void fillSingleObject(ResultSet resultSet, ReserveTimeServices reserveTimeService) {
+		try {
+			while (resultSet.next()) {
+				fillReserveTimeServices(resultSet, reserveTimeService);
 			}
-			return rescodeIDs;
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-					return null;
-				}
-			}	
+		}catch (SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Error in filling result  " + e);
 		}
-	}	
+	}
+
+	private static void fillObjectList(ResultSet resultSet, List<ReserveTimeServices> reserveTimeServices) {
+		try {
+			while (resultSet.next()) {
+				ReserveTimeServices reserveTimeService = new ReserveTimeServices();
+				fillReserveTimeServices(resultSet, reserveTimeService);
+				reserveTimeServices.add(reserveTimeService);
+			}
+		}catch (SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Error in filling result  " + e);
+		}
+	}
+
+	private static void fillService(ResultSet resultSet, Services service){
+		try {
+			service.setID(resultSet.getInt("serviceID"));
+			service.setServiceName(resultSet.getString("serviceName"));
+			service.setServiceDuration(resultSet.getInt("duration"));
+			service.setServicePrice(resultSet.getInt("cost"));
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	private static void fillServiceList(ResultSet resultSet, List<Services> services){
+		try {
+			while (resultSet.next()){
+				Services service = new Services();
+				fillService(resultSet,service);
+				services.add(service);
+			}
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
 
 }

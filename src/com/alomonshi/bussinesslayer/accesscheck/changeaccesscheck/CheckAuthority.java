@@ -1,4 +1,4 @@
-package com.alomonshi.bussinesslayer.changeaccesscheck;
+package com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck;
 
 import com.alomonshi.datalayer.dataaccess.TableAdminUnit;
 import com.alomonshi.datalayer.dataaccess.TableManager;

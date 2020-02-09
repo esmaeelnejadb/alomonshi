@@ -16,7 +16,7 @@ class ReserveTimeDeletor {
 
     ServiceResponse deleteUnitReserveTimeBetweenDays(int unitID, int startDay, int endDay) {
         List<ReserveTime> reserveTimes = checkIfExistsReservedTimes(unitID, startDay, endDay);
-        if (reserveTimes == null )
+        if (reserveTimes.isEmpty())
             return serviceResponse.setResponse(TableReserveTime.deleteBetweenDays(startDay,endDay, unitID));
         else
             return serviceResponse.setResponse(false)

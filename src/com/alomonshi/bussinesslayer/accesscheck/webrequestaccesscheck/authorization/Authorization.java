@@ -1,7 +1,7 @@
-package com.alomonshi.bussinesslayer.webrequestaccesscheck.authorization;
+package com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.authorization;
 
-import com.alomonshi.bussinesslayer.webrequestaccesscheck.ClientInformationCheck;
-import com.alomonshi.bussinesslayer.webrequestaccesscheck.WebTokenHandler;
+import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.ClientInformationCheck;
+import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.WebTokenHandler;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 
 import com.alomonshi.object.enums.UserLevels;

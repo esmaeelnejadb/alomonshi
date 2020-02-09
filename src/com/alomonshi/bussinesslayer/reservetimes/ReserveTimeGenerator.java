@@ -7,18 +7,20 @@ import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.CalendarDate;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
+import com.alomonshi.utility.DateTimeUtility;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ReserveTimeGenerator {
+class ReserveTimeGenerator {
 
     private GenerateReserveTimeForm generateReserveTimeForm;
 
-    public ReserveTimeGenerator(GenerateReserveTimeForm generateReserveTimeForm){
+    public ReserveTimeGenerator setGenerateReserveTimeForm(GenerateReserveTimeForm generateReserveTimeForm) {
         this.generateReserveTimeForm = generateReserveTimeForm;
+        return this;
     }
 
     /**
@@ -60,27 +62,42 @@ public class ReserveTimeGenerator {
      * @return list of generated reserve times to be inserted in database
      */
 
-    private static List<ReserveTime> generateMiddayReserveTimes(int unitID, int startDay, int endDay, int middayID, LocalTime startTime, LocalTime endTime)
+    static List<ReserveTime> generateMiddayReserveTimes(int unitID, int startDay, int endDay, int middayID, LocalTime startTime, LocalTime endTime)
     {
         // All duration including service, unit or reserve time duration
         // are in type of int and are considered as minutes
         List<ReserveTime> allReserveTimes = new ArrayList<>();
         List<CalendarDate> dates = TableCalendar.getDates(startDay, endDay);
         LocalTime startTimeOfButton = startTime;
-        int duration = Objects.requireNonNull(TableUnit.getUnit(unitID)).getUnitStepTime();
+        int duration = Objects.requireNonNull(TableUnit.getUnit(unitID)).getUnitDuration();
         for(CalendarDate date : dates)
         {
-            while(startTimeOfButton.isBefore(endTime.minusMinutes(duration)))
-            {
+            ReserveTime holdReserveTime = new ReserveTime();
+            while(startTimeOfButton.isBefore(endTime.minusMinutes(duration))
+                    || startTimeOfButton ==  endTime.minusMinutes(duration)) {
                 ReserveTime reservetime = new ReserveTime();
-                reservetime.setUnitID(unitID);
-                reservetime.setStartTime(startTimeOfButton);
-                reservetime.setDuration(duration);
-                reservetime.setStatus(ReserveTimeStatus.RESERVABLE);
-                reservetime.setMiddayID(middayID);
-                reservetime.setDateID(date.getID());
+                reservetime
+                        .setUnitID(unitID)
+                        .setStartTime(startTimeOfButton)
+                        .setDuration(duration)
+                        .setStatus(ReserveTimeStatus.RESERVABLE)
+                        .setMiddayID(middayID)
+                        .setDateID(date.getID());
                 startTimeOfButton = startTimeOfButton.plusMinutes(duration);
                 allReserveTimes.add(reservetime);
+            }
+
+            // Detecting and hold reminded time to be modified later in reserving time
+            if (startTimeOfButton.isAfter(endTime.minusMinutes(duration))
+                && startTimeOfButton.isBefore(endTime)) {
+                holdReserveTime.setStatus(ReserveTimeStatus.HOLD)
+                        .setDuration(DateTimeUtility.getTimeMinutes(endTime)
+                                - DateTimeUtility.getTimeMinutes(startTimeOfButton))
+                        .setStartTime(startTimeOfButton)
+                .setMiddayID(middayID)
+                .setUnitID(unitID)
+                .setDateID(date.getID());
+                allReserveTimes.add(holdReserveTime);
             }
             startTimeOfButton = startTime;
         }
@@ -94,7 +111,7 @@ public class ReserveTimeGenerator {
 
     private boolean primaryCheck(){
         return generateReserveTimeForm.getUnitID() != 0
-                && generateReserveTimeForm.getEndDate() > generateReserveTimeForm.getStartDate();
+                && generateReserveTimeForm.getEndDate() >= generateReserveTimeForm.getStartDate();
     }
 
     /**

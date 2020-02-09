@@ -9,4 +9,8 @@ public class DateTimeUtility {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         return LocalTime.parse(localTime, dateTimeFormatter);
     }
+
+    public static int getTimeMinutes(LocalTime time) {
+        return time.getHour() * 60 + time.getMinute();
+    }
 }
