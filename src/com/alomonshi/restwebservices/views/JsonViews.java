@@ -1,4 +1,4 @@
-package com.alomonshi.object.views;
+package com.alomonshi.restwebservices.views;
 
 public class JsonViews {
 

@@ -1,5 +1,7 @@
 package com.alomonshi.object.tableobjects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class Company {
 	private float rate;
 	private String logoURL;
 	private boolean isActive;
-	private String commertialCode;
+	private String commercialCode;
 	
 	
 	public int getCityID() {
@@ -96,8 +98,9 @@ public class Company {
 		return logoURL;
 	}
 
-	public String getCommertialCode() {
-		return commertialCode;
+	@JsonIgnore
+	public String getCommercialCode() {
+		return commercialCode;
 	}
 
 	public Company setID(int iD) {
@@ -166,6 +169,7 @@ public class Company {
 		return this;
 	}
 
+	@JsonIgnore
 	public boolean isActive() {
 		return isActive;
 	}
@@ -175,7 +179,7 @@ public class Company {
 		return this;
 	}
 
-	public void setCommertialCode(String commertialCode) {
-		this.commertialCode = commertialCode;
+	public void setCommercialCode(String commercialCode) {
+		this.commercialCode = commercialCode;
 	}
 }

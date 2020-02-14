@@ -51,8 +51,8 @@ public class CompanyWebService{
     }
 
     /**
-     *
      * return list of best companies
+     *
      */
 
     @GET

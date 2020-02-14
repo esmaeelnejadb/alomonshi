@@ -11,8 +11,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/userLogin")
-public class LoginWebService {
+@Path("`/userLogin`")
+public class AuthenticationWebService {
 
    private LoginAuthentication authentication;
    private HandleRegistration handleRegistration;
@@ -50,7 +50,8 @@ public class LoginWebService {
         if (clientPrimaryCheck.isClientRegistered())
             return Response.status(Response.Status.FORBIDDEN).build();
         else{
-            user.setPassword(password).setPhoneNo(phoneNumber);
+            user.setPassword(password);
+            user.setPhoneNo(phoneNumber);
             handleRegistration = new HandleRegistration(user);
             return handleRegistration.handleVerification() ? Response.ok().build() : Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -69,7 +70,8 @@ public class LoginWebService {
         Users user = TableClient.getUser(phoneNumber);
         handleRegistration = new HandleRegistration(user);
         if(handleRegistration.checkVerificationCode(verificationCode)) {
-            user.setActive(true).setUserLevel(UserLevels.CLIENT);
+            user.setActive(true);
+            user.setUserLevel(UserLevels.CLIENT);
             String token = handleRegistration.handleFinalRegistration();
             return token != null ? Response.ok(token).build() :
                     Response.status(Response.Status.NOT_ACCEPTABLE).build();

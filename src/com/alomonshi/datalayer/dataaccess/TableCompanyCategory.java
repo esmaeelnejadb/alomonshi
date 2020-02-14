@@ -14,12 +14,12 @@ import com.alomonshi.object.tableobjects.CompanyCategories;
 public class TableCompanyCategory {
 
 	public static boolean insert(CompanyCategories companyCategories){
-		String command = "insert into COMPANYCATS(CAT_NAME) values(?)";
+		String command = "insert into COMPANYCATS(CAT_NAME, LOGO_URL) values(?, ?)";
 		return executeInsertUpdateCommand(companyCategories, command);
 	}
 
 	public static boolean update(CompanyCategories companyCategory){
-		String command = "update COMPANYCATS set CAT_NAME = ?, IS_ACTIVE = ?";
+		String command = "update COMPANYCATS set CAT_NAME = ?, LOGO_URL = ?, IS_ACTIVE = ?";
 		return executeInsertUpdateCommand(companyCategory, command);
 	}
 
@@ -198,6 +198,7 @@ public class TableCompanyCategory {
 			companyCats.setID(resultSet.getInt(1));
 			companyCats.setCategoryName(resultSet.getString(2));
 			companyCats.setActive(resultSet.getBoolean(3));
+			companyCats.setLogoURL(resultSet.getString(4));
 			companyCats.setCompanySize(TableCompanies.getCompanyNumbers(companyCats.getID()));
         }catch (SQLException e){
 	        Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

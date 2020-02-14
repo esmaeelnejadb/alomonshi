@@ -29,6 +29,7 @@ public class Units {
 	public String getUnitName() {
 		return unitName;
 	}
+	@JsonIgnore
 	public int getUnitDuration() {
 		return unitDuration;
 	}

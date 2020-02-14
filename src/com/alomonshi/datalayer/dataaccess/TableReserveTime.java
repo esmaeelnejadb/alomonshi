@@ -12,6 +12,7 @@ import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.enums.MiddayID;
+import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.ClientReservedTimes;
 import com.alomonshi.server.AlomonshiServer;
 
@@ -700,6 +701,7 @@ public class TableReserveTime {
 			clientReservedTime.setUnitName(resultSet.getString("unitName"));
 			clientReservedTime.setServices(TableReserveTimeServices
 					.getServices(clientReservedTime.getReserveTimeID()));
+			clientReservedTime.setCost(getServicesTotalCost(clientReservedTime.getServices()));
 			clientReservedTime.setCommentID(resultSet.getInt("commentID"));
 			clientReservedTime.setComment(resultSet.getString("comment"));
 			clientReservedTime.setCommentRate(resultSet.getFloat("commentRate"));
@@ -721,4 +723,12 @@ public class TableReserveTime {
 		}
 	}
 
+	/**
+	 * Getting total cost of service list
+	 * @param services to be calculated their cost
+	 * @return total cost
+	 */
+	private static int getServicesTotalCost(List<Services> services){
+		return services.stream().mapToInt(Services::getServicePrice).sum();
+	}
 }

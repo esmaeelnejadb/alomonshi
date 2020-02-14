@@ -32,7 +32,7 @@ public abstract class TableClient {
 
 	public static boolean update(Users user) {
 		String command = "update CLIENTINFO set VERIFICATION_CODE = ?, NAME = ?, USERNAME = ?, PASSWORD = ?" +
-				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? WHERE ID = " + user.getID();
+				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? WHERE ID = " + user.getId();
 		return executeInsertUpdate(user, command);
 	}
 
@@ -201,7 +201,7 @@ public abstract class TableClient {
 
 	private static void fillUser(ResultSet resultSet, Users user){
 		try {
-			user.setID(resultSet.getInt(1));
+			user.setId(resultSet.getInt(1));
 			user.setVerificationCode(resultSet.getInt(2));
 			user.setName(resultSet.getString(3));
 			user.setUsername(resultSet.getString(4));

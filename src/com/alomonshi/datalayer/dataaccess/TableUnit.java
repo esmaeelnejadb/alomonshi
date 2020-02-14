@@ -20,7 +20,7 @@ public abstract class TableUnit {
 	}
 
 	public static boolean updateUnit(Units unit){
-		String command = "update UNITS set Comp_ID = ?, unit_name = ?, unit_step_time = ?, IS_ACTIVE =  ?, PICTURE_URL = ?, REMARK = ?";
+		String command = "update UNITS set Comp_ID = ?, unit_name = ?, unit_step_time = ?, IS_ACTIVE = ?, PICTURE_URL = ?, REMARK = ?";
 		return executeInsertUpdate(unit, command);
 	}
 

@@ -543,7 +543,7 @@ public class TableCompanies {
 			preparedStatement.setInt(13, company.getCityID());
 			preparedStatement.setInt(14, company.getDistrictID());
 			preparedStatement.setBoolean(15, company.isActive());
-			preparedStatement.setString(16, company.getCommertialCode());
+			preparedStatement.setString(16, company.getCommercialCode());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -567,7 +567,7 @@ public class TableCompanies {
 			company.setCityID(resultSet.getInt(14));
 			company.setDistrictID(resultSet.getInt(15));
 			company.setActive(resultSet.getBoolean(16));
-			company.setCommertialCode(resultSet.getString(17));
+			company.setCommercialCode(resultSet.getString(17));
 			company.setUnits(TableUnit.getUnits(company.getID()));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

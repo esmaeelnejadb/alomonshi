@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CheckAuthority {
+public class CheckAdminAuthority {
     private int userID;
     private int toBeCheckedID;
 
@@ -18,7 +18,7 @@ public class CheckAuthority {
      * @param userID to injected
      * @param toBeCheckedID to be injected
      */
-    public CheckAuthority(int userID, int toBeCheckedID) {
+    public CheckAdminAuthority(int userID, int toBeCheckedID) {
         this.userID = userID;
         this.toBeCheckedID = toBeCheckedID;
     }

@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.clientservices;
+package com.alomonshi.restwebservices.servicesclient;
 import com.alomonshi.datalayer.dataaccess.TableCompanyCategory;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 import javax.ws.rs.GET;

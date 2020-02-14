@@ -1,6 +1,6 @@
 package com.alomonshi.restwebservices.servicesadmin;
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAuthority;
+import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
 import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/adminReserveTime")
 public class AdminReserveTimes {
 
-    private CheckAuthority checkAuthority;
+    private CheckAdminAuthority checkAuthority;
     private ReserveTimeService reserveTimeService;
 
     /**
@@ -27,7 +27,7 @@ public class AdminReserveTimes {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public ServiceResponse generateReserveTimes(@NotNull GenerateReserveTimeForm generateReserveTimeForm){
-        checkAuthority = new CheckAuthority(generateReserveTimeForm.getUserID(), generateReserveTimeForm.getUnitID());
+        checkAuthority = new CheckAdminAuthority(generateReserveTimeForm.getUserID(), generateReserveTimeForm.getUnitID());
         ServiceResponse serviceResponse = new ServiceResponse();
         if (checkAuthority.isUserUnitAuthorized()) {
             reserveTimeService = new ReserveTimeService(serviceResponse)

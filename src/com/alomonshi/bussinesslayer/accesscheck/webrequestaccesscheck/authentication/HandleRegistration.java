@@ -48,11 +48,12 @@ public class HandleRegistration {
      */
     public boolean handleVerification(){
         String verificationCode = generateVerificationCode();
-        if(newUser.getID() == 0) {
+        newUser.setVerificationCode(Integer.parseInt(verificationCode));
+        if(newUser.getId() == 0) {
             newUser.setUserLevel(UserLevels.CLIENT);
-            if(!TableClient.insert(newUser.setVerificationCode(Integer.parseInt(verificationCode))))
+            if(!TableClient.insert(newUser))
                 return false;
-        }else if (!TableClient.update(newUser.setVerificationCode(Integer.parseInt(verificationCode))))
+        }else if (!TableClient.update(newUser))
             return false;
         return sendVerificationCodeMessage(verificationCode);
     }
@@ -71,7 +72,8 @@ public class HandleRegistration {
      * @return json web token
      */
     public String handleFinalRegistration(){
-        newUser.setToken(WebTokenHandler.generateNewToken()).setExpirationDate(LoginAuthentication.generateExpirationDate());
+        newUser.setToken(WebTokenHandler.generateNewToken());
+        newUser.setExpirationDate(LoginAuthentication.generateExpirationDate());
         if(!TableClient.update(newUser))
             return null;
         return webTokenHandler.setUser(newUser).generateWebToken();

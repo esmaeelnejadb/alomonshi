@@ -3,8 +3,7 @@ import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.object.tableobjects.ReserveTime;
-import com.alomonshi.object.uiobjects.ClientReservedTimes;
-import com.alomonshi.object.views.JsonViews;
+import com.alomonshi.restwebservices.views.JsonViews;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -77,18 +76,5 @@ public class ClientReserveTimes {
         ServiceResponse serviceResponse = new ServiceResponse();
         reserveTimeService = new ReserveTimeService(serviceResponse);
         return reserveTimeService.cancelReserveTime(requestedTime);
-    }
-
-    /**
-     * Getting client reserved times
-     * @param clientID intended client
-     * @return list of client reserved times
-     */
-    @ClientSecured
-    @GET
-    @Path("/getClientReserveTimes")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<ClientReservedTimes> getClientReservedTimes(@QueryParam("clientID") int clientID) {
-        return ReserveTimeService.getClientReservedTimes(clientID);
     }
 }

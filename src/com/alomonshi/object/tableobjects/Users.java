@@ -1,5 +1,9 @@
 package com.alomonshi.object.tableobjects;
 import com.alomonshi.object.enums.UserLevels;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.sun.glass.ui.View;
+import org.glassfish.jersey.internal.util.collection.Views;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
@@ -7,7 +11,7 @@ import java.time.LocalDateTime;
 @XmlRootElement(namespace = " ")
 public class Users{
 
-	private int ID;
+	private int id;
 	private String name;
 	private String username;
 	private String password;
@@ -19,88 +23,90 @@ public class Users{
 	private LocalDateTime expirationDate;
 	private boolean isActive;
 
+	@JsonView()
+	public int getId() {
+		return id;
+	}
+
 	public String getUsername() {
 		return username;
 	}
 	public String getName() {
 		return name;
 	}
+
+	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
 	public String getEmail() {
 		return email;
 	}
-	public int getID() {
-		return ID;
-	}
+
+	@JsonIgnore
 	public int getVerificationCode() {
 		return userVerificationCode;
 	}
+
 	public String getPhoneNo() {
 		return phoneNo;
 	}
+
+	@JsonIgnore
 	public UserLevels getUserLevel() {
 		return userLevel;
 	}
-	public Users setName(String name) {
-		this.name = name;
-		return this;
-	}
-	public Users setUsername(String username) {
-		this.username = username;
-		return this;
-	}
-	public Users setPassword(String password) {
-		this.password = password;
-		return this;
-	}
-	public Users setEmail(String email) {
-		this.email = email;
-		return this;
-	}
 
-	public Users setID(int ID) {
-		this.ID = ID;
-		return this;
-	}
-	public Users setVerificationCode(int user_action) {
-		this.userVerificationCode = user_action;
-		return this;
-	}
-	public Users setPhoneNo(String phoneNo) {
-		this.phoneNo = phoneNo;
-		return this;
-	}
-	public Users setUserLevel(UserLevels userLevel) {
-		this.userLevel = userLevel;
-		return this;
-	}
-
+	@JsonIgnore
 	public String getToken() {
 		return token;
 	}
 
-	public Users setToken(String token) {
-		this.token = token;
-		return this;
-	}
-
-	public LocalDateTime getExpirationDate() {
-		return expirationDate;
-	}
-
-	public Users setExpirationDate(LocalDateTime expirationDate) {
-		this.expirationDate = expirationDate;
-		return this;
-	}
-
+	@JsonIgnore
 	public boolean isActive() {
 		return isActive;
 	}
 
-	public Users setActive(boolean active) {
+	@JsonIgnore
+	public LocalDateTime getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	public void setVerificationCode(int user_action) {
+		this.userVerificationCode = user_action;
+	}
+	public void setPhoneNo(String phoneNo) {
+		this.phoneNo = phoneNo;
+	}
+	public void setUserLevel(UserLevels userLevel) {
+		this.userLevel = userLevel;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public void setExpirationDate(LocalDateTime expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
+	public void setActive(boolean active) {
 		isActive = active;
-		return this;
 	}
 }

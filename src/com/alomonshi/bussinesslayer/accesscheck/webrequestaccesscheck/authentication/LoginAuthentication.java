@@ -64,7 +64,8 @@ public class LoginAuthentication {
     public String handleUserLogin(String password){
         if (clientPrimaryCheck.isClientRegistered() && isPasswordValid(password)) {
             if (!clientPrimaryCheck.isTokenValid()) {
-                user.setToken(WebTokenHandler.generateNewToken()).setExpirationDate(generateExpirationDate());
+                user.setToken(WebTokenHandler.generateNewToken());
+                user.setExpirationDate(generateExpirationDate());
                 if(!TableClient.update(user))
                     return null;
             }
