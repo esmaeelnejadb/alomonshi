@@ -11,7 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("`/userLogin`")
+@Path("/userLogin")
 public class AuthenticationWebService {
 
    private LoginAuthentication authentication;

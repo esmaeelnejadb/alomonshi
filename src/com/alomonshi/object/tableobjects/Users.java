@@ -1,14 +1,9 @@
 package com.alomonshi.object.tableobjects;
 import com.alomonshi.object.enums.UserLevels;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.sun.glass.ui.View;
-import org.glassfish.jersey.internal.util.collection.Views;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalDateTime;
 
-@XmlRootElement(namespace = " ")
 public class Users{
 
 	private int id;
@@ -23,7 +18,6 @@ public class Users{
 	private LocalDateTime expirationDate;
 	private boolean isActive;
 
-	@JsonView()
 	public int getId() {
 		return id;
 	}
