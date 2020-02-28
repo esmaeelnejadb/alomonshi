@@ -1,6 +1,7 @@
 package com.alomonshi.restwebservices.message;
 
 public class ServerMessage {
+    public static final String INTERNALERRORMESSAGE = "خطا! لطفاً ورودی ها را چک نمایید.";
     public static final String SUCCESSMESSAGE = "عملیات با موفقیت صورت پذیرفت";
     public static final String FAULTMESSAGE = "خطا در انجام عملیات";
     public static final String INPUTCHECK = "لطفاً ورودی ها را چک نمایید.";

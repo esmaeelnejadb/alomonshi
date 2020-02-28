@@ -77,4 +77,8 @@ public class Authorization {
         return !isPrimaryAuthorized() || getUserLevel().getValue() < userLevel.getValue();
     }
 
+    public boolean isWebTokenBelongedToRequestedUser(int userID) {
+        return userID == user.getId();
+    }
+
 }

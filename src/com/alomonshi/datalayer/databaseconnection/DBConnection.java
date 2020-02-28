@@ -1,7 +1,6 @@
 package com.alomonshi.datalayer.databaseconnection;
 
 import com.alomonshi.configuration.ConfigurationParameter;
-import com.alomonshi.server.AlomonshiServer;
 
 import java.sql.Connection;
 
@@ -49,7 +48,7 @@ public class DBConnection {
                 connection.close();
             } catch (SQLException e)
             {
-                Logger.getLogger(AlomonshiServer.class.getName()).log(Level.SEVERE, "Exception" + e);
+                Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
             }
         }
     }

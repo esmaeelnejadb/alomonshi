@@ -1,8 +1,8 @@
-package com.alomonshi.restwebservices.filters;
+package com.alomonshi.restwebservices.filters.authentication;
 
 import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.authorization.Authorization;
 import com.alomonshi.object.enums.UserLevels;
-import com.alomonshi.restwebservices.annotation.ClientSecured;
+import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -10,10 +10,10 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-@ClientSecured
+@CompanyAdminSecured
 @Provider
 @Priority(Priorities.AUTHORIZATION)
-public class ClientAuthenticationFilter implements ContainerRequestFilter {
+public class CompanyAdminAuthenticationFilter implements ContainerRequestFilter {
 
     /**
      * Filer authorized admins
@@ -25,7 +25,7 @@ public class ClientAuthenticationFilter implements ContainerRequestFilter {
         if(requestHeaderCheck.isAuthorizationHeaderValid(requestContext))
         {
             Authorization adminAuthorization = new Authorization(requestHeaderCheck
-                    .getTokenFromRequest(requestContext), UserLevels.CLIENT);
+                    .getTokenFromRequest(requestContext), UserLevels.COMPANY_ADMIN);
             if(adminAuthorization.isNotAuthorized())
                 RequestHeaderCheck.abortWithUnauthorized(requestContext);
         }

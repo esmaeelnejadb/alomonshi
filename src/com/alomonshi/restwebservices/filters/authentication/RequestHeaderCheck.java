@@ -1,11 +1,11 @@
-package com.alomonshi.restwebservices.filters;
+package com.alomonshi.restwebservices.filters.authentication;
 
 import org.apache.http.HttpHeaders;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Response;
 
-public class RequestHeaderCheck {
+class RequestHeaderCheck {
 
     private static final String REALM = " ";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
@@ -43,14 +43,14 @@ public class RequestHeaderCheck {
         return requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
     }
 
-    public String getTokenFromRequest(ContainerRequestContext requestContext){
+    String getTokenFromRequest(ContainerRequestContext requestContext){
         return getAuthorizationHeaderFromRequest(requestContext).substring(AUTHENTICATION_SCHEME.length()).trim();
     }
 
     /**
      *
      */
-    public boolean isAuthorizationHeaderValid(ContainerRequestContext requestContext){
+    boolean isAuthorizationHeaderValid(ContainerRequestContext requestContext){
         if(!isTokenBasedAuthentication(getAuthorizationHeaderFromRequest(requestContext))){
             abortWithUnauthorized(requestContext);
             return false;

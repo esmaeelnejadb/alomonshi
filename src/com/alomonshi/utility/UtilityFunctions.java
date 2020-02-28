@@ -1,8 +1,6 @@
 package com.alomonshi.utility;
-import com.alomonshi.datalayer.dataaccess.TableClient;
 
 import java.security.SecureRandom;
-import java.util.List;
 
 public class UtilityFunctions {
 	

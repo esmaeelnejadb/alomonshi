@@ -15,7 +15,8 @@ public class ClientProfile {
     private Users user;
     private ServiceResponse serviceResponse;
 
-    public ClientProfile(Users user, ServiceResponse serviceResponse) {
+    public ClientProfile(Users user
+            , ServiceResponse serviceResponse) {
         this.user = user;
         this.serviceResponse = serviceResponse;
     }
@@ -53,17 +54,24 @@ public class ClientProfile {
      */
 
     public ServiceResponse changePassword(String newPassword, String oldPassword) {
-        if (this.user.getPassword().equals(oldPassword)) {
-            user.setPassword(newPassword);
-            if (TableClient.update(user))
-                return serviceResponse.setResponse(true)
-                        .setMessage(ServerMessage.SUCCESSMESSAGE);
-            else
+        try {
+            if (this.user.getPassword().equals(oldPassword)) {
+                user.setPassword(newPassword);
+                if (TableClient.update(user))
+                    return serviceResponse.setResponse(true)
+                            .setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    return serviceResponse.setResponse(false)
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+            }else
                 return serviceResponse.setResponse(false)
-                        .setMessage(ServerMessage.FAULTMESSAGE);
-        }else
-            return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.INPUTCHECK);
+                        .setMessage(ServerMessage.INPUTCHECK);
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot change password " + e);
+            serviceResponse.setResponse(false);
+            serviceResponse.setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse;
+        }
     }
 
     /**

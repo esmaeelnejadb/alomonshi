@@ -1,6 +1,5 @@
 package com.alomonshi.object.uiobjects;
 
-import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
 
@@ -24,6 +23,8 @@ public class ClientReservedTimes {
     private int commentID;
     private String comment;
     private float commentRate;
+    private boolean commentable;
+    private boolean cancelable;
 
     public int getReserveTimeID() {
         return reserveTimeID;
@@ -136,5 +137,21 @@ public class ClientReservedTimes {
 
     public void setCommentRate(float commentRate) {
         this.commentRate = commentRate;
+    }
+
+    public boolean isCommentable() {
+        return commentable;
+    }
+
+    public void setCommentable(boolean commentable) {
+        this.commentable = commentable;
+    }
+
+    public boolean isCancelable() {
+        return cancelable;
+    }
+
+    public void setCancelable(boolean cancelable) {
+        this.cancelable = cancelable;
     }
 }

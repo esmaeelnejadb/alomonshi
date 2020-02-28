@@ -49,7 +49,7 @@ public class Initializer implements ServletContextListener {
             }
         }
 
-        public String getKey(String key) {
+        String getKey(String key) {
             return property.getProperty(key);
         }
     }

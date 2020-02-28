@@ -1,7 +1,10 @@
 package com.alomonshi.object.tableobjects;
 import com.alomonshi.object.enums.UserLevels;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.alomonshi.restwebservices.adaptors.LocalDateTimeAdaptor;
+import com.alomonshi.restwebservices.views.JsonViews;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
 public class Users{
@@ -18,50 +21,58 @@ public class Users{
 	private LocalDateTime expirationDate;
 	private boolean isActive;
 
+	@JsonView(JsonViews.NormalViews.class)
 	public int getId() {
 		return id;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getUsername() {
 		return username;
 	}
+
+	@JsonView(JsonViews.NormalViews.class)
 	public String getName() {
 		return name;
 	}
 
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public String getPassword() {
 		return password;
 	}
+
+	@JsonView(JsonViews.NormalViews.class)
 	public String getEmail() {
 		return email;
 	}
 
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public int getVerificationCode() {
 		return userVerificationCode;
 	}
 
+	@JsonView(JsonViews.ClientViews.class)
 	public String getPhoneNo() {
 		return phoneNo;
 	}
 
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public UserLevels getUserLevel() {
 		return userLevel;
 	}
 
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public String getToken() {
 		return token;
 	}
 
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public boolean isActive() {
 		return isActive;
 	}
 
-	@JsonIgnore
+	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
+	@JsonView(JsonViews.ManagerViews.class)
 	public LocalDateTime getExpirationDate() {
 		return expirationDate;
 	}
@@ -69,9 +80,11 @@ public class Users{
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -82,12 +95,15 @@ public class Users{
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public void setVerificationCode(int user_action) {
 		this.userVerificationCode = user_action;
 	}
+
 	public void setPhoneNo(String phoneNo) {
 		this.phoneNo = phoneNo;
 	}
+
 	public void setUserLevel(UserLevels userLevel) {
 		this.userLevel = userLevel;
 	}

@@ -52,7 +52,7 @@ public class LoginAuthentication {
      * @return new expiration date
      */
 
-    public static LocalDateTime generateExpirationDate(){
+    static LocalDateTime generateExpirationDate(){
         LocalDateTime dateTime = LocalDateTime.now();
         return dateTime.plusYears(1);
     }

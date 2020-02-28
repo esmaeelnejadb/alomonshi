@@ -4,10 +4,13 @@ public class JsonViews {
 
     public static class NormalViews {}
 
-    public static class ClientViews{}
+    public static class ClientViews extends NormalViews{}
 
-    public static class AdminViews {}
+    public static class SubAdminViews extends ClientViews{}
+
+    public static class AdminViews extends SubAdminViews{}
+
+    public static class ManagerViews extends AdminViews{}
 
     public static class HiddenViews {}
-
 }

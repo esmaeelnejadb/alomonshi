@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Level;
@@ -14,7 +16,7 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.ClientReservedTimes;
-import com.alomonshi.server.AlomonshiServer;
+import com.alomonshi.utility.DateTimeUtility;
 
 public class TableReserveTime {
 
@@ -127,7 +129,7 @@ public class TableReserveTime {
 			
 		}catch(SQLException e)
 		{
-			Logger.getLogger(AlomonshiServer.class.getName()).log(Level.SEVERE, "Exception : " + e);
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
 		}
 	}
@@ -239,7 +241,9 @@ public class TableReserveTime {
 
 	public static boolean resetClientReserveData(ReserveTime reserveTime)
 	{
-	    reserveTime.setStatus(ReserveTimeStatus.RESERVABLE).setClientID(0).setResCodeID(null);
+	    reserveTime.setStatus(ReserveTimeStatus.RESERVABLE);
+		reserveTime.setClientID(0);
+		reserveTime.setResCodeID(null);
 	    return updateReserveTime(reserveTime);
 	}
 	
@@ -383,6 +387,7 @@ public class TableReserveTime {
 					"    u.ID AS unitID," +
 					"    u.UNIT_NAME AS unitName," +
 					"    IFNULL(com.comment, ' ') AS comment," +
+					"    IFNULL(com.SERVICE_RATE, 0) AS commentRate," +
 					"    IFNULL(com.ID, 0) AS commentID," +
 					"    IFNULL(com.SERVICE_RATE, 0) AS serviceRate" +
 					" FROM" +
@@ -705,6 +710,10 @@ public class TableReserveTime {
 			clientReservedTime.setCommentID(resultSet.getInt("commentID"));
 			clientReservedTime.setComment(resultSet.getString("comment"));
 			clientReservedTime.setCommentRate(resultSet.getFloat("commentRate"));
+			clientReservedTime.setCancelable(isTimeCancelable(clientReservedTime));
+			clientReservedTime.setCommentable(clientReservedTime.getCommentID() == 0
+					&& !clientReservedTime.isCancelable());
+
 		}catch (SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -731,4 +740,10 @@ public class TableReserveTime {
 	private static int getServicesTotalCost(List<Services> services){
 		return services.stream().mapToInt(Services::getServicePrice).sum();
 	}
+
+	private static boolean isTimeCancelable(ClientReservedTimes clientReservedTime) {
+		LocalDateTime reservedTimeDatetime = DateTimeUtility.getGregorianReservedTimeDatetime(clientReservedTime);
+		return reservedTimeDatetime.minusHours(1).isAfter(LocalDateTime.now());
+	}
+
 }

@@ -2,7 +2,11 @@ package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
+import com.alomonshi.restwebservices.views.JsonViews;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalTime;
 import java.util.List;
@@ -11,6 +15,7 @@ import java.util.List;
  * @author Behzad
  * Define reserve time object
  */
+@XmlRootElement
 public class ReserveTime {
 
 	private int ID;
@@ -24,76 +29,87 @@ public class ReserveTime {
 	private List<Integer> serviceIDs;
 	private String resCodeID;
 
+
+	@JsonView(JsonViews.ClientViews.class)
 	public int getID() {
 		return ID;
 	}
+
+	@JsonView(JsonViews.ManagerViews.class)
 	public int getUnitID() {
 		return unitID;
 	}
+
+	@JsonView(JsonViews.HiddenViews.class)
 	public int getMiddayID() {
 		return middayID;
 	}
+
+
+	@JsonView(JsonViews.HiddenViews.class)
 	public int getDateID() {
 		return dateID;
 	}
 
+	@XmlElement
 	@XmlJavaTypeAdapter(LocalTimeAdaptor.class)
+	@JsonView(JsonViews.ClientViews.class)
 	public LocalTime getStartTime() {
 		return startTime;
 	}
+
+	@JsonView(JsonViews.ClientViews.class)
 	public int getDuration() {
 		return duration;
 	}
+
+	@JsonView(JsonViews.AdminViews.class)
 	public ReserveTimeStatus getStatus() {
 		return status;
 	}
+
+	@JsonView(JsonViews.AdminViews.class)
 	public int getClientID() {
 		return clientID;
 	}
+
+	@JsonView(JsonViews.AdminViews.class)
 	public List<Integer> getServiceIDs() {
 		return serviceIDs;
 	}
+
+	@JsonView(JsonViews.ManagerViews.class)
 	public String getResCodeID() {
 		return resCodeID;
 	}
-	public ReserveTime setUnitID(int unitID) {
+	public void setUnitID(int unitID) {
 		this.unitID = unitID;
-		return this;
 	}
-	public ReserveTime setID(int iD) {
+	public void setID(int iD) {
 		ID = iD;
-		return this;
 	}
-	public ReserveTime setMiddayID(int middayID) {
+	public void setMiddayID(int middayID) {
 		this.middayID = middayID;
-		return this;
 	}
-	public ReserveTime setDateID(int dateID) {
+	public void setDateID(int dateID) {
 		this.dateID = dateID;
-		return this;
 	}
-	public ReserveTime setStartTime(LocalTime startTime) {
+	public void setStartTime(LocalTime startTime) {
 		this.startTime = startTime;
-		return this;
 	}
-	public ReserveTime setDuration(int duration) {
+	public void setDuration(int duration) {
 		this.duration = duration;
-		return this;
 	}
-	public ReserveTime setStatus(ReserveTimeStatus status) {
+	public void setStatus(ReserveTimeStatus status) {
 		this.status = status;
-		return this;
 	}
-	public ReserveTime setClientID(int clientID) {
+	public void setClientID(int clientID) {
 		this.clientID = clientID;
-		return this;
 	}
-	public ReserveTime setServiceIDs(List<Integer> serviceIDs) {
+	public void setServiceIDs(List<Integer> serviceIDs) {
 		this.serviceIDs = serviceIDs;
-		return this;
 	}
-	public ReserveTime setResCodeID(String resCodeID) {
+	public void setResCodeID(String resCodeID) {
 		this.resCodeID = resCodeID;
-		return this;
 	}		
 }

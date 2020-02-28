@@ -82,8 +82,8 @@ class ClientReserveTimeHandler {
                             && TableReserveTime.deleteReserveTimeList(shouldBeDeletedTimes)
                             && TableReserveTimeServices.insertList(reserveTimeServices);
                 }else { //If next time of intended reserve time be reserved time canceled time
-                    holdReserveTime.setDuration(unitDuration - serviceDuration)
-                    .setStartTime(reserveTime.getStartTime().plusMinutes(serviceDuration));
+                    holdReserveTime.setDuration(unitDuration - serviceDuration);
+                    holdReserveTime.setStartTime(reserveTime.getStartTime().plusMinutes(serviceDuration));
                     ////////////////// Do reserve tasks ////////////////////
                     return TableReserveTime.updateReserveTime(reserveTime)
                             && TableReserveTime.insertReserveTime(holdReserveTime)

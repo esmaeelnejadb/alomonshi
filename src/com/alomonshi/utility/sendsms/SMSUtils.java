@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import org.tempuri.ISendServiceProxy;
 
-import com.alomonshi.server.AlomonshiServer;
 import com.microsoft.schemas._2003._10.Serialization.Arrays.holders.ArrayOflongHolder;
 
 import javax.xml.rpc.holders.ByteArrayHolder;
@@ -29,7 +28,7 @@ public class SMSUtils {
 			if (result == 0) {
 				return true;
 			}else {
-				Logger.getLogger(AlomonshiServer.class.getName()).log(Level.SEVERE, "SMS result: " + result);
+				Logger.getLogger("Exception").log(Level.SEVERE, "Can not sent sms with result code: " + result);
 				return false;
         	}
 		} catch (RemoteException e) {
