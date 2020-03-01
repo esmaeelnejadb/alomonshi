@@ -21,13 +21,15 @@ public class CompanyAdminAuthenticationFilter implements ContainerRequestFilter 
      */
     @Override
     public void filter(ContainerRequestContext requestContext){
-        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck();
-        if(requestHeaderCheck.isAuthorizationHeaderValid(requestContext))
+        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck(requestContext);
+        if(requestHeaderCheck.isAuthorizationHeaderValid())
         {
-            Authorization adminAuthorization = new Authorization(requestHeaderCheck
-                    .getTokenFromRequest(requestContext), UserLevels.COMPANY_ADMIN);
-            if(adminAuthorization.isNotAuthorized())
-                RequestHeaderCheck.abortWithUnauthorized(requestContext);
+            Authorization authorization = new Authorization(requestHeaderCheck
+                    .getTokenFromRequest(), UserLevels.COMPANY_ADMIN);
+            if(authorization.isNotAuthorized()
+                    || authorization.isNotWebTokenBelongedToRequestedUser
+                    (requestHeaderCheck.getClientIDFromRequestBody()))
+                requestHeaderCheck.abortWithUnauthorized();
         }
     }
 }

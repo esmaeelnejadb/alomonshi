@@ -21,13 +21,15 @@ public class SiteManagerAuthenticationFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext requestContext){
-        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck();
-        if(requestHeaderCheck.isAuthorizationHeaderValid(requestContext))
+        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck(requestContext);
+        if(requestHeaderCheck.isAuthorizationHeaderValid())
         {
-            Authorization adminAuthorization = new Authorization(requestHeaderCheck
-                    .getTokenFromRequest(requestContext), UserLevels.SITE_MANAGER);
-            if(adminAuthorization.isNotAuthorized())
-                RequestHeaderCheck.abortWithUnauthorized(requestContext);
+            Authorization authorization = new Authorization(requestHeaderCheck
+                    .getTokenFromRequest(), UserLevels.SITE_MANAGER);
+            if(authorization.isNotAuthorized()
+                    || authorization.isNotWebTokenBelongedToRequestedUser
+                    (requestHeaderCheck.getClientIDFromRequestBody()))
+                requestHeaderCheck.abortWithUnauthorized();
         }
     }
 }

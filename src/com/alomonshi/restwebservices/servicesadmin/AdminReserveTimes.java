@@ -2,38 +2,187 @@ package com.alomonshi.restwebservices.servicesadmin;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
 import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
-import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
+import com.alomonshi.object.tableobjects.ReserveTime;
+import com.alomonshi.object.uiobjects.ReserveTimeForm;
+import com.alomonshi.object.uiobjects.ReserveTimeList;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
+import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
+import com.alomonshi.restwebservices.views.JsonViews;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import javax.validation.constraints.NotNull;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Path("/adminReserveTime")
 public class AdminReserveTimes {
 
     private CheckAdminAuthority checkAuthority;
     private ReserveTimeService reserveTimeService;
+    private ServiceResponse serviceResponse;
+
+    @Context
+    HttpServletResponse httpServletResponse;
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @GET
+    @Path("/reserveTimes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse getUnitReserveTime(ReserveTime reserveTime){
+        serviceResponse = new ServiceResponse();
+        try {
+            //Checking id admin can change the unit
+            checkAuthority = new CheckAdminAuthority(reserveTime.getClientID()
+                    , reserveTime.getUnitID());
+            if(checkAuthority.isUserUnitAuthorized()) {
+                reserveTimeService = new ReserveTimeService(serviceResponse);
+                serviceResponse = reserveTimeService.getAdminUnitReserveDayTimes(reserveTime);
+            }else
+                serviceResponse = serviceResponse.setResponse(false)
+                        .setMessage(ServerMessage.ACCESSFAULT);
+
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Can not get reserve times " + e);
+            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+        return serviceResponse;
+    }
 
     /**
-     * Getting input form data for generating new reserve times
-     * @param generateReserveTimeForm input data
+     * generating new reserve times
+     * @param reserveTimeForm input data
      * @return true id all time generated truly
      */
+    @JsonView(JsonViews.SubAdminViews.class)
     @CompanySubAdminSecured
     @POST
-    @Path("/generateReserveTime")
+    @Path("/reserveTimes")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public ServiceResponse generateReserveTimes(@NotNull GenerateReserveTimeForm generateReserveTimeForm){
-        checkAuthority = new CheckAdminAuthority(generateReserveTimeForm.getUserID(), generateReserveTimeForm.getUnitID());
-        ServiceResponse serviceResponse = new ServiceResponse();
-        if (checkAuthority.isUserUnitAuthorized()) {
-            reserveTimeService = new ReserveTimeService(serviceResponse)
-                    .setGenerateReserveTimeForm(generateReserveTimeForm);
-            return reserveTimeService.handleGeneratingReserveTime();
-        }else
-            return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+    public ServiceResponse generateReserveTimes(ReserveTimeForm reserveTimeForm){
+        serviceResponse = new ServiceResponse();
+        try {
+            //Checking id admin can change the unit
+            checkAuthority = new CheckAdminAuthority(reserveTimeForm.getClientID()
+                    , reserveTimeForm.getUnitID());
+            if (checkAuthority.isUserUnitAuthorized()) {
+                reserveTimeService = new ReserveTimeService(serviceResponse)
+                        .setReserveTimeForm(reserveTimeForm);
+                serviceResponse = reserveTimeService.handleGeneratingReserveTime();
+            }else
+                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Can not generate new times " + e);
+            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+        return serviceResponse;
     }
+
+    /**
+     * Deleting reserve times between days
+     * @param reserveTimeForm to be deleted information
+     * @return service response
+     */
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @DELETE
+    @Path("/reserveTimes")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse deleteUnitReserveTimes(ReserveTimeForm reserveTimeForm){
+        serviceResponse = new ServiceResponse();
+        try {
+            //Checking id admin can change the unit
+            checkAuthority = new CheckAdminAuthority(reserveTimeForm.getClientID()
+                    , reserveTimeForm.getUnitID());
+            if (checkAuthority.isUserUnitAuthorized()) {
+                reserveTimeService = new ReserveTimeService(serviceResponse)
+                        .setReserveTimeForm(reserveTimeForm);
+                serviceResponse = reserveTimeService.deleteReserveTimes();
+            }else
+                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot delete times " + e);
+            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+        return serviceResponse;
+    }
+
+    /**
+     * Canceling single reserve times in a day (Changes their status from RESERVABLE to CANCELED)
+     * (note: canceled times can be retrieved later)
+     * @param reserveTimes to be canceled
+     * @return service response
+     */
+    @CompanySubAdminSecured
+    @DELETE
+    @Path("/reserveTime")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse cancelSingleTimes(ReserveTimeList reserveTimes) {
+        serviceResponse = new ServiceResponse();
+        try {
+            //Checking id admin can change the unit
+            checkAuthority = new CheckAdminAuthority(
+                    reserveTimes.getClientID()
+                    , reserveTimes.getUnitID());
+            if (checkAuthority.isUserUnitAuthorized()) {
+                reserveTimeService = new ReserveTimeService(serviceResponse);
+                serviceResponse = reserveTimeService.cancelSingleReserveTimes(reserveTimes);
+            }else
+                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot cancel times " + e);
+            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+        return serviceResponse;
+    }
+
+    /**
+     * Cancel client reserved times in a day (Change their status from RESERVED to RESERVABLE)
+     * (note: this service is considered to inform clients separately from their reserved times
+     * have been canceled )
+     * @param reserveTimeList to be canceled
+     * @return service response
+     */
+
+    @CompanySubAdminSecured
+    @PUT
+    @Path("/reserveTime")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse cancelClientReservedTimes(ReserveTimeList reserveTimeList) {
+        try {
+            checkAuthority = new CheckAdminAuthority(
+                    reserveTimeList.getClientID()
+                    , reserveTimeList.getUnitID());
+            reserveTimeService = new ReserveTimeService(serviceResponse);
+            if (checkAuthority.isUserUnitAuthorized())
+                serviceResponse = reserveTimeService.cancelSingleReservedTimes(reserveTimeList);
+            else
+                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot cancel reserved times " + e);
+            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+        return serviceResponse;
+    }
+
+
+    @OPTIONS
+    @Path("/reserveTimes")
+    public void doOptionsForAdminReserveTimes() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/reserveTime")
+    public void doOptionsForAdminReserveTime() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
 }

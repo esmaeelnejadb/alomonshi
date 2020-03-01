@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.Units;
 
-public abstract class TableUnit {
+public class TableUnit {
 
 	public static boolean insertUnit(Units unit){
 		String command = "insert into UNITS(Comp_ID, unit_name, unit_step_time, IS_ACTIVE, PICTURE_URL, REMARK) values(?, ?, ?, ?, ?, ?)";

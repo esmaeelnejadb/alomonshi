@@ -1,6 +1,6 @@
 package com.alomonshi.utility;
 
-import com.alomonshi.object.uiobjects.ClientReservedTimes;
+import com.alomonshi.object.uiobjects.ClientReservedTime;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -25,7 +25,7 @@ public class DateTimeUtility {
         return jalaliDate.getYear() + "" + jalaliDate.getMonth() + "" + jalaliDate.getDay();
     }
 
-    public static LocalDateTime getGregorianReservedTimeDatetime(ClientReservedTimes clientReservedTime) {
+    public static LocalDateTime getGregorianReservedTimeDatetime(ClientReservedTime clientReservedTime) {
         int year = Integer.parseInt(Integer.toString(clientReservedTime.getDayID()).substring(0,4));
         int month = Integer.parseInt(Integer.toString(clientReservedTime.getDayID()).substring(4,6));
         int day = Integer.parseInt(Integer.toString(clientReservedTime.getDayID()).substring(6,8));

@@ -172,11 +172,9 @@ public class TableAdminUnit {
 			Statement stmt =conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
 			fillAdminUnits(rs, adminUnits);
-			return adminUnits;
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
 		}finally
 		{
 			if(conn != null)
@@ -190,6 +188,7 @@ public class TableAdminUnit {
 				}
 			}
 		}
+		return adminUnits;
 	}
 
 	/**

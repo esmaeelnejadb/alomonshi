@@ -23,6 +23,7 @@ public class CheckAdminAuthority {
         this.toBeCheckedID = toBeCheckedID;
     }
 
+
     /**
      * check the intended unit id is in the list of related user unit ids
      * @return true is yes
@@ -31,7 +32,6 @@ public class CheckAdminAuthority {
     public boolean isUserUnitAuthorized(){
         try {
             List<AdminUnit> adminUnits = TableAdminUnit.getManagerUnits(userID);
-            assert adminUnits != null;
             for (AdminUnit adminUnit: adminUnits) {
                 if (adminUnit.getUnitID() == toBeCheckedID)
                     return true;

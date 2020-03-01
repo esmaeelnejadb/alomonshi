@@ -49,7 +49,7 @@ public class HandleRegistration {
     public boolean handleVerification(){
         String verificationCode = generateVerificationCode();
         newUser.setVerificationCode(Integer.parseInt(verificationCode));
-        if(newUser.getId() == 0) {
+        if(newUser.getClientID() == 0) {
             newUser.setUserLevel(UserLevels.CLIENT);
             if(!TableClient.insert(newUser))
                 return false;

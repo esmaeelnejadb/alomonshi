@@ -9,11 +9,15 @@ import com.alomonshi.restwebservices.message.ServerMessage;
 import java.time.LocalTime;
 import java.util.List;
 
-class ReserveTimeCheck {
+/**
+ * Check reserve time availability for reservation process
+ */
+
+class ReserveTimeCheckAvailability {
     private ReserveTime reserveTime;
     private ServiceResponse serviceResponse;
 
-    ReserveTimeCheck(ReserveTime reserveTime, ServiceResponse serviceResponse){
+    ReserveTimeCheckAvailability(ReserveTime reserveTime, ServiceResponse serviceResponse){
         this.reserveTime = reserveTime;
         this.serviceResponse = serviceResponse;
     }

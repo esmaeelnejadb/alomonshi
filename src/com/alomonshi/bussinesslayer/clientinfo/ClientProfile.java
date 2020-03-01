@@ -80,7 +80,7 @@ public class ClientProfile {
      */
     private Users getCopiedCommentProperties() {
         BeanUtilsBean utilsBean = new CopyNotNullProperties();
-        Users toBeUpdated = TableClient.getUser(user.getId());
+        Users toBeUpdated = TableClient.getUser(user.getClientID());
         //Check client id and reserve time id is the same from table and UI
         //Copying not null values into old comment object got from database to be updated
         try {

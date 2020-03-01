@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalTime;
 import java.util.List;
 
-public class ClientReservedTimes {
+public class ClientReservedTime {
 
     private int reserveTimeID;
     private int dayID;

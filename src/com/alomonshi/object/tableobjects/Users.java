@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 public class Users{
 
-	private int id;
+	private int clientID;
 	private String name;
 	private String username;
 	private String password;
@@ -22,8 +22,8 @@ public class Users{
 	private boolean isActive;
 
 	@JsonView(JsonViews.NormalViews.class)
-	public int getId() {
-		return id;
+	public int getClientID() {
+		return clientID;
 	}
 
 	@JsonView(JsonViews.NormalViews.class)
@@ -92,8 +92,8 @@ public class Users{
 		this.email = email;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setClientID(int clientID) {
+		this.clientID = clientID;
 	}
 
 	public void setVerificationCode(int user_action) {

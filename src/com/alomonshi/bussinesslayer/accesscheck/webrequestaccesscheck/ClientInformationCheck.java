@@ -21,7 +21,7 @@ public class ClientInformationCheck {
      * @return true if user is registered
      */
     public boolean isClientRegistered(){
-        return user.getId() != 0 && user.isActive();
+        return user.getClientID() != 0 && user.isActive();
     }
 
     /**

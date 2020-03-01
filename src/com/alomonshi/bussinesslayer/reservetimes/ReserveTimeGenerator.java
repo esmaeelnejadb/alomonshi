@@ -6,7 +6,7 @@ import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.CalendarDate;
 import com.alomonshi.object.tableobjects.ReserveTime;
-import com.alomonshi.object.uiobjects.GenerateReserveTimeForm;
+import com.alomonshi.object.uiobjects.ReserveTimeForm;
 import com.alomonshi.utility.DateTimeUtility;
 
 import java.time.LocalTime;
@@ -16,10 +16,10 @@ import java.util.Objects;
 
 class ReserveTimeGenerator {
 
-    private GenerateReserveTimeForm generateReserveTimeForm;
+    private ReserveTimeForm reserveTimeForm;
 
-    public ReserveTimeGenerator setGenerateReserveTimeForm(GenerateReserveTimeForm generateReserveTimeForm) {
-        this.generateReserveTimeForm = generateReserveTimeForm;
+    ReserveTimeGenerator setReserveTimeForm(ReserveTimeForm reserveTimeForm) {
+        this.reserveTimeForm = reserveTimeForm;
         return this;
     }
 
@@ -33,20 +33,20 @@ class ReserveTimeGenerator {
         if (primaryCheck()){
             if (checkMorningTime())
                 reserveTimes.addAll(
-                        generateMiddayReserveTimes(generateReserveTimeForm.getUnitID(),
-                                generateReserveTimeForm.getStartDate(),
-                                generateReserveTimeForm.getEndDate(),
+                        generateMiddayReserveTimes(reserveTimeForm.getUnitID(),
+                                reserveTimeForm.getStartDate(),
+                                reserveTimeForm.getEndDate(),
                                 MiddayID.MORNING.getValue(),
-                                generateReserveTimeForm.getStartTime1(),
-                                generateReserveTimeForm.getEndTime1()));
+                                reserveTimeForm.getMorningStartTime(),
+                                reserveTimeForm.getMorningEndTime()));
             if (checkAfternoonTime())
                 reserveTimes.addAll(
-                        generateMiddayReserveTimes(generateReserveTimeForm.getUnitID(),
-                                generateReserveTimeForm.getStartDate(),
-                                generateReserveTimeForm.getEndDate(),
+                        generateMiddayReserveTimes(reserveTimeForm.getUnitID(),
+                                reserveTimeForm.getStartDate(),
+                                reserveTimeForm.getEndDate(),
                                 MiddayID.AFTERNOON.getValue(),
-                                generateReserveTimeForm.getStartTime2(),
-                                generateReserveTimeForm.getEndTime2()));
+                                reserveTimeForm.getAfternoonStartTime(),
+                                reserveTimeForm.getAfternoonEndTime()));
         }
         return reserveTimes;
     }
@@ -109,8 +109,8 @@ class ReserveTimeGenerator {
      */
 
     private boolean primaryCheck(){
-        return generateReserveTimeForm.getUnitID() != 0
-                && generateReserveTimeForm.getEndDate() >= generateReserveTimeForm.getStartDate();
+        return reserveTimeForm.getUnitID() != 0
+                && reserveTimeForm.getEndDate() >= reserveTimeForm.getStartDate();
     }
 
     /**
@@ -119,9 +119,9 @@ class ReserveTimeGenerator {
      */
 
     private boolean checkMorningTime(){
-        if (generateReserveTimeForm.getStartTime1() != null
-                && generateReserveTimeForm.getEndTime1() != null)
-            return generateReserveTimeForm.getEndTime1().isAfter(generateReserveTimeForm.getStartTime1());
+        if (reserveTimeForm.getMorningStartTime() != null
+                && reserveTimeForm.getMorningEndTime() != null)
+            return reserveTimeForm.getMorningEndTime().isAfter(reserveTimeForm.getMorningStartTime());
         return false;
     }
 
@@ -131,9 +131,9 @@ class ReserveTimeGenerator {
      */
 
     private boolean checkAfternoonTime(){
-        if (generateReserveTimeForm.getStartTime2() != null
-                && generateReserveTimeForm.getEndTime2() != null)
-            return generateReserveTimeForm.getEndTime2().isAfter(generateReserveTimeForm.getStartTime2());
+        if (reserveTimeForm.getAfternoonStartTime() != null
+                && reserveTimeForm.getAfternoonEndTime() != null)
+            return reserveTimeForm.getAfternoonEndTime().isAfter(reserveTimeForm.getAfternoonStartTime());
         return false;
     }
 }

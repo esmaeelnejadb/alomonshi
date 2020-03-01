@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class TableManager {
+public class TableManager {
 
 	/**
 	 * insert a manager into manager table

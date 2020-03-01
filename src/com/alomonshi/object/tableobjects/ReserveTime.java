@@ -46,7 +46,7 @@ public class ReserveTime {
 	}
 
 
-	@JsonView(JsonViews.HiddenViews.class)
+	@JsonView(JsonViews.SubAdminViews.class)
 	public int getDateID() {
 		return dateID;
 	}
@@ -63,7 +63,7 @@ public class ReserveTime {
 		return duration;
 	}
 
-	@JsonView(JsonViews.AdminViews.class)
+	@JsonView(JsonViews.SubAdminViews.class)
 	public ReserveTimeStatus getStatus() {
 		return status;
 	}

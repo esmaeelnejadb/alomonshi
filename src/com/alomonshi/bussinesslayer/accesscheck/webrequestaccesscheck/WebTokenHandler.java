@@ -132,7 +132,7 @@ public class WebTokenHandler {
         }
 
         private WebTokenPayLoad(Users user){
-            this.userID = user.getId();
+            this.userID = user.getClientID();
             this.token = user.getToken();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             this.exp = user.getExpirationDate().format(formatter);

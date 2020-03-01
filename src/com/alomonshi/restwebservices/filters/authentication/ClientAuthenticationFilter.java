@@ -16,18 +16,20 @@ import javax.ws.rs.ext.Provider;
 public class ClientAuthenticationFilter implements ContainerRequestFilter {
 
     /**
-     * Filer authorized admins
+     * Filer authorized users
      * @param requestContext inject to filter method
      */
     @Override
     public void filter(ContainerRequestContext requestContext){
-        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck();
-        if(requestHeaderCheck.isAuthorizationHeaderValid(requestContext))
+        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck(requestContext);
+        if(requestHeaderCheck.isAuthorizationHeaderValid())
         {
             Authorization authorization = new Authorization(requestHeaderCheck
-                    .getTokenFromRequest(requestContext), UserLevels.CLIENT);
-            if(authorization.isNotAuthorized())
-                RequestHeaderCheck.abortWithUnauthorized(requestContext);
+                    .getTokenFromRequest(), UserLevels.CLIENT);
+            if(authorization.isNotAuthorized()
+                    || authorization.isNotWebTokenBelongedToRequestedUser
+                            (requestHeaderCheck.getClientIDFromRequestBody()))
+                requestHeaderCheck.abortWithUnauthorized();
         }
     }
 }

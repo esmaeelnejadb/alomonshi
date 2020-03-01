@@ -6,7 +6,7 @@ import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.uiobjects.ChangePassword;
-import com.alomonshi.object.uiobjects.ClientReservedTimes;
+import com.alomonshi.object.uiobjects.ClientReservedTime;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
-import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -33,7 +32,7 @@ public class ClientProfileWebService {
 
     /**
      * Get client profile info
-     * @param clientID to be got information from
+     * @param user to be got information from
      * @return client information
      */
     @JsonView(JsonViews.ClientViews.class)
@@ -41,8 +40,8 @@ public class ClientProfileWebService {
     @GET
     @Path("/clientProfile")
     @Produces(MediaType.APPLICATION_JSON)
-    public Users getClientProfile(@QueryParam("clientID") int clientID) {
-        return ClientProfile.getClientInfo(clientID);
+    public Users getClientProfile(Users user) {
+        return ClientProfile.getClientInfo(user.getClientID());
     }
 
     /**
@@ -84,15 +83,15 @@ public class ClientProfileWebService {
 
     /**
      * Getting client reserved times
-     * @param clientID intended client
+     * @param user intended user
      * @return list of client reserved times
      */
     @ClientSecured
     @GET
     @Path("/getClientReserveTimes")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ClientReservedTimes> getClientReservedTimes(@QueryParam("clientID") int clientID) {
-        return ReserveTimeService.getClientReservedTimes(clientID);
+    public List<ClientReservedTime> getClientReservedTimes(Users user) {
+        return ReserveTimeService.getClientReservedTimes(user.getClientID());
     }
 
     @OPTIONS

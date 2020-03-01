@@ -12,4 +12,5 @@ public class ServerMessage {
     public static final String RESERVETIMEERROR_02 = "متأسفانه امکان رزرو وقت در این ساعت وجود ندارد.";
     public static final String RESERVETIMEERROR_03 = "متأسفانه زمان سروویس های انتخابی از زمان وقت قابل رزرو بیشتر است.";
     public static final String RESERVETIMEERROR_04 = "متأسفانه وقت مورد نظر در دسترس نمی باشد";
+    public static final String RESERVETIMEERROR_05 = "در این روز نوبتی جهت رزرو وجود ندارد";
 }

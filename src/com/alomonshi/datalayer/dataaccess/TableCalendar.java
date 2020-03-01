@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class TableCalendar {
+public class TableCalendar {
 
 	public static CalendarDate getDate(int dateID){
         String command = "select * from CALENDAR where ID = " + dateID;

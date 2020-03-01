@@ -1,17 +1,16 @@
 package com.alomonshi.bussinesslayer.reservetimes;
 
+import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeGenerator;
+import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeUtils;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.datalayer.dataaccess.TableReserveTimeServices;
-import com.alomonshi.datalayer.dataaccess.TableUnit;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.tableobjects.ReserveTimeServices;
-import org.apache.poi.ss.usermodel.Table;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 class ClientReserveTimeHandler {
 
@@ -33,6 +32,7 @@ class ClientReserveTimeHandler {
         //Defining hold time to be calculated and inserted if any
         ReserveTime holdReserveTime = new ReserveTime();
 
+        //if selected services duration is different from unit time duration
         if(serviceDuration != unitDuration) {
             prepareHoldReserveTime(holdReserveTime, reserveTime);
             List<ReserveTime> oldReserveTimes = TableReserveTime
