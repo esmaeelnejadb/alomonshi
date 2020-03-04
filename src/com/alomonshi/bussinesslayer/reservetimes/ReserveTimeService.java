@@ -69,23 +69,32 @@ public class ReserveTimeService{
 
 	public synchronized ServiceResponse handleGeneratingReserveTime(){
 	    try {
-	        reserveTimeDeletor = new ReserveTimeDeletor(serviceResponse);
-            //delete previous reserve times if exited
-            serviceResponse = reserveTimeDeletor.deleteUnitReserveTimeBetweenDays(reserveTimeForm);
-            //If there are no reserved times in requested days
-            if (serviceResponse.getResponse()){
-                ReserveTimeGenerator reserveTimeGenerator = new ReserveTimeGenerator();
-                List<ReserveTime> reserveTimes = reserveTimeGenerator
-                        .setReserveTimeForm(reserveTimeForm)
-                        .generateAllDayReserveTimes();
-                boolean response = reserveTimes != null && TableReserveTime.insertReserveTimeList(reserveTimes);
-                serviceResponse.setResponse(response);
-                if (response)
-                    serviceResponse.setMessage(ServerMessage.SUCCESSMESSAGE);
+            ReserveTimeGenerator reserveTimeGenerator = new ReserveTimeGenerator();
+            List<ReserveTime> reserveTimes = reserveTimeGenerator
+                    .setReserveTimeForm(reserveTimeForm)
+                    .generateReserveTimes();
+            //If input data are correct and time have been generated
+            if (!reserveTimes.isEmpty()) {
+                reserveTimeDeletor = new ReserveTimeDeletor(serviceResponse);
+                //delete previous reserve times if exited in a day
+                if (reserveTimeForm.getMidday() == null)
+                    serviceResponse = reserveTimeDeletor.deleteUnitDayReserveTimeBetweenDays(reserveTimeForm);
+                //delete previous reserve times if exited in a midday
                 else
-                    serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
-            }else
-                serviceResponse.setMessage(ServerMessage.RESERVETIMEERROR_01);
+                    serviceResponse = reserveTimeDeletor.deleteUnitMiddayReserveTimeBetweenDays(reserveTimeForm);
+                //if not reserved times are existed in the period
+                if (serviceResponse.getResponse()){
+                    //If inserting process has been done correctly
+                    if (TableReserveTime.insertReserveTimeList(reserveTimes))
+                        serviceResponse.setMessage(ServerMessage.SUCCESSMESSAGE);
+                    else
+                        serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+                }else
+                    serviceResponse.setMessage(ServerMessage.RESERVETIMEERROR_01);
+            }
+            else
+                serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception in generating reserve times " + e);
             serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
@@ -93,9 +102,18 @@ public class ReserveTimeService{
 	    return serviceResponse;
 	}
 
+    /**
+     * Deleting reserve time in all days
+     * @return service response
+     */
+
 	public synchronized ServiceResponse deleteReserveTimes(){
 	    reserveTimeDeletor = new ReserveTimeDeletor(serviceResponse);
-	    return reserveTimeDeletor.deleteUnitReserveTimeBetweenDays(reserveTimeForm);
+	    //if all day reserve times should be deleted
+	    if (reserveTimeForm.getMidday() == null)
+	        return reserveTimeDeletor.deleteUnitDayReserveTimeBetweenDays(reserveTimeForm);
+	    else // if midday reserve times should be deleted
+	        return reserveTimeDeletor.deleteUnitMiddayReserveTimeBetweenDays(reserveTimeForm);
     }
 
     /**
@@ -104,8 +122,9 @@ public class ReserveTimeService{
      * @return service response
      */
 	public synchronized ServiceResponse registerReserveTime(ReserveTime reserveTime) {
-        ReserveTimeCheckAvailability reserveTimeCheck = new ReserveTimeCheckAvailability(reserveTime, serviceResponse);
-	    if (reserveTimeCheck.checkTimeAvailability().getResponse()) {
+        ReserveTimeCheck reserveTimeCheck = new ReserveTimeCheck(reserveTime, serviceResponse);
+	    if (reserveTimeCheck.checkTimeAvailability().getResponse()
+                && reserveTimeCheck.isServicesBelongToReserveTimeUnit().getResponse()) {
             if (ClientReserveTimeHandler.setNewReserveTime(reserveTime)) {
                 serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
             }else
@@ -121,11 +140,17 @@ public class ReserveTimeService{
      */
 
     public synchronized ServiceResponse cancelReserveTime(ReserveTime reserveTime) {
-	    if (ClientReserveTimeHandler.cancelClientReserveTime(reserveTime))
-	        serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
-	    else
-	        serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
-	    return serviceResponse;
+        ReserveTimeCheck reserveTimeCheck = new ReserveTimeCheck(
+                reserveTime
+                , serviceResponse);
+        if (reserveTimeCheck.isTimeCancelable().getResponse()) {
+            if (ClientReserveTimeHandler.cancelClientReserveTime(reserveTime))
+                serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
+            else
+                serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+            return serviceResponse;
+        }else
+            return serviceResponse.setMessage(ServerMessage.INTERNALERRORMESSAGE);
     }
 
     /**
@@ -139,22 +164,43 @@ public class ReserveTimeService{
     }
 
     /**
-     * Cancel single reserve times got from ui
+     * Cancel single reservable times got from ui
      * (Changes reserve times status from RESERVABLE to CANCELED)
      * @param reserveTimes to be deleted
      * @return service response
      */
 
-    public ServiceResponse cancelSingleReserveTimes(ReserveTimeList reserveTimes){
+    public ServiceResponse retrieveSingleCanceledTimes(ReserveTimeList reserveTimes){
         List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserve times to be canceled
-        if (checkAndFillReserveTimesFromIDs(reserveTimeList, reserveTimes)) {
-            return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.RESERVETIMEERROR_01);
-        }else {
-            if (TableReserveTime.cancelReserveTimeList(reserveTimeList))
+        if (checkAndFillCalceledTimesFromIDs(reserveTimeList, reserveTimes)) {
+            if (TableReserveTime.retriveCanceledTimeList(reserveTimeList))
                 return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
             else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+        }else {
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    /**
+     * Cancel single reservable times got from ui
+     * (Changes reserve times status from RESERVABLE to CANCELED)
+     * @param reserveTimes to be deleted
+     * @return service response
+     */
+
+    public ServiceResponse cancelSingleReservableTimes(ReserveTimeList reserveTimes){
+        List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserve times to be canceled
+        if (checkAndFillReserveTimesFromIDs(reserveTimeList, reserveTimes)) {
+            if (TableReserveTime.cancelReservableTimeList(reserveTimeList))
+                return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
+            else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+
+        }else {
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
     }
 
@@ -166,11 +212,8 @@ public class ReserveTimeService{
      */
 
     public ServiceResponse cancelSingleReservedTimes(ReserveTimeList reserveTimes) {
-        List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserve times to be canceled
-        if (checkAndFillReserveTimesFromIDs(reserveTimeList, reserveTimes)) {
-            return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.RESERVETIMEERROR_01);
-        }else {
+        List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserved times to be canceled
+        if (checkAndFillReservableTimesFromIDs(reserveTimeList, reserveTimes)) {
             //not success times will be send to UI
             List<ClientReservedTime> notSuccessTimes = new ArrayList<>();
             for (ReserveTime reserveTime: reserveTimeList) {
@@ -191,6 +234,9 @@ public class ReserveTimeService{
                 return serviceResponse.setResponse(false)
                         .setMessage(ServerMessage.FAULTMESSAGE)
                         .setResponseData(Collections.singletonList(notSuccessTimes));
+        }else {
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.RESERVETIMEERROR_01);
         }
     }
 
@@ -203,9 +249,44 @@ public class ReserveTimeService{
     private boolean checkAndFillReserveTimesFromIDs(List<ReserveTime> reserveTimeList, ReserveTimeList reserveTimes) {
         for (int i = 0; i < reserveTimes.getReserveTimeIDs().size(); i++) {
             //Getting each reserve time object from table and check its unit id with gog unit id from UI
-            reserveTimeList.set(i, TableReserveTime.getReserveTime(reserveTimes.getReserveTimeIDs().get(i)));
+            reserveTimeList.add(i, TableReserveTime.getReserveTime(reserveTimes.getReserveTimeIDs().get(i)));
             if (reserveTimeList.get(i).getStatus() == ReserveTimeStatus.RESERVED
-            || reserveTimeList.get(i).getUnitID() != reserveTimes.getUnitID() )
+                    || reserveTimeList.get(i).getStatus() == ReserveTimeStatus.CANCELED
+                    || reserveTimeList.get(i).getUnitID() != reserveTimes.getUnitID())
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Filling reserve time list from their ids got from data base and two checks will been done :
+     * 1- checking if reserve time unit id belong to the admin unit
+     * 2- checking that all of reserve times have CANCELED status
+     * @param reserveTimes to be filled and checked
+     */
+    private boolean checkAndFillCalceledTimesFromIDs(List<ReserveTime> reserveTimeList, ReserveTimeList reserveTimes) {
+        for (int i = 0; i < reserveTimes.getReserveTimeIDs().size(); i++) {
+            //Getting each reserve time object from table and check its unit id with gog unit id from UI
+            reserveTimeList.add(i, TableReserveTime.getReserveTime(reserveTimes.getReserveTimeIDs().get(i)));
+            if (reserveTimeList.get(i).getStatus() != ReserveTimeStatus.CANCELED
+                    || reserveTimeList.get(i).getUnitID() != reserveTimes.getUnitID())
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Filling reserved time list from their ids got from data base and two checks will been done :
+     * 1- checking if reserve time unit id belong to the admin unit
+     * 2- checking that all of reserve times have RESERVED status
+     * @param reserveTimes to be filled and checked
+     */
+    private boolean checkAndFillReservableTimesFromIDs(List<ReserveTime> reserveTimeList, ReserveTimeList reserveTimes) {
+        for (int i = 0; i < reserveTimes.getReserveTimeIDs().size(); i++) {
+            //Getting each reserve time object from table and check its unit id with gog unit id from UI
+            reserveTimeList.add(i, TableReserveTime.getReserveTime(reserveTimes.getReserveTimeIDs().get(i)));
+            if (reserveTimeList.get(i).getStatus() != ReserveTimeStatus.RESERVED
+                    || reserveTimeList.get(i).getUnitID() != reserveTimes.getUnitID())
                 return false;
         }
         return true;

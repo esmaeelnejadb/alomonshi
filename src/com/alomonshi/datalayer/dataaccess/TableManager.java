@@ -62,15 +62,28 @@ public class TableManager {
 		}
 	}
 
-	public static List<Manager> getManager(int managerID){
-		String command = "select * from manager where MNG_ID = " + managerID ;
+	/**
+	 * Getting a manager companies
+	 * @param managerID intended manager
+	 * @return list of manager object
+	 */
+
+	public static List<Integer> getManagerCompanies(int managerID){
+		String command = "SELECT" +
+				" COMPANY_ID AS companyID" +
+				" FROM" +
+				" manager" +
+				" WHERE" +
+				" MNG_ID =  " + managerID ;
 		Connection conn = DBConnection.getConnection();
-		List<Manager> managers = new ArrayList<>();
+		List<Integer> companies = new ArrayList<>();
 		try
 		{
 			Statement stmt = conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
-            fillManagers(rs, managers);
+			while (rs.next()) {
+				companies.add(rs.getInt("companyID"));
+			}
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -87,18 +100,31 @@ public class TableManager {
 				}
 			}
 		}
-		return managers;
+		return companies;
 	}
 
-    public static List<Manager> getManagers(int companyID){
-        String command = "select * from manager where COMPANY_ID = " + companyID ;
+	/**
+	 * Getting list of a company managers
+	 * @param companyID intended company
+	 * @return list of manager object
+	 */
+
+    public static List<Integer> getCompanyManagers(int companyID){
+        String command = "SELECT" +
+				" MNG_ID as managerID" +
+				" FROM" +
+				" manager" +
+				" WHERE" +
+				" COMPANY_ID = " + companyID ;
         Connection conn = DBConnection.getConnection();
-        List<Manager> managers = new ArrayList<>();
+        List<Integer> managers = new ArrayList<>();
         try
         {
             Statement stmt = conn.createStatement();
-            ResultSet rs=stmt.executeQuery(command);
-            fillManagers(rs, managers);
+            ResultSet rs = stmt.executeQuery(command);
+            while (rs.next()) {
+            	managers.add(rs.getInt("managerID"));
+			}
         }catch(SQLException e)
         {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -118,6 +144,11 @@ public class TableManager {
         return managers;
     }
 
+	/**
+	 * Filling manager object with manager got from database
+	 * @param resultSet returned from JDBC
+	 * @param manager object to be filled
+	 */
 	private static void fillManager(ResultSet resultSet, Manager manager){
 		try {
 			manager.setID(resultSet.getInt(1));

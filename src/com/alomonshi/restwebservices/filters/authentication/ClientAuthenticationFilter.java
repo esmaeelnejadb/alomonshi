@@ -27,8 +27,9 @@ public class ClientAuthenticationFilter implements ContainerRequestFilter {
             Authorization authorization = new Authorization(requestHeaderCheck
                     .getTokenFromRequest(), UserLevels.CLIENT);
             if(authorization.isNotAuthorized()
-                    || authorization.isNotWebTokenBelongedToRequestedUser
-                            (requestHeaderCheck.getClientIDFromRequestBody()))
+                    || (authorization
+                    .isNotWebTokenBelongedToRequestedUser(requestHeaderCheck.getClientIDFromRequestBody())
+                    && requestHeaderCheck.getClientIDFromRequestBody() != 0))
                 requestHeaderCheck.abortWithUnauthorized();
         }
     }

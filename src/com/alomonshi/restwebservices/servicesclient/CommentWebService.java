@@ -1,12 +1,15 @@
 package com.alomonshi.restwebservices.servicesclient;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
+import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckClientAuthority;
 import com.alomonshi.bussinesslayer.comment.CommentService;
 import com.alomonshi.datalayer.dataaccess.TableComment;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
+import com.alomonshi.restwebservices.views.JsonViews;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -20,6 +23,7 @@ public class CommentWebService {
 
     private CommentService commentService;
     private ServiceResponse serviceResponse;
+    private CheckClientAuthority checkClientAuthority;
 
     @Context
     HttpServletResponse httpServletResponse;
@@ -29,6 +33,7 @@ public class CommentWebService {
      * @param comment to be inserted
      * @return service response
      */
+    @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
     @POST
     @Path("/comment")
@@ -36,8 +41,14 @@ public class CommentWebService {
     public ServiceResponse insertNewComment(Comments comment) {
         serviceResponse = new ServiceResponse();
         try {
-            commentService = new CommentService(comment, serviceResponse);
-            return commentService.insertNewComment();
+            checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
+            if (checkClientAuthority.isAuthorizedToChangeComment()) {
+                commentService = new CommentService(comment, serviceResponse);
+                return commentService.insertNewComment();
+            }else
+                return serviceResponse.setResponse(false)
+                        .setMessage(ServerMessage.ACCESSFAULT);
+
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot post a comment " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
@@ -49,6 +60,7 @@ public class CommentWebService {
      * @param comment to be updated
      * @return service response
      */
+    @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
     @PUT
     @Path("/comment")
@@ -56,8 +68,13 @@ public class CommentWebService {
     public ServiceResponse updateClientComment(Comments comment){
         serviceResponse = new ServiceResponse();
         try {
-            commentService = new CommentService(comment, serviceResponse);
-            return commentService.updateComment();
+            checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
+            if (checkClientAuthority.isAuthorizedToChangeComment()) {
+                commentService = new CommentService(comment, serviceResponse);
+                return commentService.updateComment();
+            }else
+                return serviceResponse.setResponse(false)
+                        .setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot update a comment " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
@@ -69,6 +86,7 @@ public class CommentWebService {
      * @param comment to be deleted
      * @return service response
      */
+    @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
     @DELETE
     @Path("/comment")
@@ -76,10 +94,15 @@ public class CommentWebService {
     public ServiceResponse deleteComment(Comments comment) {
         serviceResponse = new ServiceResponse();
         try {
-            //Getting to be deleted comment from database to set only is_active field to false
-            Comments toBeDeleted = TableComment.getComment(comment.getID());
-            commentService = new CommentService(toBeDeleted, serviceResponse);
-            return commentService.deleteComment();
+            checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
+            if (checkClientAuthority.isAuthorizedToChangeComment()) {
+                //Getting to be deleted comment from database to set only is_active field to false
+                Comments toBeDeleted = TableComment.getComment(comment.getID());
+                commentService = new CommentService(toBeDeleted, serviceResponse);
+                return commentService.deleteComment();
+            }else
+                return serviceResponse.setResponse(false)
+                        .setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot delete a comment " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);

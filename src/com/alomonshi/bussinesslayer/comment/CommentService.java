@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 public class CommentService {
 
     private ServiceResponse serviceResponse;
-    private CheckClientAuthority checkClientAuthority;
     private Comments comment;
 
     public CommentService(Comments comment, ServiceResponse serviceResponse){
@@ -31,17 +30,12 @@ public class CommentService {
      */
     public ServiceResponse insertNewComment() {
         this.deleteUnnecessaryProperties();
-        checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
-        if (checkClientAuthority.isAuthorizedToChangeComment()) {
-            if (TableComment.insertComment(comment))
-                return serviceResponse.setResponse(true)
-                        .setMessage(ServerMessage.SUCCESSMESSAGE);
-            else
-                return serviceResponse.setResponse(false)
-                        .setMessage(ServerMessage.FAULTMESSAGE);
-        }else
+        if (TableComment.insertComment(comment))
+            return serviceResponse.setResponse(true)
+                    .setMessage(ServerMessage.SUCCESSMESSAGE);
+        else
             return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.ACCESSFAULT);
+                    .setMessage(ServerMessage.FAULTMESSAGE);
     }
 
     /**
@@ -52,39 +46,10 @@ public class CommentService {
 
     public ServiceResponse updateComment() {
         this.deleteUnnecessaryProperties();
-        checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
-        if (checkClientAuthority.isAuthorizedToChangeComment()) {
-            //Copying new properties into old properties saved in database
-            comment = this.getCopiedCommentProperties();
-            if (comment != null) {
-                if (TableComment.updateComment(Objects.requireNonNull(comment)))
-                    return serviceResponse.setResponse(true)
-                            .setMessage(ServerMessage.SUCCESSMESSAGE);
-                else
-                    return serviceResponse.setResponse(false)
-                            .setMessage(ServerMessage.FAULTMESSAGE);
-            }else
-                return serviceResponse.setResponse(false)
-                        .setMessage(ServerMessage.FAULTMESSAGE);
-
-        }else
-            return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.ACCESSFAULT);
-
-    }
-
-    /**
-     * Deleting a comment
-     *
-     * @return service response
-     */
-
-    public ServiceResponse deleteComment() {
-        this.deleteUnnecessaryProperties();
-        checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
-        if (checkClientAuthority.isAuthorizedToChangeComment()) {
-            //Copying new properties into old properties saved in database
-            if (TableComment.delete(comment))
+        //Copying new properties into old properties saved in database
+        comment = this.getCopiedCommentProperties();
+        if (comment != null) {
+            if (TableComment.updateComment(Objects.requireNonNull(comment)))
                 return serviceResponse.setResponse(true)
                         .setMessage(ServerMessage.SUCCESSMESSAGE);
             else
@@ -92,12 +57,26 @@ public class CommentService {
                         .setMessage(ServerMessage.FAULTMESSAGE);
         }else
             return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.ACCESSFAULT);
+                    .setMessage(ServerMessage.FAULTMESSAGE);
+    }
+
+    /**
+     * Deleting a comment
+     * @return service response
+     */
+
+    public ServiceResponse deleteComment() {
+        this.deleteUnnecessaryProperties();
+        if (TableComment.delete(comment))
+            return serviceResponse.setResponse(true)
+                    .setMessage(ServerMessage.SUCCESSMESSAGE);
+        else
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.FAULTMESSAGE);
     }
 
     /**
      * Copy new updated fields into old object got from table
-     *
      * @return new updated comment
      */
 

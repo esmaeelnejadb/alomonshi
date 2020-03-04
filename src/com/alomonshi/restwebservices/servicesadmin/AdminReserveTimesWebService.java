@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/adminReserveTime")
-public class AdminReserveTimes {
+public class AdminReserveTimesWebService {
 
     private CheckAdminAuthority checkAuthority;
     private ReserveTimeService reserveTimeService;
@@ -113,7 +113,7 @@ public class AdminReserveTimes {
     }
 
     /**
-     * Canceling single reserve times in a day (Changes their status from RESERVABLE to CANCELED)
+     * Canceling single reservable times in a day (Changes their status from RESERVABLE to CANCELED)
      * (note: canceled times can be retrieved later)
      * @param reserveTimes to be canceled
      * @return service response
@@ -122,7 +122,7 @@ public class AdminReserveTimes {
     @DELETE
     @Path("/reserveTime")
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse cancelSingleTimes(ReserveTimeList reserveTimes) {
+    public ServiceResponse cancelSingleReservableTimes(ReserveTimeList reserveTimes) {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
@@ -131,12 +131,41 @@ public class AdminReserveTimes {
                     , reserveTimes.getUnitID());
             if (checkAuthority.isUserUnitAuthorized()) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
-                serviceResponse = reserveTimeService.cancelSingleReserveTimes(reserveTimes);
+                serviceResponse = reserveTimeService.cancelSingleReservableTimes(reserveTimes);
             }else
                 serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
 
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot cancel times " + e);
+            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+        return serviceResponse;
+    }
+
+    /**
+     * Retrieving single canceled times in a day (Changes their status from CANCELED to RESERVABLE)
+     * @param reserveTimes to be retrieved
+     * @return service response
+     */
+    @CompanySubAdminSecured
+    @POST
+    @Path("/reserveTime")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse retrieveSingleCanceledTimes(ReserveTimeList reserveTimes) {
+        serviceResponse = new ServiceResponse();
+        try {
+            //Checking id admin can change the unit
+            checkAuthority = new CheckAdminAuthority(
+                    reserveTimes.getClientID()
+                    , reserveTimes.getUnitID());
+            if (checkAuthority.isUserUnitAuthorized()) {
+                reserveTimeService = new ReserveTimeService(serviceResponse);
+                serviceResponse = reserveTimeService.retrieveSingleCanceledTimes(reserveTimes);
+            }else
+                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot retrieve times " + e);
             serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
         return serviceResponse;
@@ -155,6 +184,7 @@ public class AdminReserveTimes {
     @Path("/reserveTime")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceResponse cancelClientReservedTimes(ReserveTimeList reserveTimeList) {
+        serviceResponse = new ServiceResponse();
         try {
             checkAuthority = new CheckAdminAuthority(
                     reserveTimeList.getClientID()
@@ -171,7 +201,6 @@ public class AdminReserveTimes {
         }
         return serviceResponse;
     }
-
 
     @OPTIONS
     @Path("/reserveTimes")

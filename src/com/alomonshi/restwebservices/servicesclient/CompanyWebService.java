@@ -3,6 +3,9 @@ package com.alomonshi.restwebservices.servicesclient;
 import com.alomonshi.bussinesslayer.company.CompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.tableobjects.Company;
+import com.alomonshi.restwebservices.views.JsonViews;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -38,6 +41,7 @@ public class CompanyWebService{
      * @return company object with all related properties
      */
 
+    @JsonView(JsonViews.NormalViews.class)
     @GET
     @Path("/getCompany")
     @Produces(MediaType.APPLICATION_JSON)

@@ -1,5 +1,6 @@
 package com.alomonshi.object.uiobjects;
 
+import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
 
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ public class ReserveTimeForm {
     private int unitID;
     private int startDate;
     private int endDate;
+    private MiddayID midday;
     private LocalTime morningStartTime;
     private LocalTime morningEndTime;
     private LocalTime afternoonStartTime;
@@ -32,6 +34,10 @@ public class ReserveTimeForm {
 
     public int getEndDate() {
         return endDate;
+    }
+
+    public MiddayID getMidday() {
+        return midday;
     }
 
     @XmlJavaTypeAdapter(LocalTimeAdaptor.class)
@@ -68,6 +74,10 @@ public class ReserveTimeForm {
 
     public void setEndDate(int endDate) {
         this.endDate = endDate;
+    }
+
+    public void setMidday(MiddayID midday) {
+        this.midday = midday;
     }
 
     public void setMorningStartTime(LocalTime morningStartTime) {

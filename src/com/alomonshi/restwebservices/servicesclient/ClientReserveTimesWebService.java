@@ -2,6 +2,7 @@ package com.alomonshi.restwebservices.servicesclient;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
+import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
@@ -19,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/reserveTime")
-public class ClientReserveTimes {
+public class ClientReserveTimesWebService {
 
     private ReserveTimeService reserveTimeService;
     private ServiceResponse serviceResponse;
@@ -36,7 +37,7 @@ public class ClientReserveTimes {
     @GET
     @Path("/getUnitReserveTime")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Enum, List<ReserveTime>> getReserveTime(@QueryParam("dateID") int dateID, @QueryParam("unitID") int unitID) {
+    public Map<MiddayID, List<ReserveTime>> getReserveTime(@QueryParam("dateID") int dateID, @QueryParam("unitID") int unitID) {
         try {
             return TableReserveTime.getClientUnitReserveTimeInADay(dateID, unitID);
         }catch (Exception e){
@@ -60,7 +61,8 @@ public class ClientReserveTimes {
         serviceResponse = new ServiceResponse();
         try {
             ReserveTime requestedTime = TableReserveTime.getReserveTime(reserveTime.getID());
-            //Setting client id and requested services from requested data (parameter client id and service ids)
+            //Setting client id and requested services from requested data (
+            // parameter client id and service ids)
             requestedTime.setClientID(reserveTime.getClientID());
             requestedTime.setServiceIDs(reserveTime.getServiceIDs());
             reserveTimeService = new ReserveTimeService(serviceResponse);

@@ -1,7 +1,5 @@
 package com.alomonshi.bussinesslayer.reservetimes;
 
-import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeGenerator;
-import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeUtils;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.datalayer.dataaccess.TableReserveTimeServices;
 import com.alomonshi.object.enums.ReserveTimeStatus;
@@ -49,8 +47,10 @@ class ClientReserveTimeHandler {
                         && TableReserveTimeServices.insertList(reserveTimeServices);
 
             }else {
+                //Getting times after intended reserve times
                 List<ReserveTime> subOldReserveTimes = oldReserveTimes
-                        .subList(ReserveTimeUtils.getReserveTimeIndex(oldReserveTimes, reserveTime) + 1, oldReserveTimes.size());
+                        .subList(ReserveTimeUtils.getReserveTimeIndex(oldReserveTimes, reserveTime) + 1
+                                , oldReserveTimes.size());
 
                 //If next time of intended reserve time not to be reserved time canceled time
                 if (subOldReserveTimes.get(0).getStatus()
@@ -59,10 +59,9 @@ class ClientReserveTimeHandler {
                         == ReserveTimeStatus.HOLD) {
                     // Getting the end time which until it reserve times has been renewed.
                     ReserveTime endReserveTime = ReserveTimeUtils.getEndReservableIndexTimeFromList(subOldReserveTimes);
-                    List<ReserveTime> shouldBeDeletedTimes = ReserveTimeUtils.getReserveTimeIndex(subOldReserveTimes, endReserveTime)
-                            == subOldReserveTimes.size() - 1
-                            ? subOldReserveTimes.subList(0, ReserveTimeUtils.getReserveTimeIndex(subOldReserveTimes, endReserveTime) + 1)
-                            : subOldReserveTimes.subList(0, ReserveTimeUtils.getReserveTimeIndex(subOldReserveTimes, endReserveTime));
+                    List<ReserveTime> shouldBeDeletedTimes = subOldReserveTimes
+                            .subList(0, ReserveTimeUtils
+                                    .getReserveTimeIndex(subOldReserveTimes, endReserveTime) + 1);
                     LocalTime startTime = reserveTime.getStartTime().plusMinutes(serviceDuration);
 
                     //Getting new reserve time from start time of
@@ -81,7 +80,7 @@ class ClientReserveTimeHandler {
                             && TableReserveTime.insertReserveTimeList(newReserveTimes)
                             && TableReserveTime.deleteReserveTimeList(shouldBeDeletedTimes)
                             && TableReserveTimeServices.insertList(reserveTimeServices);
-                }else { //If next time of intended reserve time be reserved time canceled time
+                }else { //If next time of intended reserve time be reserved time or canceled time
                     holdReserveTime.setDuration(unitDuration - serviceDuration);
                     holdReserveTime.setStartTime(reserveTime.getStartTime().plusMinutes(serviceDuration));
                     ////////////////// Do reserve tasks ////////////////////

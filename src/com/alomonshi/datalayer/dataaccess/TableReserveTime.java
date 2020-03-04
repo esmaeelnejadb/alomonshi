@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,15 +16,33 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.ClientReservedTime;
-import com.alomonshi.utility.DateTimeUtility;
 
 public class TableReserveTime {
 
-	private static String insertCommand = "insert into RESERVETIMES(UNIT_ID, DAY_ID, MIDDAY_ID," +
-			" ST_TIME, DURATION, STATUS, CLIENT_ID, RES_CODE_ID) values(?, ?, ?, ?, ?, ?, ?, ?)";
+	private static String insertCommand = "INSERT INTO RESERVETIMES(" +
+			"UNIT_ID" +
+			", DAY_ID" +
+			", MIDDAY_ID" +
+			", ST_TIME" +
+			", DURATION" +
+			", STATUS" +
+			", CLIENT_ID" +
+			", RES_CODE_ID" +
+			", RESERVE_GR_TIME" +
+			")" +
+			" VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	private static String updateCommand = "update RESERVETIMES set UNIT_ID = ?, DAY_ID = ?, MIDDAY_ID = ?, ST_TIME = ?, DURATION = ?" +
-			", STATUS = ?, CLIENT_ID = ?, RES_CODE_ID = ? where id = ";
+	private static String updateCommand = "UPDATE RESERVETIMES SET" +
+			" UNIT_ID = ?" +
+			", DAY_ID = ?" +
+			", MIDDAY_ID = ?" +
+			", ST_TIME = ?" +
+			", DURATION = ?" +
+			", STATUS = ?" +
+			", CLIENT_ID = ?" +
+			", RES_CODE_ID = ? " +
+			", RESERVE_GR_TIME = ? " +
+			"WHERE id = ";
 
     /**
 	 * inserting a reserve time in database
@@ -122,10 +141,29 @@ public class TableReserveTime {
 	 * @return true all reserve times be canceled truly
 	 */
 
-	public static boolean cancelReserveTimeList(List<ReserveTime> reserveTimes) {
+	public static boolean cancelReservableTimeList(List<ReserveTime> reserveTimes) {
 		Connection connection = DBConnection.getConnection();
 		for(ReserveTime reserveTime : reserveTimes) {
 			reserveTime.setStatus(ReserveTimeStatus.CANCELED);
+			if(!executeInsertUpdate(reserveTime, updateCommand + reserveTime.getID(), connection)) {
+				DBConnection.closeConnection(connection);
+				return false;
+			}
+		}
+		DBConnection.closeConnection(connection);
+		return true;
+	}
+
+	/**
+	 * Retrive Canceled Reserve Time
+	 * @param reserveTimes to be canceled
+	 * @return true all reserve times be canceled truly
+	 */
+
+	public static boolean retriveCanceledTimeList(List<ReserveTime> reserveTimes) {
+		Connection connection = DBConnection.getConnection();
+		for(ReserveTime reserveTime : reserveTimes) {
+			reserveTime.setStatus(ReserveTimeStatus.RESERVABLE);
 			if(!executeInsertUpdate(reserveTime, updateCommand + reserveTime.getID(), connection)) {
 				DBConnection.closeConnection(connection);
 				return false;
@@ -151,17 +189,27 @@ public class TableReserveTime {
 		}
 	}
 
-    public static boolean deleteBetweenDays(int startDate, int endDate, int unitID)
+	/**
+	 * Delete reserve times between days
+	 * @param startDate start day for deleting times
+	 * @param endDate end day for de;leting time
+	 * @param unitID intended unit to be changed
+	 * @return true if all statuses change successfully
+	 */
+
+    public static boolean deleteAllDayReserveTimesBetweenDays(int startDate, int endDate, int unitID)
     {
-        String command = "update RESERVETIMES set status = " + ReserveTimeStatus.DELETED.getValue() + " where " +
-                "DAY_ID between ? and ? and UNIT_ID = ?";
+        String command = "UPDATE RESERVETIMES " +
+				"SET " +
+				"    STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+				" WHERE" +
+				"    DAY_ID BETWEEN " + startDate + " AND " + endDate +
+				"        AND UNIT_ID = " + unitID +
+				" AND STATUS != " + ReserveTimeStatus.RESERVED.getValue();
         Connection conn = DBConnection.getConnection();
         try
         {
             PreparedStatement ps = conn.prepareStatement(command);
-            ps.setInt(1, startDate);
-            ps.setInt(2, endDate);
-            ps.setInt(3, unitID);
             int i = ps.executeUpdate();
             return i >= 0 ;
         }catch(SQLException e)
@@ -182,6 +230,53 @@ public class TableReserveTime {
             }
         }
     }
+
+	/**
+	 * Deleting midday reserve times between days
+	 * @param startDate start day for deleting
+	 * @param endDate end day for deleting
+	 * @param unitID intended unit to be changed
+	 * @param middayID intended midday to be deleted
+	 * @return true if all statuses change to deleted
+	 */
+
+	public static boolean deleteMiddayReserveTimesBetweenDays(int startDate
+			, int endDate
+			, int unitID
+			, MiddayID middayID)
+	{
+		String command = "UPDATE RESERVETIMES " +
+				"SET " +
+				"    STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+				" WHERE" +
+				"    DAY_ID BETWEEN " + startDate + " AND " + endDate +
+				"        AND UNIT_ID = " + unitID +
+				" AND MIDDAY_ID = " + middayID.getValue() +
+				" AND STATUS != " + ReserveTimeStatus.RESERVED.getValue();
+		Connection conn = DBConnection.getConnection();
+		try
+		{
+			PreparedStatement ps = conn.prepareStatement(command);
+			int i = ps.executeUpdate();
+			return i >= 0 ;
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+			return false;
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+	}
 
 	public static boolean deleteUnit(int unitID)
 	{
@@ -248,6 +343,11 @@ public class TableReserveTime {
 		}
 	}
 
+	/**
+	 * Getting reserve time by id
+	 * @param ID to be got
+	 * @return got reserve time
+	 */
 	public static ReserveTime getReserveTime(int ID)
 	{
 		Connection conn = DBConnection.getConnection();
@@ -255,7 +355,12 @@ public class TableReserveTime {
 		try
 		{
 			Statement stmt = conn.createStatement();
-			String command = "select * from RESERVETIMES where ID = " + ID;
+			String command = "SELECT" +
+					" *" +
+					" FROM" +
+					" RESERVETIMES" +
+					" WHERE" +
+					" ID = " + ID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillSingleReserveTime(rs, reserveTime);
 		}catch(SQLException e)
@@ -284,10 +389,14 @@ public class TableReserveTime {
 		try
 		{
 			Statement stmt = conn.createStatement();
-			String command = "select * from RESERVETIMES" +
-					" where DAY_ID = " + dateID + " and UNIT_ID = " +
-					unitID +
-					" and (status != 5 && status != 4)" +
+			String command = "SELECT" +
+					" *" +
+					" FROM" +
+					" RESERVETIMES" +
+					" WHERE" +
+					" DAY_ID = " + dateID + " AND UNIT_ID = " + unitID +
+					" AND (status != " + ReserveTimeStatus.DELETED.getValue() +
+					" && status != " + ReserveTimeStatus.HOLD.getValue() + ")" +
 					" ORDER BY ST_TIME";
 			ResultSet rs=stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
@@ -310,11 +419,17 @@ public class TableReserveTime {
 		}
 		return reserveTimes;
 	}
-	
-	public static Map<Enum, List<ReserveTime>> getClientUnitReserveTimeInADay(int dateID, int unitID)
+
+	/**
+	 * Getting reservable time for client in a day in a unit
+	 * @param dateID intended day
+	 * @param unitID intended unit
+	 * @return list of reserved times based on morning and afternoon time
+	 */
+	public static Map<MiddayID, List<ReserveTime>> getClientUnitReserveTimeInADay(int dateID, int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
-		Map<Enum, List<ReserveTime>> reserveTimes = new HashMap<>();
+		Map<MiddayID, List<ReserveTime>> reserveTimes = new HashMap<>();
 		try
 		{
 			Statement stmt = conn.createStatement();
@@ -323,7 +438,7 @@ public class TableReserveTime {
 					dateID +
 					" and UNIT_ID = " +
 					unitID +
-					" and STATUS = 1" +
+					" and STATUS = " + ReserveTimeStatus.RESERVABLE.getValue() +
 					" ORDER BY ST_TIME";
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
@@ -342,7 +457,7 @@ public class TableReserveTime {
 				{	
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return reserveTimes;
 	}
@@ -363,6 +478,7 @@ public class TableReserveTime {
 					"    r.ST_TIME AS startTime," +
 					"    r.DURATION AS duration," +
 					"    r.RES_CODE_ID AS reserveCode," +
+					"    r.RESERVE_GR_TIME AS gregorianDate," +
 					"    c.id AS companyID," +
 					"    c.COMP_NAME AS companyName," +
 					"    u.ID AS unitID," +
@@ -416,6 +532,7 @@ public class TableReserveTime {
 					"    r.ST_TIME AS startTime," +
 					"    r.DURATION AS duration," +
 					"    r.RES_CODE_ID AS reserveCode," +
+					"    r.RESERVE_GR_TIME AS gregorianDate," +
 					"    c.id AS companyID," +
 					"    c.COMP_NAME AS companyName," +
 					"    u.ID AS unitID," +
@@ -449,7 +566,7 @@ public class TableReserveTime {
 	 * @param Code to be reserve time derived from
 	 * @return intended reserve time
 	 */
-	public static ReserveTime getReserveTimeFromCode(String Code)
+	public static ReserveTime getReserveTimeByCode(String Code)
 	{
 		Connection conn = DBConnection.getConnection();
 		ReserveTime reserveTime = new ReserveTime();
@@ -490,7 +607,7 @@ public class TableReserveTime {
 	 * @param middayID intended midday
 	 * @return reserve time list
 	 */
-	public static List<ReserveTime> getReserveTimeIDsFromMidday(int dateID, int unitID, int middayID) {
+	public static List<ReserveTime> getReserveTimeIDsFromMidday(int dateID, int unitID, MiddayID middayID) {
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
 		try
@@ -507,7 +624,7 @@ public class TableReserveTime {
 					" AND UNIT_ID = " +
 					unitID +
 					" AND MIDDAY_ID = " +
-					middayID +
+					middayID.getValue() +
 					" ORDER BY ST_TIME";
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
@@ -535,10 +652,10 @@ public class TableReserveTime {
      */
 	public static List<ReserveTime> getUnitReservedTimesBetweenDays(int unitID, int stDate, int endDate)
 	{
-		Connection conn = DBConnection.getConnection(); 
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTime> reserveTimes = new ArrayList<>();
 		try
 		{
-			List<ReserveTime> reserveTimes = new ArrayList<>();
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" * FROM" +
@@ -554,7 +671,6 @@ public class TableReserveTime {
 					endDate;
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
-			return reserveTimes;
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -572,6 +688,195 @@ public class TableReserveTime {
 				}
 			}	
 		}
+		return reserveTimes;
+	}
+
+	/**
+	 * Getting unit midday reserved times
+	 * @param unitID input
+	 * @param stDate input
+	 * @param endDate input
+	 * @param midday input
+	 * @return reserve time list
+	 */
+	public static List<ReserveTime> getUnitMiddayReservedTimesBetweenDays(int unitID
+			, int stDate
+			, int endDate
+			, MiddayID midday) {
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTime> reserveTimes = new ArrayList<>();
+		try
+		{
+			Statement stmt = conn.createStatement();
+			String command = "SELECT" +
+					" * FROM" +
+					" RESERVETIMES" +
+					" WHERE" +
+					" STATUS = " +
+					ReserveTimeStatus.RESERVED.getValue() +
+					" AND UNIT_ID = " +
+					unitID +
+					" AND DAY_ID BETWEEN " +
+					stDate +
+					" AND " +
+					endDate +
+					" AND MIDDAY_ID = " + midday.getValue();
+			ResultSet rs = stmt.executeQuery(command);
+			fillReserveTimeList(rs, reserveTimes);
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+			return null;
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return reserveTimes;
+	}
+
+	/**
+	 * Getting first time of a midday between days
+	 * @param unitID input
+	 * @param stDate input
+	 * @param endDate input
+	 * @param midday input
+	 * @return first time in a midday
+	 */
+	public static LocalTime getUnitMiddayFirstTimeBetweenDays(int unitID
+			, int stDate
+			, int endDate
+			, MiddayID midday) {
+		Connection conn = DBConnection.getConnection();
+		LocalTime minimumStartTime = null;
+		try
+		{
+			Statement stmt = conn.createStatement();
+			String command = "SELECT" +
+					" MIN(ST_TIME) as minimumStartTime" +
+					" FROM" +
+					" reservetimes" +
+					" WHERE" +
+					" day_id BETWEEN " + stDate + " AND " + endDate +
+					" AND unit_id = " + unitID +
+					" AND midday_id = " + midday.getValue() +
+					" AND status != " + ReserveTimeStatus.DELETED.getValue();
+			ResultSet rs = stmt.executeQuery(command);
+			while (rs.next()){
+				minimumStartTime = rs.getObject("minimumStartTime", LocalTime.class);
+			}
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return minimumStartTime;
+	}
+
+	/**
+	 * Getting last time of a midday between days
+	 * @param unitID input
+	 * @param stDate input
+	 * @param endDate input
+	 * @param midday input
+	 * @return last time in a midday
+	 */
+	public static LocalTime getUnitMiddayLastTimeBetweenDays(int unitID
+			, int stDate
+			, int endDate
+			, MiddayID midday) {
+		Connection conn = DBConnection.getConnection();
+		LocalTime maximumLastTime = null;
+		try
+		{
+			Statement stmt = conn.createStatement();
+			String command = "SELECT " +
+					" MAX(ADDTIME(ST_TIME, SEC_TO_TIME(duration * 60))) as maximumLastTime" +
+					" FROM" +
+					" alomonshi.reservetimes" +
+					" WHERE" +
+					" day_id BETWEEN " + stDate + " AND " + endDate +
+					" AND unit_id = " + unitID +
+					" AND midday_id = " + midday.getValue() +
+					" AND status != " + ReserveTimeStatus.DELETED.getValue();
+			ResultSet rs = stmt.executeQuery(command);
+			while (rs.next()){
+				maximumLastTime = rs.getObject("maximumLastTime", LocalTime.class);
+			}
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return maximumLastTime;
+	}
+
+	/**
+	 * Getting unit reserve times after current time
+	 * @param unitID intended unit id
+	 * @return list reserved times after now
+	 */
+	public static List<ReserveTime> getUnitFutureReserveTime(int unitID) {
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTime> reserveTimes = new ArrayList<>();
+		try
+		{
+			Statement stmt = conn.createStatement();
+			String command = "SELECT" +
+					" * FROM" +
+					" RESERVETIMES" +
+					" WHERE" +
+					" STATUS = " +
+					ReserveTimeStatus.RESERVED.getValue() +
+					" AND UNIT_ID = " +
+					unitID +
+					" AND RESERVE_GR_TIME >= '" +
+					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())+
+					"'";
+			ResultSet rs = stmt.executeQuery(command);
+			fillReserveTimeList(rs, reserveTimes);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return reserveTimes;
 	}
 
 	/**
@@ -579,17 +884,17 @@ public class TableReserveTime {
 	 * @param preparedStatement to be filled for execution
 	 * @param reserveTime where prepared statement will be filled from
 	 */
-
 	private static void prepare(PreparedStatement preparedStatement, ReserveTime reserveTime){
 		try {
 			preparedStatement.setInt(1, reserveTime.getUnitID());
 			preparedStatement.setInt(2, reserveTime.getDateID());
-			preparedStatement.setInt(3, reserveTime.getMiddayID());
+			preparedStatement.setInt(3, reserveTime.getMiddayID().getValue());
 			preparedStatement.setObject(4, reserveTime.getStartTime());
 			preparedStatement.setInt(5, reserveTime.getDuration());
 			preparedStatement.setInt(6, reserveTime.getStatus().getValue());
 			preparedStatement.setInt(7, reserveTime.getClientID());
 			preparedStatement.setString(8, reserveTime.getResCodeID());
+			preparedStatement.setObject(9, reserveTime.getReserveTimeGRDateTime());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -605,12 +910,13 @@ public class TableReserveTime {
 			reserveTime.setID(resultSet.getInt(1));
 			reserveTime.setUnitID(resultSet.getInt(2));
 			reserveTime.setDateID(resultSet.getInt(3));
-			reserveTime.setMiddayID(resultSet.getInt(4));
+			reserveTime.setMiddayID(MiddayID.getByValue(resultSet.getInt(4)));
 			reserveTime.setStartTime(resultSet.getObject(5, LocalTime.class));
 			reserveTime.setDuration(resultSet.getInt(6));
 			reserveTime.setStatus(ReserveTimeStatus.getByValue(resultSet.getInt(7)));
 			reserveTime.setClientID(resultSet.getInt(8));
 			reserveTime.setResCodeID(resultSet.getString(9));
+			reserveTime.setReserveTimeGRDateTime(resultSet.getObject(10, LocalDateTime.class));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -655,7 +961,7 @@ public class TableReserveTime {
 	 * @param reserveTimes to be filled
 	 */
 	private static void fillReserveTimeList(ResultSet resultSet
-			, Map<Enum
+			, Map<MiddayID
 			, List<ReserveTime>> reserveTimes){
 		try{
 			List<ReserveTime> morningReserveTimes = new ArrayList<>();
@@ -663,9 +969,9 @@ public class TableReserveTime {
 			while (resultSet.next()){
 				ReserveTime reserveTime = new ReserveTime();
 				fillReserveTime(resultSet, reserveTime);
-				if (reserveTime.getMiddayID() == MiddayID.MORNING.getValue())
+				if (reserveTime.getMiddayID() == MiddayID.MORNING)
 					morningReserveTimes.add(reserveTime);
-				else if (reserveTime.getMiddayID() == MiddayID.AFTERNOON.getValue())
+				else if (reserveTime.getMiddayID() == MiddayID.AFTERNOON)
 					afternoonReserveTimes.add(reserveTime);
 			}
 			reserveTimes.put(MiddayID.MORNING, morningReserveTimes);
@@ -689,6 +995,7 @@ public class TableReserveTime {
 			clientReservedTime.setStartTime(resultSet.getObject("startTime", LocalTime.class));
 			clientReservedTime.setDuration(resultSet.getInt("duration"));
 			clientReservedTime.setReserveCodeID(resultSet.getString("reserveCode"));
+			clientReservedTime.setGregorianDateTime(resultSet.getObject("gregorianDate", LocalDateTime.class));
 			clientReservedTime.setCompanyID(resultSet.getInt("companyID"));
 			clientReservedTime.setCompanyName(resultSet.getString("companyName"));
 			clientReservedTime.setUnitID(resultSet.getInt("unitID"));
@@ -772,8 +1079,7 @@ public class TableReserveTime {
 	 * @return true if it can be canceled
 	 */
 	private static boolean isTimeCancelable(ClientReservedTime clientReservedTime) {
-		LocalDateTime reservedTimeDatetime = DateTimeUtility.getGregorianReservedTimeDatetime(clientReservedTime);
-		return reservedTimeDatetime.minusHours(1).isAfter(LocalDateTime.now());
+		//Reserved time can be canceled until 1 hour before time is reached
+		return clientReservedTime.getGregorianDateTime().minusHours(1).isAfter(LocalDateTime.now());
 	}
-
 }

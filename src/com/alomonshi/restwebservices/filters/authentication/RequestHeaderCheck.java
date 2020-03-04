@@ -52,6 +52,11 @@ class RequestHeaderCheck {
         return requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
     }
 
+    /**
+     * Getting json web token from authentication part of request
+     * @return json web token
+     */
+
     String getTokenFromRequest(){
         return getAuthorizationHeaderFromRequest().substring(AUTHENTICATION_SCHEME.length()).trim();
     }
@@ -65,6 +70,11 @@ class RequestHeaderCheck {
             return false;
         }else return true;
     }
+
+    /**
+     * Getting client id if exists in body to check with client id in authorization header
+     * @return client id
+     */
 
     int getClientIDFromRequestBody() {
         if (requestContext.hasEntity() && isJson()) {

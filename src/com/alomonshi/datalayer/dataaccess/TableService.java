@@ -310,7 +310,12 @@ public class TableService {
 			}
 		}
 	}
-	
+
+	/**
+	 * Get unit services
+	 * @param unitID intended unit id
+	 * @return list of services
+	 */
 	public static List<Services> getUnitServices(int unitID)
 	{
 		List<Services> services = new ArrayList<>();
@@ -319,7 +324,7 @@ public class TableService {
 		{
 			Statement stmt = conn.createStatement();
 			String command = "select * from SERVICES where IS_ACTIVE is true AND unit_id = " + unitID;
-			ResultSet rs=stmt.executeQuery(command);
+			ResultSet rs = stmt.executeQuery(command);
 			fillServices(rs, services);
 			return services;
 		}catch(SQLException e)
@@ -339,6 +344,48 @@ public class TableService {
 				}
 			}	
 		}
+	}
+
+	/**
+	 * Get unit service IDs
+	 * @param unitID intended unit id
+	 * @return list of service IDs
+	 */
+	public static List<Integer> getUnitServiceIDs(int unitID)
+	{
+		List<Integer> serviceIDs = new ArrayList<>();
+		Connection conn = DBConnection.getConnection();
+		try
+		{
+			Statement stmt = conn.createStatement();
+			String command = "SELECT" +
+					" ID AS id" +
+					" FROM" +
+					" SERVICES" +
+					" WHERE" +
+					" IS_ACTIVE IS TRUE AND unit_id = " + unitID;
+			ResultSet rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				serviceIDs.add(rs.getInt("id"));
+			}
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+			return null;
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return serviceIDs;
 	}
 	
 	public static Set<Integer> getSearchedServices(String serviceName)

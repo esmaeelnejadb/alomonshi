@@ -2,7 +2,7 @@ package com.alomonshi.object.enums;
 
 public enum ReserveTimeStatus {
     RESERVABLE(1), RESERVED(2), CANCELED(3), HOLD(4), DELETED(5);
-    int value;
+    private int value;
     ReserveTimeStatus(int value){
         this.value = value;
     }

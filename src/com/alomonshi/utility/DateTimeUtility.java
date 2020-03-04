@@ -13,27 +13,49 @@ public class DateTimeUtility {
         return time.getHour() * 60 + time.getMinute();
     }
 
+    /**
+     * Getting current persian date time
+     * @return current date time
+     */
+
     public static String getPersianCurrentDateTime() {
         Calendar cal = Calendar.getInstance();
         JalaliCalendar jalaliDate = new JalaliCalendar(cal.getTime());
         return jalaliDate.toString() + " " + cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE) + ":" + cal.get(Calendar.SECOND);
     }
 
-    public static String getCurrentPersianDate(){
+    /**
+     * Getting current persian day id
+     * @return current persian day id
+     */
+
+    public static int getCurrentPersianDate(){
         Calendar cal = Calendar.getInstance();
         JalaliCalendar jalaliDate = new JalaliCalendar(cal.getTime());
-        return jalaliDate.getYear() + "" + jalaliDate.getMonth() + "" + jalaliDate.getDay();
+        return Integer.parseInt(jalaliDate.getYear()
+                + "" + jalaliDate.getMonth()
+                + "" + jalaliDate.getDay());
     }
 
-    public static LocalDateTime getGregorianReservedTimeDatetime(ClientReservedTime clientReservedTime) {
-        int year = Integer.parseInt(Integer.toString(clientReservedTime.getDayID()).substring(0,4));
-        int month = Integer.parseInt(Integer.toString(clientReservedTime.getDayID()).substring(4,6));
-        int day = Integer.parseInt(Integer.toString(clientReservedTime.getDayID()).substring(6,8));
+    public static LocalDateTime getGregorianReservedTimeDatetime(int dayID, LocalTime time) {
+        int year = Integer.parseInt(Integer.toString(dayID).substring(0,4));
+        int month = Integer.parseInt(Integer.toString(dayID).substring(4,6));
+        int day = Integer.parseInt(Integer.toString(dayID).substring(6,8));
         JalaliCalendar jalaliCalendar = new JalaliCalendar(year, month, day);
         String datetime = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 .format(jalaliCalendar.toGregorian()
                         .toZonedDateTime()
-                        .toLocalDate()) + " " + clientReservedTime.getStartTime();
+                        .toLocalDate()) + " " + time;
         return LocalDateTime.parse(datetime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
+
+    public static String beautifyPersianDateID(int dateID) {
+        String stringDateID = Integer.toString(dateID);
+        return stringDateID.substring(0,4) +
+                "/" +
+                stringDateID.substring(4,6) +
+                "/" +
+                stringDateID.substring(6,8);
+
     }
 }

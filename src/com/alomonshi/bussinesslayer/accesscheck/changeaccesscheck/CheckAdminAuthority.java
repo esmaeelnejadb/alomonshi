@@ -1,9 +1,8 @@
 package com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck;
 
-import com.alomonshi.datalayer.dataaccess.TableAdminUnit;
+import com.alomonshi.datalayer.dataaccess.TableUnitAdmins;
 import com.alomonshi.datalayer.dataaccess.TableManager;
-import com.alomonshi.object.tableobjects.AdminUnit;
-import com.alomonshi.object.tableobjects.Manager;
+import com.alomonshi.object.tableobjects.UnitAdmins;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -31,9 +30,9 @@ public class CheckAdminAuthority {
 
     public boolean isUserUnitAuthorized(){
         try {
-            List<AdminUnit> adminUnits = TableAdminUnit.getManagerUnits(userID);
-            for (AdminUnit adminUnit: adminUnits) {
-                if (adminUnit.getUnitID() == toBeCheckedID)
+            List<UnitAdmins> unitAdmins = TableUnitAdmins.getManagerUnits(userID);
+            for (UnitAdmins unitAdmin : unitAdmins) {
+                if (unitAdmin.getUnitID() == toBeCheckedID)
                     return true;
             }
         }catch (Exception e){
@@ -48,15 +47,12 @@ public class CheckAdminAuthority {
      */
     public boolean isUserCompanyAuthorized(){
         try {
-            List<Manager> managers = TableManager.getManager(userID);
-            for (Manager manager: managers) {
-                if (manager.getCompanyID() == toBeCheckedID)
-                    return true;
-            }
+            List<Integer> managers = TableManager.getManagerCompanies(userID);
+            if (managers.contains(toBeCheckedID))
+                return true;
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error in authorization " + e);
         }
         return false;
     }
-
 }

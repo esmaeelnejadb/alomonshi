@@ -86,6 +86,7 @@ public class ClientProfileWebService {
      * @param user intended user
      * @return list of client reserved times
      */
+    @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
     @GET
     @Path("/getClientReserveTimes")
