@@ -20,7 +20,6 @@ import java.util.logging.Logger;
 @Path("/adminUnit")
 public class AdminUnitWebService {
 
-    private CheckAdminAuthority checkAuthority;
     private UnitService unitService;
     private ServiceResponse serviceResponse;
 
@@ -35,14 +34,13 @@ public class AdminUnitWebService {
 
     @JsonView(JsonViews.AdminViews.class)
     @CompanyAdminSecured
-    @GET
-    @Path("/unit")
+    @POST
+    @Path("/getCompanyUnit")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceResponse getCompanyUnitList(AdminEditObject adminEditObject) {
         serviceResponse = new ServiceResponse();
         try {
-            checkAuthority = new CheckAdminAuthority();
-            if (checkAuthority.isUserCompanyAuthorized(adminEditObject.getClientID()
+            if (CheckAdminAuthority.isUserCompanyAuthorized(adminEditObject.getClientID()
                     , adminEditObject.getCompanyID())) {
                 unitService = new UnitService(serviceResponse);
                 return unitService.getCompanyUnit(adminEditObject.getCompanyID());
@@ -68,9 +66,8 @@ public class AdminUnitWebService {
     public ServiceResponse insertNewUnit(Units unit) {
         serviceResponse = new ServiceResponse();
         try {
-            checkAuthority = new CheckAdminAuthority();
             unitService = new UnitService(unit, serviceResponse);
-            if (checkAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())) {
+            if (CheckAdminAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())) {
                 return unitService.insertNewUnit();
             }else
                 return serviceResponse.setResponse(false)
@@ -89,10 +86,9 @@ public class AdminUnitWebService {
     public ServiceResponse updateUnit(Units unit) {
         serviceResponse = new ServiceResponse();
         try {
-            checkAuthority = new CheckAdminAuthority();
             unitService = new UnitService(unit, serviceResponse);
-            if (checkAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
-                    && checkAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
+            if (CheckAdminAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
+                    && CheckAdminAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
                 return unitService.updateUnit();
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
@@ -115,10 +111,9 @@ public class AdminUnitWebService {
     public ServiceResponse deleteUnit(Units unit) {
         serviceResponse = new ServiceResponse();
         try {
-            checkAuthority = new CheckAdminAuthority();
             unitService = new UnitService(unit, serviceResponse);
-            if (checkAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
-                    && checkAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
+            if (CheckAdminAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
+                    && CheckAdminAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
                 return unitService.deleteUnit();
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
@@ -126,6 +121,12 @@ public class AdminUnitWebService {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
+    }
+
+    @OPTIONS
+    @Path("/getCompanyUnit")
+    public void doOptionsForAdminGettingUnit() {
+        HttpContextHeader.doOptions(httpServletResponse);
     }
 
     @OPTIONS

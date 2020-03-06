@@ -22,4 +22,6 @@ public class ServerMessage {
     public static final String SERVICEERROR_01 = "متأسفانه در این واحد خدماتی تعریف نشده است.";
     public static final String SERVICEERROR_02 = "متأسفانه در خدمت مورد نظر نوبت های رزرو شده وجود دارد، ابتدا این نوبت ها را لغو نمایید. ";
 
+    //******Error in comment services******//
+    public static final String COMMENTERROR_01 = "متأسفانه در این واحد نظری ثبت نشده است.";
 }

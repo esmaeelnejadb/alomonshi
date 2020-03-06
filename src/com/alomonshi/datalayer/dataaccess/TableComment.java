@@ -19,85 +19,114 @@ import com.alomonshi.object.tableobjects.Services;
 
 public class TableComment {
 
+	/**
+	 * Insert new comment
+	 * @param comment to be inserted
+	 * @return result
+	 */
 	public static boolean insertComment(Comments comment){
-		comment.setCommentDate(LocalDateTime.now());
-		String command = "insert into COMMENTS (CLIENT_ID, RES_TIME_ID, COMMENT" +
-				", REPLY_COMMENT, SERVICE_RATE, IS_ACTIVE, COMMENT_DATE, REPLY_DATE) values(?, ?, ?, ?, ?, ?, ?, ?)";
-		return executeInsertUpdate(comment, command);
+		Connection connection = DBConnection.getConnection();
+		String command = "insert into COMMENTS (" +
+				"CLIENT_ID" +
+				", RES_TIME_ID" +
+				", COMMENT" +
+				", REPLY_COMMENT" +
+				", SERVICE_RATE" +
+				", IS_ACTIVE" +
+				", COMMENT_DATE" +
+				", REPLY_DATE" +
+				") values(?, ?, ?, ?, ?, ?, ?, ?)";
+		boolean response = executeInsertUpdate(comment, command, connection);
+		DBConnection.closeConnection(connection);
+		return response;
 	}
 
+	/**
+	 * update a comment object
+	 * @param comment to be updated
+	 * @return result
+	 */
 	public static boolean updateComment(Comments comment){
-		String command = "UPDATE COMMENTS SET CLIENT_ID = ?, RES_TIME_ID = ?, COMMENT = ?" +
-				", REPLY_COMMENT = ?, SERVICE_RATE = ?, IS_ACTIVE = ?, COMMENT_DATE = ?, REPLY_DATE = ?" +
-				" where id = " + comment.getID();
-		return executeInsertUpdate(comment, command);
+		Connection connection = DBConnection.getConnection();
+		String command = "UPDATE COMMENTS SET " +
+				"CLIENT_ID = ?" +
+				", RES_TIME_ID = ?" +
+				", COMMENT = ?" +
+				", REPLY_COMMENT = ?" +
+				", SERVICE_RATE = ?" +
+				", IS_ACTIVE = ?" +
+				", COMMENT_DATE = ?" +
+				", REPLY_DATE = ?" +
+				" where" +
+				" id = " + comment.getID();
+		boolean response = executeInsertUpdate(comment, command, connection);
+		DBConnection.closeConnection(connection);
+		return response;
 	}
 
+	/**
+	 * Delete a comment from database(set is_active field to false)
+	 * @param comment to be deleted
+	 * @return result
+	 */
 	public static boolean delete(Comments comment){
 		comment.setActive(false);
 		return updateComment(comment);
 	}
-	
-	//importing users data into database
-	private static boolean executeInsertUpdate(Comments comment, String command)
-	{		
-		Connection conn = DBConnection.getConnection();
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
+
+
+	/**
+	 * Executing insert update in database
+	 * @param comment to be executed
+	 * @param command update or insert command
+	 * @param connection objecd injected from JDBC
+	 * @return result
+	 */
+	private static boolean executeInsertUpdate(Comments comment, String command, Connection connection)
+	{
+		try {
+			PreparedStatement ps = connection.prepareStatement(command);
 			prepare(comment, ps);
 			int i = ps.executeUpdate();
 			return i == 1;
-			
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
 		}
 	}
 
-	public static Comments getComment(int ID)
-	{
+	/**
+	 * Getting a comment from database
+	 * @param ID to be got from database
+	 * @return comment object
+	 */
+	public static Comments getComment(int ID) {
 		Connection conn = DBConnection.getConnection();
 		Comments comment = new Comments();
-		try
-		{
+		try {
 			Statement stmt =conn.createStatement();
-			String command = "SELECT * FROM COMMENTS where IS_ACTIVE IS TRUE AND ID = " + ID;
+			String command = "SELECT" +
+					" *" +
+					" FROM" +
+					" COMMENTS" +
+					" WHERE" +
+					" IS_ACTIVE IS TRUE AND ID = " + ID;
 			ResultSet rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				fillComment(rs, comment);
 			}
-			return comment;
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return comment;
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
+		return comment;
 	}
 	
 	public static Comments getCommentByResTimeID(int resTimeID)
@@ -107,7 +136,12 @@ public class TableComment {
 		try
 		{
 			Statement stmt =conn.createStatement();
-			String command = "SELECT * FROM COMMENTS where IS_ACTIVE IS TRUE AND RES_TIME_ID = " + resTimeID;
+			String command = "SELECT" +
+					" *" +
+					" FROM" +
+					" COMMENTS" +
+					" WHERE" +
+					" IS_ACTIVE IS TRUE AND RES_TIME_ID = " + resTimeID;
 			ResultSet rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				fillComment(rs, comment);
@@ -132,54 +166,63 @@ public class TableComment {
 		}
 	}
 
-	static List<Comments> getUnitComments(int unitID)
+	/**
+	 * Get unit comments
+	 * @param unitID which comments to be got
+	 * @return lsit of unit comments
+	 */
+
+	public static List<Comments> getUnitComments(int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<Comments> comments = new LinkedList<>();
 		try
 		{
 			Statement stmt = conn.createStatement();
-			String command = "SELECT " +
-					"	 rt.ID as reserveTimeID," +
-					"    com.comment as comment," +
-					"    com.COMMENT_DATE as commentDate," +
-					"    com.reply_comment as replyComment," +
-					"    com.REPLY_DATE as replyDate," +
-					"    com.SERVICE_RATE as serviceRate," +
-					"    cl.NAME as clientName" +
+			String command = "SELECT" +
+					" rt.ID as reserveTimeID," +
+					" com.ID as commentID," +
+					" com.comment as comment," +
+					" com.COMMENT_DATE as commentDate," +
+					" com.reply_comment as replyComment," +
+					" com.REPLY_DATE as replyDate," +
+					" com.SERVICE_RATE as serviceRate," +
+					" cl.NAME as clientName" +
 					" FROM" +
-					"    alomonshi.comments com," +
-					"    alomonshi.reservetimes rt," +
-					"    alomonshi.clientinfo cl," +
-					"    alomonshi.units unit" +
-					"    where" +
-					"    com.res_time_id = rt.id" +
-					"    and rt.unit_id = unit.id" +
-					"    and com.client_id = cl.id" +
-					"    and unit.ID = " + unitID +
-					"    and com.is_active is true " +
-					"    AND rt.status = " + ReserveTimeStatus.RESERVED.getValue();
+					" alomonshi.comments com," +
+					" alomonshi.reservetimes rt," +
+					" alomonshi.clientinfo cl," +
+					" alomonshi.units unit" +
+					" where" +
+					" com.RES_TIME_ID = rt.id" +
+					" and rt.UNIT_ID = unit.id" +
+					" and com.CLIENT_ID = cl.id" +
+					" and unit.ID = " + unitID +
+					" and com.IS_ACTIVE is true " +
+					" AND rt.STATUS = " + ReserveTimeStatus.RESERVED.getValue() +
+					" ORDER BY com.COMMENT_DATE DESC";
 			ResultSet rs=stmt.executeQuery(command);
 			fillUnitComments(rs, comments);
 			return comments;
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return comments;
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
 		}
 	}
+
+	/**
+	 * Getting client comments
+	 * @param clientID which its comments to be got
+	 * @return list of comments
+	 */
 	
 	public static List<Comments> getClientComments(int clientID)
 	{
@@ -208,6 +251,27 @@ public class TableComment {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Prepare object to be executed
+	 * @param comment which object to be prepared with
+	 * @param ps JDBC  prepared statement to be prepared
+	 */
+
+	private static void prepare(Comments comment, PreparedStatement ps) {
+		try{
+			ps.setInt(1, comment.getClientID());
+			ps.setInt(2, comment.getReserveTimeID());
+			ps.setString(3, comment.getComment());
+			ps.setString(4, comment.getReplyComment());
+			ps.setFloat(5, comment.getServiceRate());
+			ps.setBoolean(6, comment.isActive());
+			ps.setObject(7,comment.getCommentDate());
+			ps.setObject(8, comment.getReplyDate());
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
@@ -244,24 +308,10 @@ public class TableComment {
 		}
 	}
 
-	private static void prepare(Comments comment, PreparedStatement ps) {
-		try{
-			ps.setInt(1, comment.getClientID());
-			ps.setInt(2, comment.getReserveTimeID());
-			ps.setString(3, comment.getComment());
-			ps.setString(4, comment.getReplyComment());
-			ps.setFloat(5, comment.getServiceRate());
-			ps.setBoolean(6, comment.isActive());
-			ps.setObject(7,comment.getCommentDate());
-			ps.setObject(8, comment.getReplyDate());
-		}catch(SQLException e) {
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}
-	}
-
 	private static void fillUnitComment(ResultSet resultSet, Comments comment) {
 		try {
 			comment.setReserveTimeID(resultSet.getInt("reserveTimeID"));
+			comment.setID(resultSet.getInt("commentID"));
 			comment.setComment(resultSet.getString("comment"));
 			comment.setCommentDate(resultSet.getObject("commentDate", LocalDateTime.class));
 			comment.setReplyComment(resultSet.getString("replyComment"));

@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 @Path("/adminReserveTime")
 public class AdminReserveTimesWebService {
 
-    private CheckAdminAuthority checkAuthority;
     private ReserveTimeService reserveTimeService;
     private ServiceResponse serviceResponse;
 
@@ -30,27 +29,25 @@ public class AdminReserveTimesWebService {
 
     @JsonView(JsonViews.SubAdminViews.class)
     @CompanySubAdminSecured
-    @GET
-    @Path("/reserveTimes")
+    @POST
+    @Path("/getUnitReserveTimes")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceResponse getUnitReserveTime(ReserveTime reserveTime){
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority();
-            if(checkAuthority.isUserUnitAuthorized(reserveTime.getClientID()
+            if(CheckAdminAuthority.isUserUnitAuthorized(reserveTime.getClientID()
                     , reserveTime.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
-                serviceResponse = reserveTimeService.getAdminUnitReserveDayTimes(reserveTime);
+                return reserveTimeService.getAdminUnitReserveDayTimes(reserveTime);
             }else
-                serviceResponse = serviceResponse.setResponse(false)
+                return serviceResponse.setResponse(false)
                         .setMessage(ServerMessage.ACCESSFAULT);
 
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Can not get reserve times " + e);
-            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
-        return serviceResponse;
     }
 
     /**
@@ -67,19 +64,17 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority();
-            if (checkAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
+            if (CheckAdminAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
                     , reserveTimeForm.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse)
                         .setReserveTimeForm(reserveTimeForm);
-                serviceResponse = reserveTimeService.handleGeneratingReserveTime();
+                return reserveTimeService.handleGeneratingReserveTime();
             }else
-                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Can not generate new times " + e);
-            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
-        return serviceResponse;
     }
 
     /**
@@ -97,19 +92,17 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority();
-            if (checkAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
+            if (CheckAdminAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
                     , reserveTimeForm.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse)
                         .setReserveTimeForm(reserveTimeForm);
-                serviceResponse = reserveTimeService.deleteReserveTimes();
+                return reserveTimeService.deleteReserveTimes();
             }else
-                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot delete times " + e);
-            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
-        return serviceResponse;
     }
 
     /**
@@ -126,19 +119,17 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority();
-            if (checkAuthority.isUserUnitAuthorized(reserveTimes.getClientID()
+            if (CheckAdminAuthority.isUserUnitAuthorized(reserveTimes.getClientID()
                     , reserveTimes.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
-                serviceResponse = reserveTimeService.cancelSingleReservableTimes(reserveTimes);
+                return reserveTimeService.cancelSingleReservableTimes(reserveTimes);
             }else
-                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
 
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot cancel times " + e);
-            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
-        return serviceResponse;
     }
 
     /**
@@ -154,19 +145,17 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority();
-            if (checkAuthority.isUserUnitAuthorized(reserveTimes.getClientID()
+            if (CheckAdminAuthority.isUserUnitAuthorized(reserveTimes.getClientID()
                     , reserveTimes.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
-                serviceResponse = reserveTimeService.retrieveSingleCanceledTimes(reserveTimes);
+                return reserveTimeService.retrieveSingleCanceledTimes(reserveTimes);
             }else
-                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
 
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot retrieve times " + e);
-            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
-        return serviceResponse;
     }
 
     /**
@@ -184,19 +173,23 @@ public class AdminReserveTimesWebService {
     public ServiceResponse cancelClientReservedTimes(ReserveTimeList reserveTimeList) {
         serviceResponse = new ServiceResponse();
         try {
-            checkAuthority = new CheckAdminAuthority();
             reserveTimeService = new ReserveTimeService(serviceResponse);
-            if (checkAuthority.isUserUnitAuthorized(reserveTimeList.getClientID()
+            if (CheckAdminAuthority.isUserUnitAuthorized(reserveTimeList.getClientID()
                     , reserveTimeList.getUnitID()))
-                serviceResponse = reserveTimeService.cancelSingleReservedTimes(reserveTimeList);
+                return reserveTimeService.cancelSingleReservedTimes(reserveTimeList);
             else
-                serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
 
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Cannot cancel reserved times " + e);
-            serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
-        return serviceResponse;
+    }
+
+    @OPTIONS
+    @Path("/getUnitReserveTimes")
+    public void doOptionsForAdminGettingReserveTimes() {
+        HttpContextHeader.doOptions(httpServletResponse);
     }
 
     @OPTIONS

@@ -1,9 +1,8 @@
 package com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck;
 
-import com.alomonshi.datalayer.dataaccess.TableService;
-import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.datalayer.dataaccess.TableUnitAdmins;
-import com.alomonshi.datalayer.dataaccess.TableManager;
+import com.alomonshi.datalayer.dataaccess.*;
+import com.alomonshi.object.tableobjects.Comments;
+import com.alomonshi.object.tableobjects.ReserveTime;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -20,7 +19,7 @@ public class CheckAdminAuthority {
      * @return true is yes
      */
 
-    public boolean isUserUnitAuthorized(int userID, int unitID){
+    public static boolean isUserUnitAuthorized(int userID, int unitID){
         try {
             List<Integer> unitIDs = TableUnitAdmins.getManagerUnits(userID);
             if (unitIDs.contains(unitID))
@@ -35,7 +34,7 @@ public class CheckAdminAuthority {
      * check if the user is manager of the intended company
      * @return true if yes
      */
-    public boolean isUserCompanyAuthorized(int userID, int companyID){
+    public static boolean isUserCompanyAuthorized(int userID, int companyID){
         try {
             List<Integer> managers = TableManager.getManagerCompanies(userID);
             if (managers.contains(companyID))
@@ -52,7 +51,7 @@ public class CheckAdminAuthority {
      * @param companyID to be checked company got from ui
      * @return true if unit belongs to that company
      */
-    public boolean isUnitBelongToCompany(int unitID, int companyID) {
+    public static boolean isUnitBelongToCompany(int unitID, int companyID) {
         return TableUnit.getUnit(unitID).getCompanyID() == companyID;
     }
 
@@ -62,7 +61,18 @@ public class CheckAdminAuthority {
      * @param unitID to be checked unit
      * @return true if service belongs to unit
      */
-    public boolean isServiceBelongToUnit(int serviceID, int unitID) {
+    public static boolean isServiceBelongToUnit(int serviceID, int unitID) {
         return TableService.getService(serviceID).getUnitID() == unitID;
+    }
+
+    /**
+     * Check if admin can edit a user comment
+     * @param comment to be checked
+     * @return result
+     */
+    public static boolean canAdminEditComment(Comments comment) {
+        //Getting reserve time of the comment to get unit id from that
+        ReserveTime reserveTime = TableReserveTime.getReserveTime(comment.getReserveTimeID());
+        return isUserUnitAuthorized(comment.getClientID(), reserveTime.getUnitID());
     }
 }
