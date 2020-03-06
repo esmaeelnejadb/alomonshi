@@ -37,9 +37,9 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority(reserveTime.getClientID()
-                    , reserveTime.getUnitID());
-            if(checkAuthority.isUserUnitAuthorized()) {
+            checkAuthority = new CheckAdminAuthority();
+            if(checkAuthority.isUserUnitAuthorized(reserveTime.getClientID()
+                    , reserveTime.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
                 serviceResponse = reserveTimeService.getAdminUnitReserveDayTimes(reserveTime);
             }else
@@ -67,9 +67,9 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority(reserveTimeForm.getClientID()
-                    , reserveTimeForm.getUnitID());
-            if (checkAuthority.isUserUnitAuthorized()) {
+            checkAuthority = new CheckAdminAuthority();
+            if (checkAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
+                    , reserveTimeForm.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse)
                         .setReserveTimeForm(reserveTimeForm);
                 serviceResponse = reserveTimeService.handleGeneratingReserveTime();
@@ -97,9 +97,9 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority(reserveTimeForm.getClientID()
-                    , reserveTimeForm.getUnitID());
-            if (checkAuthority.isUserUnitAuthorized()) {
+            checkAuthority = new CheckAdminAuthority();
+            if (checkAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
+                    , reserveTimeForm.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse)
                         .setReserveTimeForm(reserveTimeForm);
                 serviceResponse = reserveTimeService.deleteReserveTimes();
@@ -126,10 +126,9 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority(
-                    reserveTimes.getClientID()
-                    , reserveTimes.getUnitID());
-            if (checkAuthority.isUserUnitAuthorized()) {
+            checkAuthority = new CheckAdminAuthority();
+            if (checkAuthority.isUserUnitAuthorized(reserveTimes.getClientID()
+                    , reserveTimes.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
                 serviceResponse = reserveTimeService.cancelSingleReservableTimes(reserveTimes);
             }else
@@ -155,10 +154,9 @@ public class AdminReserveTimesWebService {
         serviceResponse = new ServiceResponse();
         try {
             //Checking id admin can change the unit
-            checkAuthority = new CheckAdminAuthority(
-                    reserveTimes.getClientID()
-                    , reserveTimes.getUnitID());
-            if (checkAuthority.isUserUnitAuthorized()) {
+            checkAuthority = new CheckAdminAuthority();
+            if (checkAuthority.isUserUnitAuthorized(reserveTimes.getClientID()
+                    , reserveTimes.getUnitID())) {
                 reserveTimeService = new ReserveTimeService(serviceResponse);
                 serviceResponse = reserveTimeService.retrieveSingleCanceledTimes(reserveTimes);
             }else
@@ -186,11 +184,10 @@ public class AdminReserveTimesWebService {
     public ServiceResponse cancelClientReservedTimes(ReserveTimeList reserveTimeList) {
         serviceResponse = new ServiceResponse();
         try {
-            checkAuthority = new CheckAdminAuthority(
-                    reserveTimeList.getClientID()
-                    , reserveTimeList.getUnitID());
+            checkAuthority = new CheckAdminAuthority();
             reserveTimeService = new ReserveTimeService(serviceResponse);
-            if (checkAuthority.isUserUnitAuthorized())
+            if (checkAuthority.isUserUnitAuthorized(reserveTimeList.getClientID()
+                    , reserveTimeList.getUnitID()))
                 serviceResponse = reserveTimeService.cancelSingleReservedTimes(reserveTimeList);
             else
                 serviceResponse = serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);

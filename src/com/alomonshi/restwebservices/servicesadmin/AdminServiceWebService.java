@@ -1,8 +1,9 @@
 package com.alomonshi.restwebservices.servicesadmin;
+
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
-import com.alomonshi.bussinesslayer.unit.UnitService;
-import com.alomonshi.object.tableobjects.Units;
+import com.alomonshi.bussinesslayer.service.ServicesService;
+import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
@@ -17,35 +18,33 @@ import javax.ws.rs.core.MediaType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Path("/adminUnit")
-public class AdminUnitWebService {
+@Path("/adminService")
+public class AdminServiceWebService {
 
     private CheckAdminAuthority checkAuthority;
-    private UnitService unitService;
+    private ServicesService servicesService;
     private ServiceResponse serviceResponse;
 
     @Context
     HttpServletResponse httpServletResponse;
 
     /**
-     * Getting unit list of a company
-     * @param adminEditObject information got from ui
-     * @return List of units
+     * Getting list of unit services
+     * @param adminEditObject got from ui
+     * @return service response
      */
-
-    @JsonView(JsonViews.AdminViews.class)
+    @JsonView(JsonViews.SubAdminViews.class)
     @CompanyAdminSecured
     @GET
-    @Path("/unit")
+    @Path("/service")
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse getCompanyUnitList(AdminEditObject adminEditObject) {
+    public ServiceResponse getUnitServices(AdminEditObject adminEditObject) {
         serviceResponse = new ServiceResponse();
         try {
             checkAuthority = new CheckAdminAuthority();
-            if (checkAuthority.isUserCompanyAuthorized(adminEditObject.getClientID()
-                    , adminEditObject.getCompanyID())) {
-                unitService = new UnitService(serviceResponse);
-                return unitService.getCompanyUnit(adminEditObject.getCompanyID());
+            if (checkAuthority.isUserUnitAuthorized(adminEditObject.getClientID(), adminEditObject.getUnitID())) {
+                servicesService = new ServicesService(serviceResponse);
+                return servicesService.getUnitServices(adminEditObject.getUnitID());
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e){
@@ -54,46 +53,18 @@ public class AdminUnitWebService {
         }
     }
 
-    /**
-     * Inserting new units
-     * @param unit to be inserted
-     * @return service response
-     */
-
-    @JsonView(JsonViews.AdminViews.class)
+    @JsonView(JsonViews.SubAdminViews.class)
     @CompanyAdminSecured
     @POST
-    @Path("/unit")
+    @Path("/service")
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse insertNewUnit(Units unit) {
+    public ServiceResponse insertNewService(Services service) {
         serviceResponse = new ServiceResponse();
         try {
             checkAuthority = new CheckAdminAuthority();
-            unitService = new UnitService(unit, serviceResponse);
-            if (checkAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())) {
-                return unitService.insertNewUnit();
-            }else
-                return serviceResponse.setResponse(false)
-                        .setMessage(ServerMessage.ACCESSFAULT);
-        }catch (Exception e){
-            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
-            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
-        }
-    }
-
-    @JsonView(JsonViews.AdminViews.class)
-    @CompanyAdminSecured
-    @PUT
-    @Path("/unit")
-    @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse updateUnit(Units unit) {
-        serviceResponse = new ServiceResponse();
-        try {
-            checkAuthority = new CheckAdminAuthority();
-            unitService = new UnitService(unit, serviceResponse);
-            if (checkAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
-                    && checkAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
-                return unitService.updateUnit();
+            if (checkAuthority.isUserUnitAuthorized(service.getClientID(), service.getUnitID())) {
+                servicesService = new ServicesService(service, serviceResponse);
+                return servicesService.insertNewService();
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e){
@@ -102,24 +73,40 @@ public class AdminUnitWebService {
         }
     }
 
-    /**
-     * Deleting a unit
-     * @param unit to be delete
-     * @return service response
-     */
-    @JsonView(JsonViews.AdminViews.class)
+    @JsonView(JsonViews.SubAdminViews.class)
     @CompanyAdminSecured
-    @DELETE
-    @Path("/unit")
+    @PUT
+    @Path("/service")
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse deleteUnit(Units unit) {
+    public ServiceResponse updateService(Services service) {
         serviceResponse = new ServiceResponse();
         try {
             checkAuthority = new CheckAdminAuthority();
-            unitService = new UnitService(unit, serviceResponse);
-            if (checkAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
-                    && checkAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
-                return unitService.deleteUnit();
+            if (checkAuthority.isUserUnitAuthorized(service.getClientID(), service.getUnitID())
+                    && checkAuthority.isServiceBelongToUnit(service.getID(), service.getUnitID())) {
+                servicesService = new ServicesService(service, serviceResponse);
+                return servicesService.updateService();
+            }else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanyAdminSecured
+    @DELETE
+    @Path("/service")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse deleteService(Services service) {
+        serviceResponse = new ServiceResponse();
+        try {
+            checkAuthority = new CheckAdminAuthority();
+            if (checkAuthority.isUserUnitAuthorized(service.getClientID(), service.getUnitID())
+                    && checkAuthority.isServiceBelongToUnit(service.getID(), service.getUnitID())) {
+                servicesService = new ServicesService(service, serviceResponse);
+                return servicesService.deleteService();
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
         }catch (Exception e){
@@ -129,8 +116,8 @@ public class AdminUnitWebService {
     }
 
     @OPTIONS
-    @Path("/unit")
-    public void doOptionsForAdminUnit() {
+    @Path("/service")
+    public void doOptionsForAdminService() {
         HttpContextHeader.doOptions(httpServletResponse);
     }
 }

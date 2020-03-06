@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,7 +78,6 @@ public class TableReserveTime {
 	 * @param reserveTime a reserve time to be updated in database
 	 * @return true if updated truly
 	 */
-
 	public static boolean updateReserveTime(ReserveTime reserveTime){
 		Connection connection = DBConnection.getConnection();
         boolean response = executeInsertUpdate(reserveTime, updateCommand + reserveTime.getID(), connection);
@@ -93,7 +91,6 @@ public class TableReserveTime {
 	 * @param reserveTimes list to be updated in database
 	 * @return true if all data updated truly
 	 */
-
 	public static boolean updateReserveTimeList(List<ReserveTime> reserveTimes){
 		Connection connection = DBConnection.getConnection();
 		for(ReserveTime reserveTime : reserveTimes) {
@@ -121,7 +118,6 @@ public class TableReserveTime {
 	 * @param reserveTimes list to be updated in database
 	 * @return true if all data updated truly
 	 */
-
 	public static boolean deleteReserveTimeList(List<ReserveTime> reserveTimes){
 		Connection connection = DBConnection.getConnection();
 		for(ReserveTime reserveTime : reserveTimes) {
@@ -140,7 +136,6 @@ public class TableReserveTime {
 	 * @param reserveTimes to be canceled
 	 * @return true all reserve times be canceled truly
 	 */
-
 	public static boolean cancelReservableTimeList(List<ReserveTime> reserveTimes) {
 		Connection connection = DBConnection.getConnection();
 		for(ReserveTime reserveTime : reserveTimes) {
@@ -159,8 +154,7 @@ public class TableReserveTime {
 	 * @param reserveTimes to be canceled
 	 * @return true all reserve times be canceled truly
 	 */
-
-	public static boolean retriveCanceledTimeList(List<ReserveTime> reserveTimes) {
+	public static boolean retrieveCanceledTimeList(List<ReserveTime> reserveTimes) {
 		Connection connection = DBConnection.getConnection();
 		for(ReserveTime reserveTime : reserveTimes) {
 			reserveTime.setStatus(ReserveTimeStatus.RESERVABLE);
@@ -173,10 +167,16 @@ public class TableReserveTime {
 		return true;
 	}
 
+	/**
+	 * Execute insert update process
+	 * @param reserveTime to be insert or updated
+	 * @param command to be executed
+	 * @param connection object to be inserted
+	 * @return true if execute truly
+	 */
 	private static boolean executeInsertUpdate(ReserveTime reserveTime, String command, Connection connection)
 	{
-		try
-		{
+		try {
 			PreparedStatement ps = connection.prepareStatement(command);
 			prepare(ps, reserveTime);
 			int i = ps.executeUpdate();
@@ -199,16 +199,15 @@ public class TableReserveTime {
 
     public static boolean deleteAllDayReserveTimesBetweenDays(int startDate, int endDate, int unitID)
     {
-        String command = "UPDATE RESERVETIMES " +
-				"SET " +
-				"    STATUS = " + ReserveTimeStatus.DELETED.getValue() +
-				" WHERE" +
-				"    DAY_ID BETWEEN " + startDate + " AND " + endDate +
-				"        AND UNIT_ID = " + unitID +
-				" AND STATUS != " + ReserveTimeStatus.RESERVED.getValue();
         Connection conn = DBConnection.getConnection();
-        try
-        {
+        try {
+			String command = "UPDATE RESERVETIMES " +
+					"SET " +
+					"    STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+					" WHERE" +
+					"    DAY_ID BETWEEN " + startDate + " AND " + endDate +
+					"        AND UNIT_ID = " + unitID +
+					" AND STATUS != " + ReserveTimeStatus.RESERVED.getValue();
             PreparedStatement ps = conn.prepareStatement(command);
             int i = ps.executeUpdate();
             return i >= 0 ;
@@ -239,7 +238,6 @@ public class TableReserveTime {
 	 * @param middayID intended midday to be deleted
 	 * @return true if all statuses change to deleted
 	 */
-
 	public static boolean deleteMiddayReserveTimesBetweenDays(int startDate
 			, int endDate
 			, int unitID
@@ -278,68 +276,34 @@ public class TableReserveTime {
 		}
 	}
 
+	/**
+	 * Delete unit times
+	 * @param unitID which its reserve times to be deleted
+	 * @return delete result
+	 */
 	public static boolean deleteUnit(int unitID)
 	{
-		String command = "update RESERVETIMES set status = "
-				+ ReserveTimeStatus.DELETED.getValue()
-				+ " where unit_ID = ?";
 		Connection conn = DBConnection.getConnection();
-		try
-		{
+		try {
+			String command = "UPDATE RESERVETIMES" +
+					" SET" +
+					" STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+					" WHERE" +
+					" UNIT_ID = " + unitID;
 			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, unitID);
 			int i = ps.executeUpdate();
-			return i == 1;
-
-		}catch(SQLException e)
-		{
+			return i >= 0;
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
-		}
-	}
-
-	public static boolean deleteService(int unitID, int ID)
-	{
-		String command = "update RESERVETIMES set status = "
-				+ ReserveTimeStatus.DELETED.getValue()
-				+ " where unit_ID = ? AND ID = ?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, unitID);
-			ps.setInt(2, ID);
-			int i=ps.executeUpdate();
-			return i == 1;
-			
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
 		}
 	}
 
@@ -352,8 +316,7 @@ public class TableReserveTime {
 	{
 		Connection conn = DBConnection.getConnection();
 		ReserveTime reserveTime = new ReserveTime();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" *" +
@@ -363,18 +326,13 @@ public class TableReserveTime {
 					" ID = " + ID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillSingleReserveTime(rs, reserveTime);
-		}catch(SQLException e)
-		{
+		} catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 						conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -386,8 +344,7 @@ public class TableReserveTime {
 	{
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" *" +
@@ -401,21 +358,16 @@ public class TableReserveTime {
 			ResultSet rs=stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
 			
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try {
 						conn.close();		
-				} catch (SQLException e)  
-				{	
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return reserveTimes;
 	}
@@ -430,8 +382,7 @@ public class TableReserveTime {
 	{
 		Connection conn = DBConnection.getConnection();
 		Map<MiddayID, List<ReserveTime>> reserveTimes = new HashMap<>();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "select * from RESERVETIMES" +
 					" where DAY_ID = " +
@@ -443,18 +394,13 @@ public class TableReserveTime {
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
 
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)  
-				{	
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -504,8 +450,7 @@ public class TableReserveTime {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
 		}finally {
-			if(conn != null)
-			{
+			if(conn != null) {
 				try {
 						conn.close();		
 				} catch (SQLException e) {
@@ -549,8 +494,7 @@ public class TableReserveTime {
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
-			if(conn != null)
-			{
+			if(conn != null) {
 				try {
 					conn.close();
 				} catch (SQLException e) {
@@ -570,8 +514,7 @@ public class TableReserveTime {
 	{
 		Connection conn = DBConnection.getConnection();
 		ReserveTime reserveTime = new ReserveTime();
-		try
-		{
+		try {
 			Statement stmt =conn.createStatement();
 			String command = "select * " +
 					"from RESERVETIMES " +
@@ -584,18 +527,14 @@ public class TableReserveTime {
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return reserveTime;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)  
-				{	
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return reserveTime;
 	}
@@ -610,8 +549,7 @@ public class TableReserveTime {
 	public static List<ReserveTime> getReserveTimeIDsFromMidday(int dateID, int unitID, MiddayID middayID) {
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "select" +
 					" * from" +
@@ -637,7 +575,7 @@ public class TableReserveTime {
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return reserveTimes;
 	}
@@ -654,8 +592,7 @@ public class TableReserveTime {
 	{
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" * FROM" +
@@ -671,22 +608,17 @@ public class TableReserveTime {
 					endDate;
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try  {
 						conn.close();		
-				} catch (SQLException e)  
-				{	
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return reserveTimes;
 	}
@@ -705,8 +637,7 @@ public class TableReserveTime {
 			, MiddayID midday) {
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" * FROM" +
@@ -723,19 +654,14 @@ public class TableReserveTime {
 					" AND MIDDAY_ID = " + midday.getValue();
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return null;
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -757,8 +683,7 @@ public class TableReserveTime {
 			, MiddayID midday) {
 		Connection conn = DBConnection.getConnection();
 		LocalTime minimumStartTime = null;
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" MIN(ST_TIME) as minimumStartTime" +
@@ -773,18 +698,13 @@ public class TableReserveTime {
 			while (rs.next()){
 				minimumStartTime = rs.getObject("minimumStartTime", LocalTime.class);
 			}
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -806,8 +726,7 @@ public class TableReserveTime {
 			, MiddayID midday) {
 		Connection conn = DBConnection.getConnection();
 		LocalTime maximumLastTime = null;
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT " +
 					" MAX(ADDTIME(ST_TIME, SEC_TO_TIME(duration * 60))) as maximumLastTime" +
@@ -822,18 +741,13 @@ public class TableReserveTime {
 			while (rs.next()){
 				maximumLastTime = rs.getObject("maximumLastTime", LocalTime.class);
 			}
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -842,29 +756,69 @@ public class TableReserveTime {
 	}
 
 	/**
-	 * Getting unit reserve times after current time
+	 * Getting unit reserve times after current time (Not reached reserved times in a unit)
 	 * @param unitID intended unit id
 	 * @return list reserved times after now
 	 */
-	public static List<ReserveTime> getUnitFutureReserveTime(int unitID) {
+	public static List<ReserveTime> getUnitNotYetReservedTime(int unitID) {
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
-					" * FROM" +
-					" RESERVETIMES" +
+					" rt.ID," +
+					" rt.DAY_ID," +
+					" rt.RES_CODE_ID," +
+					" rt.ST_TIME" +
+					" FROM" +
+					" RESERVETIMES rt" +
 					" WHERE" +
-					" STATUS = " +
-					ReserveTimeStatus.RESERVED.getValue() +
-					" AND UNIT_ID = " +
-					unitID +
-					" AND RESERVE_GR_TIME >= '" +
-					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now())+
-					"'";
+					" STATUS = " + ReserveTimeStatus.RESERVED.getValue() +
+					" AND UNIT_ID = " + unitID +
+					" AND RESERVE_GR_TIME >= NOW()" +
+					" ORDER BY ID DESC";
 			ResultSet rs = stmt.executeQuery(command);
-			fillReserveTimeList(rs, reserveTimes);
+			fillBreifServerTimes(rs, reserveTimes);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return reserveTimes;
+	}
+
+	/**
+	 * Getting services reserve times after current time (Not reached reserved times in a service)
+	 * @param service which its reserved times to be deleted
+	 * @return list reserved times after now
+	 */
+	public static List<ReserveTime> getServiceNotYetReserveTime(Services service) {
+		Connection conn = DBConnection.getConnection();
+		List<ReserveTime> reserveTimes = new ArrayList<>();
+		try {
+			Statement stmt = conn.createStatement();
+			String command = "SELECT" +
+					" rt.ID," +
+					" rt.DAY_ID," +
+					" rt.RES_CODE_ID," +
+					" rt.ST_TIME" +
+					" FROM" +
+					" reservetimes rt," +
+					" reservetimeservices rts" +
+					" WHERE" +
+					" rt.ID = rts.RES_TIME_ID" +
+					" AND rt.STATUS = " + ReserveTimeStatus.RESERVED.getValue() +
+					" AND rts.SERVICE_ID = " + service.getID() +
+					" AND rt.RESERVE_GR_TIME > NOW()" +
+					" ORDER BY rt.ID DESC;";
+			ResultSet rs = stmt.executeQuery(command);
+			fillBreifServerTimes(rs, reserveTimes);
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
@@ -901,12 +855,32 @@ public class TableReserveTime {
 	}
 
 	/**
+	 * Filling some essential parts of reserve time for not reached times
+	 * @param resultSet got from JDBC
+	 * @param reserveTimes list of reserve times
+	 */
+	private static void fillBreifServerTimes(ResultSet resultSet, List<ReserveTime> reserveTimes) {
+		try {
+			while (resultSet.next()) {
+				ReserveTime reserveTime = new ReserveTime();
+				reserveTime.setID(resultSet.getInt(1));
+				reserveTime.setDateID(resultSet.getInt(2));
+				reserveTime.setResCodeID(resultSet.getString(3));
+				reserveTime.setStartTime(resultSet.getObject(4, LocalTime.class));
+				reserveTimes.add(reserveTime);
+			}
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
 	 * Fill reserve time got from data base
 	 * @param resultSet returned from JDBC
 	 * @param reserveTime to be filled
 	 */
 	private static void fillReserveTime(ResultSet resultSet, ReserveTime reserveTime){
-		try{
+		try {
 			reserveTime.setID(resultSet.getInt(1));
 			reserveTime.setUnitID(resultSet.getInt(2));
 			reserveTime.setDateID(resultSet.getInt(3));
@@ -944,7 +918,7 @@ public class TableReserveTime {
 	 * @param reserveTimes to be filled
 	 */
 	private static void fillReserveTimeList(ResultSet resultSet, List<ReserveTime> reserveTimes){
-		try{
+		try {
 			while (resultSet.next()){
 				ReserveTime reserveTime = new ReserveTime();
 				fillReserveTime(resultSet, reserveTime);
@@ -963,7 +937,7 @@ public class TableReserveTime {
 	private static void fillReserveTimeList(ResultSet resultSet
 			, Map<MiddayID
 			, List<ReserveTime>> reserveTimes){
-		try{
+		try {
 			List<ReserveTime> morningReserveTimes = new ArrayList<>();
 			List<ReserveTime> afternoonReserveTimes = new ArrayList<>();
 			while (resultSet.next()){
@@ -976,11 +950,10 @@ public class TableReserveTime {
 			}
 			reserveTimes.put(MiddayID.MORNING, morningReserveTimes);
 			reserveTimes.put(MiddayID.AFTERNOON, afternoonReserveTimes);
-		}catch(SQLException e){
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
-
 
 	/**
 	 * Filling client reserve time information into ClientReserveTime object
@@ -1080,6 +1053,11 @@ public class TableReserveTime {
 	 */
 	private static boolean isTimeCancelable(ClientReservedTime clientReservedTime) {
 		//Reserved time can be canceled until 1 hour before time is reached
-		return clientReservedTime.getGregorianDateTime().minusHours(1).isAfter(LocalDateTime.now());
+		try {
+			return clientReservedTime.getGregorianDateTime().minusHours(1).isAfter(LocalDateTime.now());
+		}catch (Exception e) {
+			return false;
+		}
+
 	}
 }

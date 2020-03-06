@@ -85,14 +85,14 @@ public class TableUnit {
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
 					conn.close();
-				} catch (SQLException e)  
-				{	
+				} catch (SQLException e)
+				{
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return 0;
 	}
@@ -110,7 +110,7 @@ public class TableUnit {
 			PreparedStatement ps = conn.prepareStatement(command);
 			prepare(ps, unit);
 			int i = ps.executeUpdate();
-			return i == 1;
+			return i >= 1;
 
 		}catch(SQLException e)
 		{
@@ -297,6 +297,11 @@ public class TableUnit {
 		}
 	}
 
+	/**
+	 * Fill a list of units got from database
+	 * @param resultSet returned from JDBC
+	 * @param units injected to be filed
+	 */
 	private static void fillUnits(ResultSet resultSet, List<Units> units){
 		try{
 			while (resultSet.next()){
@@ -308,4 +313,5 @@ public class TableUnit {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
+
 }

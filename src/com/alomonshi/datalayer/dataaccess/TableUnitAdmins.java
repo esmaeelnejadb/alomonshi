@@ -170,29 +170,27 @@ public class TableUnitAdmins {
 	 */
 	public static boolean deleteAdmin(int managerID)
 	{
-		String command="update adminunits set IS_ACTIVE = false where mng_id = ?";
+		String command = "UPDATE adminunits" +
+				" SET" +
+				" IS_ACTIVE = FALSE" +
+				" WHERE" +
+				" MNG_ID = " + managerID;
 		Connection conn = DBConnection.getConnection();
-		try
-		{
+		try {
 			PreparedStatement ps = conn.prepareStatement(command);
 			ps.setInt(1, managerID);
 
 			int i=ps.executeUpdate();
 			return i == 1;
 
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 						conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -205,16 +203,23 @@ public class TableUnitAdmins {
 	 * @return list of unit belong to an admin in a company
 	 */
 
-	public static List<UnitAdmins> getManagerUnits(int managerID)
+	public static List<Integer> getManagerUnits(int managerID)
 	{
 		Connection conn = DBConnection.getConnection();
-		List<UnitAdmins> unitAdmins = new ArrayList<>();
+		List<Integer> unitIDs = new ArrayList<>();
 		try
 		{
-			String command="select * from adminunits where MNG_ID =" + managerID;
+			String command = "SELECT" +
+					" UNIT_ID as unitID" +
+					" FROM" +
+					" adminunits" +
+					" WHERE" +
+					" IS_ACTIVE IS TRUE AND MNG_ID = " + managerID;
 			Statement stmt =conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
-			fillAdminUnits(rs, unitAdmins);
+			while (rs.next()) {
+				unitIDs.add(rs.getInt("unitID"));
+			}
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -231,7 +236,7 @@ public class TableUnitAdmins {
 				}
 			}
 		}
-		return unitAdmins;
+		return unitIDs;
 	}
 
 	/**
@@ -240,21 +245,26 @@ public class TableUnitAdmins {
 	 * @return list of admins of a unit
 	 */
 
-	public static List<UnitAdmins> getUnitManagers(int unitID)
+	public static List<Integer> getUnitManagers(int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
-		List<UnitAdmins> unitAdmins = new ArrayList<>();
+		List<Integer> unitAdmins = new ArrayList<>();
 		try
 		{
-			String command="select * from adminunits where UNIT_ID = " + unitID;
-			Statement stmt =conn.createStatement();
+			String command = "SELECT" +
+					" MNG_ID as managerID" +
+					" FROM" +
+					" adminunits" +
+					" WHERE" +
+					" IS_ACTIVE IS TRUE AND UNIT_ID = " + unitID;
+			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
-			fillAdminUnits(rs, unitAdmins);
-			return unitAdmins;
+			while (rs.next()) {
+				unitAdmins.add(rs.getInt("managerID"));
+			}
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
 		}finally
 		{
 			if(conn != null)
@@ -267,7 +277,8 @@ public class TableUnitAdmins {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
-		}	
+		}
+		return unitAdmins;
 	}
 
 	/**

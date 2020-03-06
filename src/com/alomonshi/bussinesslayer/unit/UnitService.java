@@ -1,16 +1,14 @@
 package com.alomonshi.bussinesslayer.unit;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.datalayer.dataaccess.TableManager;
-import com.alomonshi.datalayer.dataaccess.TableReserveTime;
-import com.alomonshi.datalayer.dataaccess.TableUnit;
-import com.alomonshi.datalayer.dataaccess.TableUnitAdmins;
+import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.tableobjects.UnitAdmins;
 import com.alomonshi.object.tableobjects.Units;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.utility.CopyNotNullProperties;
 import org.apache.commons.beanutils.BeanUtilsBean;
+
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
@@ -99,17 +97,23 @@ public class UnitService {
      * @return service response
      */
     public ServiceResponse deleteUnit() {
+        prepareUnitForDelete();
         //Checking if there are reserve times in that unit
-        List<ReserveTime> reserveTimes = TableReserveTime.getUnitFutureReserveTime(unit.getID());
+        List<ReserveTime> reserveTimes = TableReserveTime.getUnitNotYetReservedTime(unit.getID());
         if (reserveTimes.isEmpty()) {
-            boolean result = TableUnit.delete(unit) && TableUnitAdmins.deleteUnit(unit.getID());
+            boolean result = TableUnit.delete(unit)
+                    && TableUnitAdmins.deleteUnit(unit.getID()) // Delete unit admins
+                    && TableService.deleteUnitServices(unit.getID()) // Delete unit service
+                    && TableReserveTime.deleteUnit(unit.getID()); // Delete unit reserve times
             //Checking if any active reserved times is existed for that unit
             if (result) {
                 return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
             }else
-                return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }else
-            return serviceResponse.setResponse(false).setMessage(ServerMessage.UNITERROR_02);
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.UNITERROR_02)
+                    .setResponseData(Collections.singletonList(reserveTimes));
     }
 
     /**
@@ -166,11 +170,30 @@ public class UnitService {
      */
     private void prepareUnitForUpdate() {
         unit.setUpdateDate(LocalDateTime.now());
-        unit = getCopiedUnitProperties(); // fill null properties which get from ui with properties get from database
+        // fill null properties which get from ui with properties get from database
+        unit = getCopiedUnitProperties();
+    }
+
+    /**
+     * Prepare unit for delete
+     */
+    private void prepareUnitForDelete() {
+        // Setting properties null to be unchanged in database
+        unit.setUnitName(null);
+        unit.setUnitDuration(0);
+        unit.setCompanyID(0);
+        unit.setPictureURL(null);
+        unit.setRemark(null);
+        unit.setCreateDate(null);
+        unit.setUpdateDate(null);
+        unit.setRemoveDate(LocalDateTime.now());
+        // fill null properties which get from ui with properties get from database
+        unit = getCopiedUnitProperties();
     }
 
     /**
      * Setting unit id for each unit admin object
+     unit.setRemoveDate(LocalDateTime.now());
      * @param unitAdmins list which unit id to be set
      * @param unitID to be set
      */
@@ -179,4 +202,5 @@ public class UnitService {
             unitAdmin.setUnitID(unitID);
         }
     }
+
 }

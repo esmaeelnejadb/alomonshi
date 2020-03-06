@@ -173,7 +173,7 @@ public class ReserveTimeService{
     public ServiceResponse retrieveSingleCanceledTimes(ReserveTimeList reserveTimes){
         List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserve times to be canceled
         if (checkAndFillCalceledTimesFromIDs(reserveTimeList, reserveTimes)) {
-            if (TableReserveTime.retriveCanceledTimeList(reserveTimeList))
+            if (TableReserveTime.retrieveCanceledTimeList(reserveTimeList))
                 return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
             else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
@@ -236,7 +236,7 @@ public class ReserveTimeService{
                         .setResponseData(Collections.singletonList(notSuccessTimes));
         }else {
             return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.RESERVETIMEERROR_01);
+                    .setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
     }
 

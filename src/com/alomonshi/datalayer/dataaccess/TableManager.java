@@ -74,7 +74,8 @@ public class TableManager {
 				" FROM" +
 				" manager" +
 				" WHERE" +
-				" MNG_ID =  " + managerID ;
+				" MNG_ID =  " + managerID +
+				" AND IS_ACTIVE IS TRUE";
 		Connection conn = DBConnection.getConnection();
 		List<Integer> companies = new ArrayList<>();
 		try
@@ -115,7 +116,8 @@ public class TableManager {
 				" FROM" +
 				" manager" +
 				" WHERE" +
-				" COMPANY_ID = " + companyID ;
+				" COMPANY_ID = " + companyID +
+				" AND IS_ACTIVE IS TRUE";
         Connection conn = DBConnection.getConnection();
         List<Integer> managers = new ArrayList<>();
         try

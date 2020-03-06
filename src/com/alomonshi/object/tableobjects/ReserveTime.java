@@ -81,7 +81,7 @@ public class ReserveTime {
 		return serviceIDs;
 	}
 
-	@JsonView(JsonViews.ManagerViews.class)
+	@JsonView(JsonViews.ClientViews.class)
 	public String getResCodeID() {
 		return resCodeID;
 	}

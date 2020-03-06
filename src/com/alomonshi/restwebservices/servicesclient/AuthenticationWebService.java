@@ -27,7 +27,8 @@ public class AuthenticationWebService {
     @POST
     @Path("/clientPasswordLogin")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response confirmLoginRequest(@FormParam("phoneNumber") String phoneNumber, @FormParam("password") String password){
+    public Response confirmLoginRequest(@FormParam("phoneNumber") String phoneNumber
+            , @FormParam("password") String password){
         Users user = TableClient.getUser(phoneNumber);
         authentication = new LoginAuthentication(user);
         String token = authentication.handleUserLogin(password);

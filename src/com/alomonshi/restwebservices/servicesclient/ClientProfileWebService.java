@@ -37,7 +37,7 @@ public class ClientProfileWebService {
      */
     @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
-    @GET
+    @POST
     @Path("/clientProfile")
     @Produces(MediaType.APPLICATION_JSON)
     public Users getClientProfile(Users user) {
@@ -88,11 +88,16 @@ public class ClientProfileWebService {
      */
     @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
-    @GET
+    @POST
     @Path("/getClientReserveTimes")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ClientReservedTime> getClientReservedTimes(Users user) {
-        return ReserveTimeService.getClientReservedTimes(user.getClientID());
+        try {
+            return ReserveTimeService.getClientReservedTimes(user.getClientID());
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot update change password " + e);
+            return null;
+        }
     }
 
     @OPTIONS

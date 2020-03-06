@@ -15,6 +15,11 @@ public class ServerMessage {
     public static final String RESERVETIMEERROR_05 = "در این روز نوبتی جهت رزرو وجود ندارد";
 
     //******Error in unit services******//
-    public static final String UNITERROR_01 = "متأسفانه در این مجموعه واحدی تعریف نشده است";
+    public static final String UNITERROR_01 = "متأسفانه در این مجموعه واحدی تعریف نشده است.";
     public static final String UNITERROR_02 = "متأسفانه در واحد مورد نظر نوبت های رزرو شده وجود دارد، ابتدا این نوبت ها را لغو نمایید. ";
+
+    //******Error in service services******//
+    public static final String SERVICEERROR_01 = "متأسفانه در این واحد خدماتی تعریف نشده است.";
+    public static final String SERVICEERROR_02 = "متأسفانه در خدمت مورد نظر نوبت های رزرو شده وجود دارد، ابتدا این نوبت ها را لغو نمایید. ";
+
 }

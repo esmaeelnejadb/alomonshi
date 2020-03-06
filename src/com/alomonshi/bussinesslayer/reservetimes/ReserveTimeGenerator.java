@@ -72,38 +72,40 @@ class ReserveTimeGenerator {
         List<CalendarDate> dates = TableCalendar.getDates(startDay, endDay);
         LocalTime startTimeOfButton = startTime;
         int duration = Objects.requireNonNull(TableUnit.getUnit(unitID)).getUnitDuration();
-        for(CalendarDate date : dates)
-        {
-            ReserveTime holdReserveTime = new ReserveTime();
-            while(startTimeOfButton.isBefore(endTime.minusMinutes(duration))
-                    || startTimeOfButton ==  endTime.minusMinutes(duration)) {
-                ReserveTime reservetime = new ReserveTime();
-                reservetime.setUnitID(unitID);
-                reservetime.setStartTime(startTimeOfButton);
-                reservetime.setDuration(duration);
-                reservetime.setStatus(ReserveTimeStatus.RESERVABLE);
-                reservetime.setMiddayID(middayID);
-                reservetime.setDateID(date.getID());
-                reservetime.setReserveTimeGRDateTime(DateTimeUtility
-                        .getGregorianReservedTimeDatetime(reservetime.getDateID()
-                                , reservetime.getStartTime()));
-                startTimeOfButton = startTimeOfButton.plusMinutes(duration);
-                allReserveTimes.add(reservetime);
-            }
+        if(duration != 0) {
+            for(CalendarDate date : dates)
+            {
+                ReserveTime holdReserveTime = new ReserveTime();
+                while(startTimeOfButton.isBefore(endTime.minusMinutes(duration))
+                        || startTimeOfButton ==  endTime.minusMinutes(duration)) {
+                    ReserveTime reservetime = new ReserveTime();
+                    reservetime.setUnitID(unitID);
+                    reservetime.setStartTime(startTimeOfButton);
+                    reservetime.setDuration(duration);
+                    reservetime.setStatus(ReserveTimeStatus.RESERVABLE);
+                    reservetime.setMiddayID(middayID);
+                    reservetime.setDateID(date.getID());
+                    reservetime.setReserveTimeGRDateTime(DateTimeUtility
+                            .getGregorianReservedTimeDatetime(reservetime.getDateID()
+                                    , reservetime.getStartTime()));
+                    startTimeOfButton = startTimeOfButton.plusMinutes(duration);
+                    allReserveTimes.add(reservetime);
+                }
 
-            // Detecting and hold reminded time to be modified later in reserving time
-            if (startTimeOfButton.isAfter(endTime.minusMinutes(duration))
-                && startTimeOfButton.isBefore(endTime)) {
-                holdReserveTime.setStatus(ReserveTimeStatus.HOLD);
-                holdReserveTime.setDuration(DateTimeUtility.getTimeMinutes(endTime)
-                                - DateTimeUtility.getTimeMinutes(startTimeOfButton));
-                holdReserveTime.setStartTime(startTimeOfButton);
-                holdReserveTime.setMiddayID(middayID);
-                holdReserveTime.setUnitID(unitID);
-                holdReserveTime.setDateID(date.getID());
-                allReserveTimes.add(holdReserveTime);
+                // Detecting and hold reminded time to be modified later in reserving time
+                if (startTimeOfButton.isAfter(endTime.minusMinutes(duration))
+                        && startTimeOfButton.isBefore(endTime)) {
+                    holdReserveTime.setStatus(ReserveTimeStatus.HOLD);
+                    holdReserveTime.setDuration(DateTimeUtility.getTimeMinutes(endTime)
+                            - DateTimeUtility.getTimeMinutes(startTimeOfButton));
+                    holdReserveTime.setStartTime(startTimeOfButton);
+                    holdReserveTime.setMiddayID(middayID);
+                    holdReserveTime.setUnitID(unitID);
+                    holdReserveTime.setDateID(date.getID());
+                    allReserveTimes.add(holdReserveTime);
+                }
+                startTimeOfButton = startTime;
             }
-            startTimeOfButton = startTime;
         }
         return allReserveTimes;
     }
@@ -115,7 +117,8 @@ class ReserveTimeGenerator {
 
     private boolean primaryCheck(){
         return reserveTimeForm.getUnitID() != 0
-                && reserveTimeForm.getEndDate() >= reserveTimeForm.getStartDate();
+                && reserveTimeForm.getEndDate() >= reserveTimeForm.getStartDate()
+                && TableUnit.getUnit(reserveTimeForm.getUnitID()).getUnitDuration() > 0;
     }
 
     /**
