@@ -201,7 +201,7 @@ public class TableComment {
 					" and com.IS_ACTIVE is true " +
 					" AND rt.STATUS = " + ReserveTimeStatus.RESERVED.getValue() +
 					" ORDER BY com.COMMENT_DATE DESC";
-			ResultSet rs=stmt.executeQuery(command);
+			ResultSet rs = stmt.executeQuery(command);
 			fillUnitComments(rs, comments);
 			return comments;
 		}catch(SQLException e) {

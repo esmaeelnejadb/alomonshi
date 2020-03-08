@@ -9,7 +9,6 @@ import com.alomonshi.object.tableobjects.CalendarDate;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.uiobjects.ReserveTimeForm;
 import com.alomonshi.utility.DateTimeUtility;
-import sun.font.DelegatingShape;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ class ReserveTimeGenerator {
         List<ReserveTime> allReserveTimes = new ArrayList<>();
         List<CalendarDate> dates = TableCalendar.getDates(startDay, endDay);
         LocalTime startTimeOfButton = startTime;
-        int duration = Objects.requireNonNull(TableUnit.getUnit(unitID)).getUnitDuration();
+        int duration = Objects.requireNonNull(TableUnit.getUnit(unitID, false)).getUnitDuration();
         if(duration != 0) {
             for(CalendarDate date : dates)
             {
@@ -118,7 +117,7 @@ class ReserveTimeGenerator {
     private boolean primaryCheck(){
         return reserveTimeForm.getUnitID() != 0
                 && reserveTimeForm.getEndDate() >= reserveTimeForm.getStartDate()
-                && TableUnit.getUnit(reserveTimeForm.getUnitID()).getUnitDuration() > 0;
+                && TableUnit.getUnit(reserveTimeForm.getUnitID(), false).getUnitDuration() > 0;
     }
 
     /**

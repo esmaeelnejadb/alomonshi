@@ -21,7 +21,7 @@ public class CheckAdminAuthority {
 
     public static boolean isUserUnitAuthorized(int userID, int unitID){
         try {
-            List<Integer> unitIDs = TableUnitAdmins.getManagerUnits(userID);
+            List<Integer> unitIDs = TableUnitAdmin.getAdminUnitIDs(userID);
             if (unitIDs.contains(unitID))
                 return true;
         }catch (Exception e){
@@ -36,7 +36,7 @@ public class CheckAdminAuthority {
      */
     public static boolean isUserCompanyAuthorized(int userID, int companyID){
         try {
-            List<Integer> managers = TableManager.getManagerCompanies(userID);
+            List<Integer> managers = TableAdmin.getManagerCompanies(userID);
             if (managers.contains(companyID))
                 return true;
         }catch (Exception e) {
@@ -52,7 +52,7 @@ public class CheckAdminAuthority {
      * @return true if unit belongs to that company
      */
     public static boolean isUnitBelongToCompany(int unitID, int companyID) {
-        return TableUnit.getUnit(unitID).getCompanyID() == companyID;
+        return TableUnit.getUnit(unitID, false).getCompanyID() == companyID;
     }
 
     /**

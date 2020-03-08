@@ -1,6 +1,6 @@
 package com.alomonshi.object.tableobjects;
 
-public class UnitAdmins {
+public class UnitAdmin {
     private int id;
     private int managerID;
     private int unitID;

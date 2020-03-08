@@ -34,7 +34,7 @@ class CommentPropertiesPreparation {
     /**
      * Copy new updated fields into old object got from table
      * There is one difference related to copy client object and is that client id got from database
-     * and got from ui does not check to be equal
+     * and got from ui does not check to be equal in this method
      * @return new updated comment
      */
     static Comments getCopiedAdminCommentProperties(Comments comment) {

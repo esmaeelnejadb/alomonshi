@@ -1,8 +1,7 @@
 package com.alomonshi.datalayer.dataaccess;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
-import com.alomonshi.object.tableobjects.UnitAdmins;
-
+import com.alomonshi.object.tableobjects.UnitAdmin;
 import java.sql.Connection;
 
 import java.sql.PreparedStatement;
@@ -14,20 +13,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TableUnitAdmins {
+public class TableUnitAdmin {
 
 	private static String insertCommand = "insert into adminunits(MNG_ID, UNIT_ID, IS_ACTIVE) values(?, ?, ?)";
 	private static String updateCommand = "UPDATE adminunits SET MNG_ID = ?, , UNIT_ID = ?, IS_ACTIVE = ? WHERE ID = ";
 
 	/**
 	 * inserting admin unit
-	 * @param unitAdmins object to be inserted
+	 * @param unitAdmin object to be inserted
 	 * @return true if truly
 	 */
 
-	public static boolean insertUnitAdmin(UnitAdmins unitAdmins){
+	public static boolean insertUnitAdmin(UnitAdmin unitAdmin){
 		Connection connection = DBConnection.getConnection();
-		boolean response = executeInsertUpdate(unitAdmins, insertCommand, connection);
+		boolean response = executeInsertUpdate(unitAdmin, insertCommand, connection);
 		DBConnection.closeConnection(connection);
 		return response;
 	}
@@ -37,9 +36,9 @@ public class TableUnitAdmins {
 	 * @param unitAdmins to be inserted
 	 * @return true if all admins inserted truly
 	 */
-	public static boolean insertUnitAdmins(List<UnitAdmins> unitAdmins) {
+	public static boolean insertUnitAdmins(List<UnitAdmin> unitAdmins) {
 		Connection connection = DBConnection.getConnection();
-		for (UnitAdmins unitAdmin : unitAdmins) {
+		for (UnitAdmin unitAdmin : unitAdmins) {
 			if (!executeInsertUpdate(unitAdmin, insertCommand, connection)) {
 				DBConnection.closeConnection(connection);
 				return false;
@@ -55,7 +54,7 @@ public class TableUnitAdmins {
 	 * @return true if updated truly
 	 */
 
-	private static boolean updateUnitAdmin(UnitAdmins unitAdmin){
+	private static boolean updateUnitAdmin(UnitAdmin unitAdmin){
 		Connection connection = DBConnection.getConnection();
 		boolean response = executeInsertUpdate(unitAdmin
 				, updateCommand + unitAdmin.getId()
@@ -70,9 +69,9 @@ public class TableUnitAdmins {
 	 * @return true if update done truly
 	 */
 
-	private static boolean updateUnitAdmins(List<UnitAdmins> unitAdmins) {
+	private static boolean updateUnitAdmins(List<UnitAdmin> unitAdmins) {
 		Connection connection = DBConnection.getConnection();
-		for (UnitAdmins unitAdmin : unitAdmins) {
+		for (UnitAdmin unitAdmin : unitAdmins) {
 			if (!executeInsertUpdate(unitAdmin, updateCommand + unitAdmin.getId(), connection)) {
 				DBConnection.closeConnection(connection);
 				return false;
@@ -84,44 +83,32 @@ public class TableUnitAdmins {
 
 	/**
 	 * delete an admin unit
-	 * @param unitAdmins admin unit to be deleted
+	 * @param unitAdmin admin unit to be deleted
 	 * @return true if deleted truly
 	 */
-	public static boolean deleteUnitAdmin(UnitAdmins unitAdmins){
-		unitAdmins.setActive(false);
-		return updateUnitAdmin(unitAdmins);
+	public static boolean deleteUnitAdmin(UnitAdmin unitAdmin){
+		unitAdmin.setActive(false);
+		return updateUnitAdmin(unitAdmin);
 	}
 
     /**
      * execute insert update commands
-     * @param unitAdmins admin unit to be executed
+     * @param unitAdmin admin unit to be executed
      * @param command command to be executed
      * @return true id executed truly
      */
 
-	private static boolean executeInsertUpdate(UnitAdmins unitAdmins, String command, Connection connection)
+	private static boolean executeInsertUpdate(UnitAdmin unitAdmin, String command, Connection connection)
 	{
 		try {
 			PreparedStatement ps = connection.prepareStatement(command);
-			prepare(ps, unitAdmins);
+			prepare(ps, unitAdmin);
 			int i = ps.executeUpdate();
 			return i == 1;
 		}catch(SQLException e)
 		{
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
 			return false;
-		}finally
-		{
-			if(connection != null)
-			{
-				try
-				{
-						connection.close();
-				} catch (SQLException e)
-				{
-                    Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
-				}
-			}
 		}
 	}
 
@@ -168,20 +155,21 @@ public class TableUnitAdmins {
 	 * Deleting an admin form company
 	 * @return true if process has been done properly
 	 */
-	public static boolean deleteAdmin(int managerID)
+	public static boolean deleteAdmin(int managerID, int companyID)
 	{
-		String command = "UPDATE adminunits" +
-				" SET" +
-				" IS_ACTIVE = FALSE" +
-				" WHERE" +
-				" MNG_ID = " + managerID;
 		Connection conn = DBConnection.getConnection();
 		try {
+            String command = "UPDATE adminunits" +
+                    " SET" +
+                    " IS_ACTIVE = FALSE" +
+                    " WHERE" +
+                    " MNG_ID = " + managerID +
+                    " AND UNIT_ID " +
+                    "in " +
+                    "(SELECT ID FROM units WHERE COMP_ID = "+ companyID + " AND IS_ACTIVE IS TRUE)";
 			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setInt(1, managerID);
-
-			int i=ps.executeUpdate();
-			return i == 1;
+			int i = ps.executeUpdate();
+			return i >= 0;
 
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -203,7 +191,7 @@ public class TableUnitAdmins {
 	 * @return list of unit belong to an admin in a company
 	 */
 
-	public static List<Integer> getManagerUnits(int managerID)
+	public static List<Integer> getAdminUnitIDs(int managerID)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<Integer> unitIDs = new ArrayList<>();
@@ -215,8 +203,8 @@ public class TableUnitAdmins {
 					" adminunits" +
 					" WHERE" +
 					" IS_ACTIVE IS TRUE AND MNG_ID = " + managerID;
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
 			while (rs.next()) {
 				unitIDs.add(rs.getInt("unitID"));
 			}
@@ -245,7 +233,7 @@ public class TableUnitAdmins {
 	 * @return list of admins of a unit
 	 */
 
-	public static List<Integer> getUnitManagers(int unitID)
+	public static List<Integer> getUnitAdminIDs(int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<Integer> unitAdmins = new ArrayList<>();
@@ -282,64 +270,16 @@ public class TableUnitAdmins {
 	}
 
 	/**
-	 * Filling admin object
-	 * @param resultSet returned from JDBC
-	 * @param unitAdmins filled object
-	 */
-	private static void fillAdminUnit(ResultSet resultSet, UnitAdmins unitAdmins){
-	    try {
-	        unitAdmins.setId(resultSet.getInt(1));
-	        unitAdmins.setManagerID(resultSet.getInt(2));
-	        unitAdmins.setUnitID(resultSet.getInt(3));
-	        unitAdmins.setActive(resultSet.getBoolean(4));
-        }catch (SQLException e){
-            Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
-        }
-    }
-
-	/**
-	 * Filling single admin unit with resultset
-	 * @param resultSet returned from JDBC
-	 * @param unitAdmins filled object
-	 */
-    private static void fillSingleAdminUnit(ResultSet resultSet, UnitAdmins unitAdmins){
-	    try {
-	     while (resultSet.next()){
-	         fillAdminUnit(resultSet, unitAdmins);
-         }
-        }catch (SQLException e){
-            Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
-        }
-    }
-
-	/**
-	 * Filling list of unit admins returned from database
-	 * @param resultSet returned from JDBC
-	 * @param unitAdmins filled list
-	 */
-	private static void fillAdminUnits(ResultSet resultSet, List<UnitAdmins> unitAdmins){
-	    try {
-	     while (resultSet.next()){
-	         UnitAdmins unitAdmin = new UnitAdmins();
-	         fillAdminUnit(resultSet, unitAdmin);
-	         unitAdmins.add(unitAdmin);
-         }
-        }catch (SQLException e){
-            Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
-        }
-    }
-
-	/**
 	 * Prepare statement for executing query
 	 * @param preparedStatement to be prepared
-	 * @param unitAdmins to be prepared with
+	 * @param unitAdmin to be prepared with
 	 */
 
-	private static void prepare(PreparedStatement preparedStatement, UnitAdmins unitAdmins){
+	private static void prepare(PreparedStatement preparedStatement, UnitAdmin unitAdmin){
 	    try {
-	        preparedStatement.setInt(1, unitAdmins.getManagerID());
-	        preparedStatement.setInt(2, unitAdmins.getUnitID());
-	        preparedStatement.setBoolean(3, unitAdmins.isActive());
+	        preparedStatement.setInt(1, unitAdmin.getManagerID());
+	        preparedStatement.setInt(2, unitAdmin.getUnitID());
+	        preparedStatement.setBoolean(3, unitAdmin.isActive());
         }catch (SQLException e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception" + e);
         }

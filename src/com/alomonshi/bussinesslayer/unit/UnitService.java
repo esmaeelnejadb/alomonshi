@@ -3,7 +3,7 @@ package com.alomonshi.bussinesslayer.unit;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.object.tableobjects.ReserveTime;
-import com.alomonshi.object.tableobjects.UnitAdmins;
+import com.alomonshi.object.tableobjects.UnitAdmin;
 import com.alomonshi.object.tableobjects.Units;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.utility.CopyNotNullProperties;
@@ -44,7 +44,7 @@ public class UnitService {
      * @return service response
      */
     public ServiceResponse getCompanyUnit(int companyID) {
-        List<Units> units =  TableUnit.getUnits(companyID);
+        List<Units> units =  TableUnit.getUnits(companyID, false);
         if (!units.isEmpty()) {
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
@@ -59,21 +59,19 @@ public class UnitService {
      */
     public ServiceResponse insertNewUnit() {
         prepareUnitForInsertion();// Some action on unit object
-        List<UnitAdmins> unitAdmins = new ArrayList<>();
-        if (fillUnitAdmins(unitAdmins)) {//Filling unit admins to be inserted in database
-            int unitID = TableUnit.insertUnit(unit);
-            if (unitID > 0) {
-                // Setting unit id for unit admins
-                setUnitAdminsUnitID(unitAdmins, unitID);
-                boolean result = TableUnitAdmins.insertUnitAdmins(unitAdmins);
-                if (result) {
-                    return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
-                }else
-                    return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+        UnitAdmin unitAdmin = new UnitAdmin();//For inserting company Manager as unit admin
+        int unitID = TableUnit.insertUnit(unit);
+        if (unitID > 0) {
+            // Setting unit id for unit admins
+            unit.setID(unitID);
+            prepareUnitAdmin(unitAdmin);
+            boolean result = TableUnitAdmin.insertUnitAdmin(unitAdmin);
+            if (result) {
+                return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
         }else
-            return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
     }
 
     /**
@@ -102,7 +100,7 @@ public class UnitService {
         List<ReserveTime> reserveTimes = TableReserveTime.getUnitNotYetReservedTime(unit.getID());
         if (reserveTimes.isEmpty()) {
             boolean result = TableUnit.delete(unit)
-                    && TableUnitAdmins.deleteUnit(unit.getID()) // Delete unit admins
+                    && TableUnitAdmin.deleteUnit(unit.getID()) // Delete unit admins
                     && TableService.deleteUnitServices(unit.getID()) // Delete unit service
                     && TableReserveTime.deleteUnit(unit.getID()); // Delete unit reserve times
             //Checking if any active reserved times is existed for that unit
@@ -123,7 +121,7 @@ public class UnitService {
 
     private Units getCopiedUnitProperties() {
         BeanUtilsBean utilsBean = new CopyNotNullProperties();
-        Units newUnit = TableUnit.getUnit(unit.getID());
+        Units newUnit = TableUnit.getUnit(unit.getID(), false);
         if (newUnit.getID() != unit.getID())
             return null;
         try {
@@ -135,32 +133,9 @@ public class UnitService {
     }
 
     /**
-     * Filling list of unit admins to be inserted in database
-     * @param unitAdmins to be filled
-     * @return true if all admins be manager of intended company
-     */
-
-    private boolean fillUnitAdmins(List<UnitAdmins> unitAdmins) {
-        List<Integer> managers = TableManager.getCompanyManagers(unit.getCompanyID());
-        for(Integer managerID : unit.getManagerIDs()) {
-            if (!managers.contains(managerID))
-                return false;
-            UnitAdmins unitAdmin = new UnitAdmins();
-            unitAdmin.setActive(true);
-            unitAdmin.setManagerID(managerID);
-            unitAdmin.setUnitID(unit.getID());
-            unitAdmins.add(unitAdmin);
-        }
-        return true;
-    }
-
-    /**
      * Prepare a unit for insertion
      */
     private void prepareUnitForInsertion(){
-        if (unit.getManagerIDs() == null)
-            unit.setManagerIDs(new HashSet<>());
-        unit.getManagerIDs().add(unit.getClientID()); //Adding current company manager to unit admin list
         unit.setActive(true); // unit activation
         unit.setCreateDate(LocalDateTime.now());
     }
@@ -192,15 +167,13 @@ public class UnitService {
     }
 
     /**
-     * Setting unit id for each unit admin object
-     unit.setRemoveDate(LocalDateTime.now());
-     * @param unitAdmins list which unit id to be set
-     * @param unitID to be set
+     * Prepare unit admin for insertion
+     * @param unitAdmin to be inserted
      */
-    private void setUnitAdminsUnitID(List<UnitAdmins> unitAdmins, int unitID) {
-        for (UnitAdmins unitAdmin : unitAdmins) {
-            unitAdmin.setUnitID(unitID);
-        }
+    private void prepareUnitAdmin(UnitAdmin unitAdmin) {
+        unitAdmin.setUnitID(unit.getID());
+        unitAdmin.setManagerID(unit.getClientID());
+        unitAdmin.setActive(true);
     }
 
 }

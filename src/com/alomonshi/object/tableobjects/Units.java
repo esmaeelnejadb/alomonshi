@@ -9,14 +9,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @XmlRootElement(namespace = " ")
 public class Units {
 	private int ID;
 	private int companyID;
 	private int clientID;
-	private Set<Integer> managerIDs;
 	private String unitName;
 	private int unitDuration;// Unit duration has been considered in minute
 	private Boolean isActive;
@@ -42,10 +40,6 @@ public class Units {
 	@JsonView(JsonViews.AdminViews.class)
 	public int getClientID() {
 		return clientID;
-	}
-
-	public Set<Integer> getManagerIDs() {
-		return managerIDs;
 	}
 
 	@JsonView(JsonViews.NormalViews.class)
@@ -112,10 +106,6 @@ public class Units {
 
 	public void setClientID(int clientID) {
 		this.clientID = clientID;
-	}
-
-	public void setManagerIDs(Set<Integer> managerIDs) {
-		this.managerIDs = managerIDs;
 	}
 
 	public void setUnitName(String unitName) {

@@ -1,10 +1,13 @@
 package com.alomonshi.object.uiobjects;
 
+import com.alomonshi.object.tableobjects.Admin;
+
 public class AdminEditObject {
     private int clientID;
     private int companyID;
     private int unitID;
     private int serviceID;
+    private Admin companyAdmins;
 
     public int getClientID() {
         return clientID;
@@ -22,6 +25,10 @@ public class AdminEditObject {
         return serviceID;
     }
 
+    public Admin getCompanyAdmins() {
+        return companyAdmins;
+    }
+
     public void setClientID(int clientID) {
         this.clientID = clientID;
     }
@@ -36,5 +43,9 @@ public class AdminEditObject {
 
     public void setServiceID(int serviceID) {
         this.serviceID = serviceID;
+    }
+
+    public void setCompanyAdmins(Admin companyAdmins) {
+        this.companyAdmins = companyAdmins;
     }
 }

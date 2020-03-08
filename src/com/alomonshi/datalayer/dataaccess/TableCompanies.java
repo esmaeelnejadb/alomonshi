@@ -568,7 +568,7 @@ public class TableCompanies {
 			company.setDistrictID(resultSet.getInt(15));
 			company.setActive(resultSet.getBoolean(16));
 			company.setCommercialCode(resultSet.getString(17));
-			company.setUnits(TableUnit.getUnits(company.getID()));
+			company.setUnits(TableUnit.getUnits(company.getID(), true));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}

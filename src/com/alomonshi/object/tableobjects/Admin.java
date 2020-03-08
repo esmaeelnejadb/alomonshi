@@ -2,10 +2,13 @@ package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.object.enums.UserLevels;
 
-public class Manager {
+import java.util.List;
+
+public class Admin {
     private int ID;
     private int managerID;
     private int companyID;
+    private List<Units> units;
     private UserLevels managerLevel;
     private boolean isActive;
 
@@ -17,16 +20,24 @@ public class Manager {
         return managerID;
     }
 
-    public void setManagerID(int managerID) {
-        this.managerID = managerID;
-    }
-
     public int getCompanyID() {
         return companyID;
     }
 
+    public List<Units> getUnits() {
+        return units;
+    }
+
+    public UserLevels getManagerLevel() {
+        return managerLevel;
+    }
+
     public boolean isActive() {
         return isActive;
+    }
+
+    public void setManagerID(int managerID) {
+        this.managerID = managerID;
     }
 
     public void setID(int ID) {
@@ -37,8 +48,8 @@ public class Manager {
         this.companyID = companyID;
     }
 
-    public UserLevels getManagerLevel() {
-        return managerLevel;
+    public void setUnits(List<Units> units) {
+        this.units = units;
     }
 
     public void setManagerLevel(UserLevels managerLevel) {
@@ -47,5 +58,19 @@ public class Manager {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+        else if (!Admin.class.isAssignableFrom(object.getClass()))
+            return false;
+        else {
+            Admin admin = (Admin) object;
+            return admin.getManagerID() == this.managerID
+                    && admin.getCompanyID() == this.getCompanyID();
+        }
+
     }
 }

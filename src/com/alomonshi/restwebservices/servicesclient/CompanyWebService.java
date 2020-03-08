@@ -23,6 +23,7 @@ public class CompanyWebService{
      * @param categoryID intended category id for getting related companies
      * @return list of companies
      */
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getCategoryList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -41,7 +42,7 @@ public class CompanyWebService{
      * @return company object with all related properties
      */
 
-    @JsonView(JsonViews.NormalViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getCompany")
     @Produces(MediaType.APPLICATION_JSON)
@@ -58,7 +59,7 @@ public class CompanyWebService{
      * return list of best companies
      *
      */
-
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getBestList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -75,7 +76,7 @@ public class CompanyWebService{
      *
      * @return list of newest company list
      */
-
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getNewestList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -97,7 +98,7 @@ public class CompanyWebService{
      * @param lon longitude of user
      * @return list of searched companies
      */
-
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getSearchedList")
     @Produces(MediaType.APPLICATION_JSON)
