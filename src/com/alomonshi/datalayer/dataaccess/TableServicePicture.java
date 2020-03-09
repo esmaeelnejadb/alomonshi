@@ -53,8 +53,8 @@ public class TableServicePicture {
         }
     }
 
-    public static List<ServicePicture> getServicePictures(int serviceID){
-        String command="select * from servicepictures where serviceID = " + serviceID + " AND isActive IS TRUE";
+    static List<ServicePicture> getServicePictures(int serviceID){
+        String command = "select * from servicepictures where serviceID = " + serviceID + " AND isActive IS TRUE";
         Connection conn = DBConnection.getConnection();
         List<ServicePicture> servicePictures = new ArrayList<>();
         try
@@ -62,7 +62,9 @@ public class TableServicePicture {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(command);
             fillServicePictures(rs, servicePictures);
-            return servicePictures;
+            if (!servicePictures.isEmpty())
+                return servicePictures;
+            else return null;
         }catch(SQLException e)
         {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

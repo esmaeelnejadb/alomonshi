@@ -1,6 +1,8 @@
 package com.alomonshi.object.tableobjects;
 
+import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -13,45 +15,55 @@ public class CompanyCategories {
 	private List<Company> companies;
 	private boolean isActive;
 	private String logoURL;
-	
+
+	@JsonView(JsonViews.NormalViews.class)
 	public int getID() {
 		return ID;
 	}
+
+	@JsonView(JsonViews.NormalViews.class)
 	public String getCategoryName() {
 		return categoryName;
 	}
-	@JsonIgnore
+
+	@JsonView(JsonViews.ManagerViews.class)
 	public List<Company> getCompanies() {
 		return companies;
 	}
+
+	@JsonView(JsonViews.NormalViews.class)
+	public int getCompanySize() {
+		return companySize;
+	}
+
+	@JsonView(JsonViews.NormalViews.class)
+	public String getLogoURL() {
+		return logoURL;
+	}
+
+	@JsonView(JsonViews.ManagerViews.class)
+	public boolean isActive() {
+		return isActive;
+	}
+
 	public void setID(int iD) {
 		ID = iD;
 	}
+
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
+
 	public void setCompanies(List<Company> companies) {
 		this.companies = companies;
-	}
-
-	public boolean isActive() {
-		return isActive;
 	}
 
 	public void setActive(boolean active) {
 		isActive = active;
 	}
 
-	public int getCompanySize() {
-		return companySize;
-	}
-
 	public void setCompanySize(int companySize) {
 		this.companySize = companySize;
-	}
-
-	public String getLogoURL() {
-		return logoURL;
 	}
 
 	public void setLogoURL(String logoURL) {

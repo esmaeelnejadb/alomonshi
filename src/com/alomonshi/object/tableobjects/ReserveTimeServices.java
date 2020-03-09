@@ -12,53 +12,47 @@ public class ReserveTimeServices {
         return id;
     }
 
-    public ReserveTimeServices setId(int id) {
-        this.id = id;
-        return this;
-    }
-
     public int getReserveTimeID() {
         return reserveTimeID;
-    }
-
-    public ReserveTimeServices setReserveTimeID(int reserveTimeID) {
-        this.reserveTimeID = reserveTimeID;
-        return this;
     }
 
     public int getServiceID() {
         return serviceID;
     }
 
-    public ReserveTimeServices setServiceID(int serviceID) {
-        this.serviceID = serviceID;
-        return this;
-    }
-
     public int getUnitID() {
         return unitID;
-    }
-
-    public ReserveTimeServices setUnitID(int unitID) {
-        this.unitID = unitID;
-        return this;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public ReserveTimeServices setActive(boolean active) {
-        isActive = active;
-        return this;
     }
 
     public int getClientID() {
         return clientID;
     }
 
-    public ReserveTimeServices setClientID(int clientID) {
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setReserveTimeID(int reserveTimeID) {
+        this.reserveTimeID = reserveTimeID;
+    }
+
+    public void setServiceID(int serviceID) {
+        this.serviceID = serviceID;
+    }
+
+    public void setUnitID(int unitID) {
+        this.unitID = unitID;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public void setClientID(int clientID) {
         this.clientID = clientID;
-        return this;
     }
 }

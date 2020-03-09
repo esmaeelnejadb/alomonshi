@@ -174,11 +174,11 @@ class ClientReserveTimeHandler {
     private static void fillReserveTimeServices(List<ReserveTimeServices> reserveTimeServices, ReserveTime reserveTime) {
         for (Integer serviceID : reserveTime.getServiceIDs()) {
             ReserveTimeServices reserveTimeService = new ReserveTimeServices();
-            reserveTimeService.setActive(true)
-            .setUnitID(reserveTime.getUnitID())
-            .setServiceID(serviceID)
-            .setReserveTimeID(reserveTime.getID())
-            .setClientID(reserveTime.getClientID());
+            reserveTimeService.setActive(true);
+            reserveTimeService.setUnitID(reserveTime.getUnitID());
+            reserveTimeService.setServiceID(serviceID);
+            reserveTimeService.setReserveTimeID(reserveTime.getID());
+            reserveTimeService.setClientID(reserveTime.getClientID());
             reserveTimeServices.add(reserveTimeService);
         }
     }

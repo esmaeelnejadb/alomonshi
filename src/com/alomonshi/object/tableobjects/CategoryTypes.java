@@ -1,5 +1,8 @@
 package com.alomonshi.object.tableobjects;
 
+import com.alomonshi.restwebservices.views.JsonViews;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
@@ -8,26 +11,30 @@ public class CategoryTypes {
 	private int ID;
 	private String typeName;
 	private List<CompanyCategories> categories;
-	
+
+	@JsonView(JsonViews.NormalViews.class)
 	public int getID() {
 		return ID;
 	}
+
+	@JsonView(JsonViews.NormalViews.class)
 	public String getTypeName() {
 		return typeName;
 	}
+
+	@JsonView(JsonViews.ManagerViews.class)
 	public List<CompanyCategories> getCategories() {
 		return categories;
 	}
-	public CategoryTypes setID(int iD) {
+
+	@JsonView(JsonViews.ManagerViews.class)
+	public void setID(int iD) {
 		ID = iD;
-		return this;
 	}
-	public CategoryTypes setTypeName(String typeName) {
+	public void setTypeName(String typeName) {
 		this.typeName = typeName;
-		return this;
 	}
-	public CategoryTypes setCompanyCats(List<CompanyCategories> categories) {
+	public void setCompanyCats(List<CompanyCategories> categories) {
 		this.categories = categories;
-		return this;
 	}
 }

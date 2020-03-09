@@ -538,7 +538,7 @@ public class TableCompanies {
 			preparedStatement.setFloat(8, company.getLocationLon());
 			preparedStatement.setString(9, company.getWebsite());
 			preparedStatement.setFloat(10, company.getRate());
-			preparedStatement.setString(11, company.getPicURL());
+			preparedStatement.setString(11, company.getLogoURL());
 			preparedStatement.setString(12, company.getLocality());
 			preparedStatement.setInt(13, company.getCityID());
 			preparedStatement.setInt(14, company.getDistrictID());

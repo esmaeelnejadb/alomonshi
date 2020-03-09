@@ -1,6 +1,8 @@
 package com.alomonshi.object.tableobjects;
 
+import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -25,158 +27,157 @@ public class Company {
 	private String logoURL;
 	private boolean isActive;
 	private String commercialCode;
-	
-	
-	public int getCityID() {
-		return cityID;
-	}
-	public Company setCityID(int cityID) {
-		this.cityID = cityID;
-		return this;
-	}
-	public int getDistrictID() {
-		return districtID;
-	}
-	public Company setDistrictID(int districtID) {
-		this.districtID = districtID;
-		return this;
-	}
 
-	public String getLocality() {
-		return locality;
-	}
-
-	public Company setLocality(String locality) {
-		this.locality = locality;
-		return this;		
-	}	
+	@JsonView(JsonViews.NormalViews.class)
 	public int getID() {
 		return ID;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
+	public int getCityID() {
+		return cityID;
+	}
+
+	@JsonView(JsonViews.NormalViews.class)
+	public int getDistrictID() {
+		return districtID;
+	}
+
+	@JsonView(JsonViews.NormalViews.class)
+	public String getLocality() {
+		return locality;
+	}
+
+	@JsonView(JsonViews.NormalViews.class)
 	public int getCompanyCatID() {
 		return companyCatID;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getCompanyName() {
 		return companyName;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getCompanyAddress() {
 		return companyAddress;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getCompanyPhoneNo1() {
 		return companyPhoneNo1;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getCompanyPhoneNo2() {
 		return companyPhoneNo2;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getCompanyPhoneNo3() {
 		return companyPhoneNo3;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public float getLocationLon() {
 		return LocationLon;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public float getLocationLat() {
 		return LocationLat;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getWebsite() {
 		return website;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public float getRate() {
 		return rate;
 	}
 
-	public String getPicURL() {
-		return logoURL;
-	}
-
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public String getCommercialCode() {
 		return commercialCode;
 	}
 
-	public Company setID(int iD) {
-		ID = iD;
-		return this;
-	}
-
-	public Company setCompanyCatID(int companyCatID) {
-		this.companyCatID = companyCatID;
-		return this;
-	}
-	public Company setCompanyName(String companyName) {
-		this.companyName = companyName;
-		return this;
-	}
-	public Company setCompanyAddress(String companyAddress) {
-		this.companyAddress = companyAddress;
-		return this;
-	}
-	public Company setCompanyPhoneNo1(String companyPhoneNo1) {
-		this.companyPhoneNo1 = companyPhoneNo1;
-		return this;
-	}
-	public Company setCompanyPhoneNo2(String companyPhoneNo2) {
-		this.companyPhoneNo2 = companyPhoneNo2;
-		return this;
-	}
-	public Company setCompanyPhoneNo3(String companyPhoneNo3) {
-		this.companyPhoneNo3 = companyPhoneNo3;
-		return this;
-	}
-	public Company setLocationLon(float locationLon) {
-		LocationLon = locationLon;
-		return this;
-	}
-	public Company setLocationLat(float locationLat) {
-		LocationLat = locationLat;
-		return this;
-	}
+	@JsonView(JsonViews.NormalViews.class)
 	public List<Units> getUnits() {
 		return units;
 	}
-	public Company setUnits(List<Units> units) {
-		this.units = units;
-		return this;
-	}
-	public Company setRate(float rate) {
-		this.rate = rate;
-		return this;
-	}
-	public Company setWebsite(String website) {
-		this.website = website;
-		return this;
-	}
-	public Company setPicURL(String url) {
-		this.logoURL = url;
-		return this;
-	}
 
+	@JsonView(JsonViews.NormalViews.class)
 	public String getLogoURL() {
 		return logoURL;
 	}
 
-	public Company setLogoURL(String logoURL) {
-		this.logoURL = logoURL;
-		return this;
-	}
-
-	@JsonIgnore
+	@JsonView(JsonViews.ManagerViews.class)
 	public boolean isActive() {
 		return isActive;
 	}
 
-	public Company setActive(boolean active) {
+	public void setID(int iD) {
+		ID = iD;
+	}
+
+	public void setLocality(String locality) {
+		this.locality = locality;
+	}
+
+	public void setDistrictID(int districtID) {
+		this.districtID = districtID;
+	}
+
+	public void setCityID(int cityID) {
+		this.cityID = cityID;
+	}
+
+	public void setCompanyCatID(int companyCatID) {
+		this.companyCatID = companyCatID;
+	}
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
+	}
+	public void setCompanyAddress(String companyAddress) {
+		this.companyAddress = companyAddress;
+	}
+	public void setCompanyPhoneNo1(String companyPhoneNo1) {
+		this.companyPhoneNo1 = companyPhoneNo1;
+	}
+	public void setCompanyPhoneNo2(String companyPhoneNo2) {
+		this.companyPhoneNo2 = companyPhoneNo2;
+	}
+	public void setCompanyPhoneNo3(String companyPhoneNo3) {
+		this.companyPhoneNo3 = companyPhoneNo3;
+	}
+	public void setLocationLon(float locationLon) {
+		LocationLon = locationLon;
+	}
+	public void setLocationLat(float locationLat) {
+		LocationLat = locationLat;
+	}
+
+	public void setUnits(List<Units> units) {
+		this.units = units;
+	}
+	public void setRate(float rate) {
+		this.rate = rate;
+	}
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+	public void setPicURL(String url) {
+		this.logoURL = url;
+	}
+
+	public void setLogoURL(String logoURL) {
+		this.logoURL = logoURL;
+	}
+
+	public void setActive(boolean active) {
 		isActive = active;
-		return this;
 	}
 
 	public void setCommercialCode(String commercialCode) {
