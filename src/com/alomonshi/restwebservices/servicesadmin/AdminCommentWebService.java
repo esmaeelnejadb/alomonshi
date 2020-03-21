@@ -31,7 +31,7 @@ public class AdminCommentWebService {
 
 
     /**
-     * Gettin unit comments
+     * Getting unit comments
      * @param adminEditObject data got from UI
      * @return service response
      */

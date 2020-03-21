@@ -1,11 +1,13 @@
 package com.alomonshi.object.tableobjects;
 
+import com.alomonshi.restwebservices.adaptors.LocalDateTimeAdaptor;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -72,16 +74,19 @@ public class Services {
 	}
 
 	@JsonView(JsonViews.SubAdminViews.class)
+	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
 	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
 
 	@JsonView(JsonViews.SubAdminViews.class)
+	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
 	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}
 
-	@JsonView(JsonViews.SubAdminViews.class)
+	@JsonView(JsonViews.ManagerViews.class)
+	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
 	public LocalDateTime getRemoveDate() {
 		return removeDate;
 	}

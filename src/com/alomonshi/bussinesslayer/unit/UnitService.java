@@ -48,7 +48,22 @@ public class UnitService {
         if (!units.isEmpty()) {
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
-                    .setResponseData(Collections.singletonList(units));
+                    .setResponseData(units);
+        }else
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.UNITERROR_01);
+    }
+
+    /**
+     * Getting company unit list from database
+     * @param adminID intended admin
+     * @return service response
+     */
+    public ServiceResponse getAdminUnit(int adminID) {
+        List<Units> units =  TableUnit.getAdminUnit(adminID);
+        if (!units.isEmpty()) {
+            return serviceResponse.setResponse(true)
+                    .setMessage(ServerMessage.SUCCESSMESSAGE)
+                    .setResponseData(units);
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.UNITERROR_01);
     }
@@ -111,7 +126,7 @@ public class UnitService {
         }else
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.UNITERROR_02)
-                    .setResponseData(Collections.singletonList(reserveTimes));
+                    .setResponseData(reserveTimes);
     }
 
     /**

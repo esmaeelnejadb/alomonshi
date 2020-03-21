@@ -1,15 +1,17 @@
 package com.alomonshi.bussinesslayer;
 
+
 import java.util.List;
 
 public class ServiceResponse {
-    private List<Object> responseData;
+    private Object responseData;
     private boolean response;
     private String message;
 
-    public List<Object> getResponseData() {
+    public Object getResponseData() {
         return responseData;
     }
+
 
     public boolean getResponse() {
         return response;
@@ -19,7 +21,7 @@ public class ServiceResponse {
         return message;
     }
 
-    public ServiceResponse setResponseData(List<Object> responseData) {
+    public ServiceResponse setResponseData(Object responseData) {
         this.responseData = responseData;
         return this;
     }

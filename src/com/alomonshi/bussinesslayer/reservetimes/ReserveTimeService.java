@@ -8,6 +8,7 @@ import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 
+import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.uiobjects.ClientReservedTime;
@@ -33,7 +34,6 @@ public class ReserveTimeService{
      * @param reserveTimeForm to be set
      * @return this object
      */
-
     public ReserveTimeService setReserveTimeForm(ReserveTimeForm reserveTimeForm) {
         this.reserveTimeForm = reserveTimeForm;
         return this;
@@ -44,9 +44,8 @@ public class ReserveTimeService{
      * @param reserveTime that intended unit and day have been drived from
      * @return list of reserve times in a day
      */
-
     public ServiceResponse getAdminUnitReserveDayTimes(ReserveTime reserveTime){
-        List<ReserveTime> reserveTimes = TableReserveTime.getAdminUnitReserveTimeInADay(
+        Map<MiddayID, List<ReserveTime>> reserveTimes = TableReserveTime.getAdminUnitReserveTimeInADay(
                 reserveTime.getDateID(), reserveTime.getUnitID());
         if (reserveTimes.isEmpty()) {
             return serviceResponse.setResponse(false)
@@ -54,9 +53,8 @@ public class ReserveTimeService{
         }else
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
-                    .setResponseData(Collections.singletonList(reserveTimes));
+                    .setResponseData(reserveTimes);
     }
-
 
     /**
      * Handling reserve times to be inserted in data base, for inserting a list of reserve times
@@ -66,7 +64,6 @@ public class ReserveTimeService{
      * will be returned with true response, otherwise response will set to false with empty response data
      * @return service response
      */
-
 	public synchronized ServiceResponse handleGeneratingReserveTime(){
 	    try {
             ReserveTimeGenerator reserveTimeGenerator = new ReserveTimeGenerator();
@@ -106,7 +103,6 @@ public class ReserveTimeService{
      * Deleting reserve time in all days
      * @return service response
      */
-
 	public synchronized ServiceResponse deleteReserveTimes(){
 	    reserveTimeDeletor = new ReserveTimeDeletor(serviceResponse);
 	    //if all day reserve times should be deleted
@@ -121,7 +117,7 @@ public class ReserveTimeService{
      * @param reserveTime time to be reserved
      * @return service response
      */
-	public synchronized ServiceResponse registerReserveTime(ReserveTime reserveTime) {
+	public ServiceResponse registerReserveTime(ReserveTime reserveTime) {
         ReserveTimeCheck reserveTimeCheck = new ReserveTimeCheck(reserveTime, serviceResponse);
 	    if (reserveTimeCheck.checkTimeAvailability().getResponse()
                 && reserveTimeCheck.isServicesBelongToReserveTimeUnit().getResponse()) {
@@ -134,19 +130,23 @@ public class ReserveTimeService{
     }
 
     /**
-     * Cancel reserve time
+     * Cancel reserve time by client
      * @param reserveTime to be canceled
      * @return service response to be returned
      */
 
-    public synchronized ServiceResponse cancelReserveTime(ReserveTime reserveTime) {
+    public ServiceResponse cancelReserveTime(ReserveTime reserveTime) {
         ReserveTimeCheck reserveTimeCheck = new ReserveTimeCheck(
                 reserveTime
                 , serviceResponse);
         if (reserveTimeCheck.isTimeCancelable().getResponse()) {
-            if (ClientReserveTimeHandler.cancelClientReserveTime(reserveTime))
+            ClientReservedTime clientReservedTime = TableReserveTime.getClientReservedTime(reserveTime.getID());
+            if (ClientReserveTimeHandler.cancelClientReserveTime(reserveTime)) {
+                //Sending sms to client
+                String[] toNumber = {TableClient.getUser(reserveTime.getClientID()).getPhoneNo()};
+                SMSUtils.sendSMS(toNumber, SMSMessage.getClientCancelTimeMessage(clientReservedTime));
                 serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
-            else
+            }else
                 serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
             return serviceResponse;
         }else
@@ -172,7 +172,7 @@ public class ReserveTimeService{
 
     public ServiceResponse retrieveSingleCanceledTimes(ReserveTimeList reserveTimes){
         List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserve times to be canceled
-        if (checkAndFillCalceledTimesFromIDs(reserveTimeList, reserveTimes)) {
+        if (checkAndFillCanceledTimesFromIDs(reserveTimeList, reserveTimes)) {
             if (TableReserveTime.retrieveCanceledTimeList(reserveTimeList))
                 return serviceResponse.setResponse(true).setMessage(ServerMessage.SUCCESSMESSAGE);
             else
@@ -210,30 +210,11 @@ public class ReserveTimeService{
      * @param reserveTimes to be canceled
      * @return service response
      */
-
     public ServiceResponse cancelSingleReservedTimes(ReserveTimeList reserveTimes) {
         List<ReserveTime> reserveTimeList = new ArrayList<>();//List of reserved times to be canceled
         if (checkAndFillReservableTimesFromIDs(reserveTimeList, reserveTimes)) {
             //not success times will be send to UI
-            List<ClientReservedTime> notSuccessTimes = new ArrayList<>();
-            for (ReserveTime reserveTime: reserveTimeList) {
-                //Cancel Reserve Time
-                ClientReservedTime clientReservedTime = TableReserveTime.getClientReservedTime(reserveTime.getID());
-                if (cancelReserveTime(reserveTime).getResponse()) {
-                    //Getting client phone number from table
-                    String[] toNumber = {TableClient.getUser(reserveTime.getClientID()).getPhoneNo()};
-                    //Sending canceling message to client
-                    SMSUtils.sendSMS(toNumber, SMSMessage.getAdminCancelTimeMessage(clientReservedTime));
-                }else
-                    notSuccessTimes.add(clientReservedTime);
-            }
-            if (notSuccessTimes.isEmpty())
-                return serviceResponse.setResponse(true)
-                        .setMessage(ServerMessage.SUCCESSMESSAGE);
-            else
-                return serviceResponse.setResponse(false)
-                        .setMessage(ServerMessage.FAULTMESSAGE)
-                        .setResponseData(Collections.singletonList(notSuccessTimes));
+            return cancelReservedTimeListFromAdmin(reserveTimeList);
         }else {
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.INTERNALERRORMESSAGE);
@@ -241,7 +222,23 @@ public class ReserveTimeService{
     }
 
     /**
-     * Filling reserve time list from their ids got from data base and two checks will been done :
+     * Cancel reserved times between days from admin
+     * @return service response
+     */
+    public ServiceResponse cancelReservedTimeBetweenDays() {
+        //List of reserved times to be canceled
+        List<ReserveTime> reserveTimeList = getListOfReservedTimesBetweenDaysForDelete();
+        if (!reserveTimeList.isEmpty()) {
+            return cancelReservedTimeListFromAdmin(reserveTimeList);
+        }else
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.RESERVETIMEERROR_06);
+
+    }
+
+    /**
+     *
+     * Checking and Filling reserve time list got from ui with their times got from data base and two checks will been done :
      * 1- checking if reserve time unit id belong to the admin unit
      * 2- checking that non of reserve time has RESERVED status
      * @param reserveTimes to be filled and checked
@@ -259,12 +256,12 @@ public class ReserveTimeService{
     }
 
     /**
-     * Filling reserve time list from their ids got from data base and two checks will been done :
+     * Checking and Filling reserve time list got from ui with their times got from data base and two checks will been done :
      * 1- checking if reserve time unit id belong to the admin unit
      * 2- checking that all of reserve times have CANCELED status
      * @param reserveTimes to be filled and checked
      */
-    private boolean checkAndFillCalceledTimesFromIDs(List<ReserveTime> reserveTimeList, ReserveTimeList reserveTimes) {
+    private boolean checkAndFillCanceledTimesFromIDs(List<ReserveTime> reserveTimeList, ReserveTimeList reserveTimes) {
         for (int i = 0; i < reserveTimes.getReserveTimeIDs().size(); i++) {
             //Getting each reserve time object from table and check its unit id with gog unit id from UI
             reserveTimeList.add(i, TableReserveTime.getReserveTime(reserveTimes.getReserveTimeIDs().get(i)));
@@ -283,12 +280,62 @@ public class ReserveTimeService{
      */
     private boolean checkAndFillReservableTimesFromIDs(List<ReserveTime> reserveTimeList, ReserveTimeList reserveTimes) {
         for (int i = 0; i < reserveTimes.getReserveTimeIDs().size(); i++) {
-            //Getting each reserve time object from table and check its unit id with gog unit id from UI
+            //Getting each reserve time object from table and check its unit id with got unit id from UI
             reserveTimeList.add(i, TableReserveTime.getReserveTime(reserveTimes.getReserveTimeIDs().get(i)));
             if (reserveTimeList.get(i).getStatus() != ReserveTimeStatus.RESERVED
                     || reserveTimeList.get(i).getUnitID() != reserveTimes.getUnitID())
                 return false;
         }
         return true;
+    }
+
+    /**
+     * Cancel a list of reserved times from admin and send sms to client
+     * @param reserveTimeList to be canceled
+     * @return service response
+     */
+
+    private ServiceResponse cancelReservedTimeListFromAdmin(List<ReserveTime> reserveTimeList) {
+        //Getting not successful canceled times
+        List<ClientReservedTime> notSuccessTimes = new ArrayList<>();
+        for (ReserveTime reserveTime: reserveTimeList) {
+            //Cancel Reserve Time
+            ClientReservedTime clientReservedTime = TableReserveTime.getClientReservedTime(reserveTime.getID());
+            if (ClientReserveTimeHandler.cancelClientReserveTime(reserveTime)) {
+                //Getting client phone number from table
+                String[] toNumber = {TableClient.getUser(reserveTime.getClientID()).getPhoneNo()};
+                //Sending canceling message to client
+                SMSUtils.sendSMS(toNumber, SMSMessage.getAdminCancelTimeMessage(clientReservedTime));
+            }else
+                notSuccessTimes.add(clientReservedTime);
+        }
+        if (notSuccessTimes.isEmpty())
+            return serviceResponse.setResponse(true)
+                    .setMessage(ServerMessage.SUCCESSMESSAGE);
+        else
+            return serviceResponse.setResponse(false)
+                    .setMessage(ServerMessage.FAULTMESSAGE)
+                    .setResponseData(notSuccessTimes);
+    }
+
+    /**
+     * Getting list of reserved time for delete;
+     * @return should be deleted reserved times
+     */
+    private List<ReserveTime> getListOfReservedTimesBetweenDaysForDelete() {
+        if (reserveTimeForm.getMidday() != null)
+            return TableReserveTime
+                    .getUnitMiddayReservedTimesBetweenDays(
+                            reserveTimeForm.getUnitID(),
+                            reserveTimeForm.getStartDate(),
+                            reserveTimeForm.getEndDate(),
+                            reserveTimeForm.getMidday());
+        else
+            return TableReserveTime
+                    .getUnitReservedTimesBetweenDays(
+                            reserveTimeForm.getUnitID(),
+                            reserveTimeForm.getStartDate(),
+                            reserveTimeForm.getEndDate());
+
     }
 }

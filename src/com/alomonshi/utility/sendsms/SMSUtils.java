@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.alomonshi.configuration.ConfigurationParameter;
 import org.tempuri.ISendServiceProxy;
 
 import com.microsoft.schemas._2003._10.Serialization.Arrays.holders.ArrayOflongHolder;
@@ -14,16 +15,20 @@ public class SMSUtils {
 	
 	public static boolean sendSMS(String[] toNumbers , String messageContent) {
 		//Sending SMS
-		ISendServiceProxy ss  = new ISendServiceProxy();
-		String userName = "esmaeelnejadb";
-		String smsPass = "0000";
-		String fromNumber = "2100090119012";
-		boolean isFlash = false;
+		ISendServiceProxy sendSMS  = new ISendServiceProxy();
+		//boolean isFlash = false;
 		ArrayOflongHolder recId = new ArrayOflongHolder();
-		ByteArrayHolder smsstatus = new ByteArrayHolder();
+		ByteArrayHolder smsStatus = new ByteArrayHolder();
 		
 		try {
-			int result = ss.sendSMS(userName, smsPass, fromNumber, toNumbers, messageContent, isFlash, recId, smsstatus);
+			int result = sendSMS.sendSMS(ConfigurationParameter.smsPanelUserName,
+					ConfigurationParameter.smsPanelPassword,
+					ConfigurationParameter.smsPanelFromNumber,
+					toNumbers,
+					messageContent,
+					false,
+					recId,
+					smsStatus);
 			//if successfully sent
 			if (result == 0) {
 				return true;

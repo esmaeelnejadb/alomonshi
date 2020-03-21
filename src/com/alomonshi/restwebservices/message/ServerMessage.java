@@ -13,6 +13,7 @@ public class ServerMessage {
     public static final String RESERVETIMEERROR_03 = "متأسفانه زمان سروویس های انتخابی از زمان وقت قابل رزرو بیشتر است.";
     public static final String RESERVETIMEERROR_04 = "متأسفانه وقت مورد نظر در دسترس نمی باشد";
     public static final String RESERVETIMEERROR_05 = "در این روز نوبتی جهت رزرو وجود ندارد";
+    public static final String RESERVETIMEERROR_06 = "در این بازه نوبت های رزرو وجود ندارد";
 
     //******Error in unit services******//
     public static final String UNITERROR_01 = "متأسفانه در این مجموعه واحدی تعریف نشده است.";

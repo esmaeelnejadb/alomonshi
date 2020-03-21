@@ -42,7 +42,7 @@ public class Units {
 		return clientID;
 	}
 
-	@JsonView(JsonViews.NormalViews.class)
+	@JsonView(JsonViews.ClientViews.class)
 	public String getUnitName() {
 		return unitName;
 	}
@@ -53,6 +53,7 @@ public class Units {
 	}
 
 	@XmlAttribute(name = "services")
+	@JsonView(JsonViews.ClientViews.class)
 	public List<Services> getServices() {
 		return services;
 	}
@@ -67,7 +68,7 @@ public class Units {
 		return isActive;
 	}
 
-	@JsonView(JsonViews.NormalViews.class)
+	@JsonView(JsonViews.ClientViews.class)
 	@XmlAttribute(name = "comments")
 	public List<Comments> getUnitComments() {
 		return unitComments;
@@ -79,13 +80,13 @@ public class Units {
 	}
 
 	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
-	@JsonView(JsonViews.ManagerViews.class)
+	@JsonView(JsonViews.AdminViews.class)
 	public LocalDateTime getCreateDate() {
 		return createDate;
 	}
 
     @XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
-	@JsonView(JsonViews.ManagerViews.class)
+	@JsonView(JsonViews.AdminViews.class)
 	public LocalDateTime getUpdateDate() {
 		return updateDate;
 	}

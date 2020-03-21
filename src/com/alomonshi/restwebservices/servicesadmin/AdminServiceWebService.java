@@ -2,10 +2,13 @@ package com.alomonshi.restwebservices.servicesadmin;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
+import com.alomonshi.bussinesslayer.service.ServiceDiscountService;
 import com.alomonshi.bussinesslayer.service.ServicesService;
+import com.alomonshi.object.tableobjects.ServiceDiscount;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.AdminEditObject;
-import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
+import com.alomonshi.object.uiobjects.ServiceDiscountList;
+import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
@@ -23,6 +26,7 @@ public class AdminServiceWebService {
 
     private ServicesService servicesService;
     private ServiceResponse serviceResponse;
+    private ServiceDiscountService serviceDiscountService;
 
     @Context
     HttpServletResponse httpServletResponse;
@@ -33,7 +37,7 @@ public class AdminServiceWebService {
      * @return service response
      */
     @JsonView(JsonViews.SubAdminViews.class)
-    @CompanyAdminSecured
+    @CompanySubAdminSecured
     @POST
     @Path("/getUnitService")
     @Produces(MediaType.APPLICATION_JSON)
@@ -52,7 +56,7 @@ public class AdminServiceWebService {
     }
 
     @JsonView(JsonViews.SubAdminViews.class)
-    @CompanyAdminSecured
+    @CompanySubAdminSecured
     @POST
     @Path("/service")
     @Produces(MediaType.APPLICATION_JSON)
@@ -71,7 +75,7 @@ public class AdminServiceWebService {
     }
 
     @JsonView(JsonViews.SubAdminViews.class)
-    @CompanyAdminSecured
+    @CompanySubAdminSecured
     @PUT
     @Path("/service")
     @Produces(MediaType.APPLICATION_JSON)
@@ -91,7 +95,7 @@ public class AdminServiceWebService {
     }
 
     @JsonView(JsonViews.SubAdminViews.class)
-    @CompanyAdminSecured
+    @CompanySubAdminSecured
     @DELETE
     @Path("/service")
     @Produces(MediaType.APPLICATION_JSON)
@@ -110,6 +114,88 @@ public class AdminServiceWebService {
         }
     }
 
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @POST
+    @Path("/serviceDiscounts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse insertServiceDiscount(ServiceDiscountList serviceDiscounts) {
+        serviceResponse = new ServiceResponse();
+        try {
+            if (CheckAdminAuthority.isServiceDiscountListEditAuthorized(serviceDiscounts)) {
+                serviceDiscountService = new ServiceDiscountService(serviceResponse);
+                return serviceDiscountService.insertServiceDiscountList(serviceDiscounts.getServiceDiscounts());
+            }else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @DELETE
+    @Path("/serviceDiscounts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse deleteServiceDiscount(ServiceDiscountList serviceDiscounts) {
+        serviceResponse = new ServiceResponse();
+        try {
+            if (CheckAdminAuthority.isServiceDiscountListEditAuthorized(serviceDiscounts)) {
+                serviceDiscountService = new ServiceDiscountService(serviceResponse);
+                return serviceDiscountService.deleteServiceDiscountList(serviceDiscounts.getServiceDiscounts());
+            }else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @POST
+    @Path("/serviceDiscount")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse insertServiceDiscount(ServiceDiscount serviceDiscount) {
+        serviceResponse = new ServiceResponse();
+        try {
+            if (CheckAdminAuthority.isUserUnitAuthorized(serviceDiscount.getClientID(),
+                    serviceDiscount.getUnitID())
+                    && CheckAdminAuthority.isServiceBelongToUnit(serviceDiscount.getServiceID(),
+                    serviceDiscount.getUnitID())) {
+                serviceDiscountService = new ServiceDiscountService(serviceResponse, serviceDiscount);
+                return serviceDiscountService.insertDiscount();
+            }else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @PUT
+    @Path("/serviceDiscount")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse updateServiceDiscount(ServiceDiscount serviceDiscount) {
+        serviceResponse = new ServiceResponse();
+        try {
+            if (CheckAdminAuthority.isUserUnitAuthorized(serviceDiscount.getClientID(),
+                    serviceDiscount.getUnitID())
+                    && CheckAdminAuthority.isServiceBelongToUnit(serviceDiscount.getServiceID(),
+                    serviceDiscount.getUnitID())) {
+                serviceDiscountService = new ServiceDiscountService(serviceResponse, serviceDiscount);
+                return serviceDiscountService.updateDiscount();
+            }else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
     @OPTIONS
     @Path("/getUnitService")
     public void doOptionsForAdminGettingService() {
@@ -119,6 +205,18 @@ public class AdminServiceWebService {
     @OPTIONS
     @Path("/service")
     public void doOptionsForAdminService() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/serviceDiscountList")
+    public void doOptionsForServiceDiscountList() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/serviceDiscount")
+    public void doOptionsForServiceDiscount() {
         HttpContextHeader.doOptions(httpServletResponse);
     }
 }

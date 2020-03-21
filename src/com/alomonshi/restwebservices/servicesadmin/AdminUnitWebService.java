@@ -5,6 +5,7 @@ import com.alomonshi.bussinesslayer.unit.UnitService;
 import com.alomonshi.object.tableobjects.Units;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
+import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
@@ -35,7 +36,7 @@ public class AdminUnitWebService {
     @JsonView(JsonViews.AdminViews.class)
     @CompanyAdminSecured
     @POST
-    @Path("/getCompanyUnit")
+    @Path("/companyUnits")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceResponse getCompanyUnitList(AdminEditObject adminEditObject) {
         serviceResponse = new ServiceResponse();
@@ -46,6 +47,28 @@ public class AdminUnitWebService {
                 return unitService.getCompanyUnit(adminEditObject.getCompanyID());
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    /**
+     * Getting unit list of a company
+     * @param adminEditObject information got from ui
+     * @return List of units
+     */
+
+    @JsonView(JsonViews.AdminViews.class)
+    @CompanySubAdminSecured
+    @POST
+    @Path("/units")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse getAdminUnitList(AdminEditObject adminEditObject) {
+        serviceResponse = new ServiceResponse();
+        try {
+            unitService = new UnitService(serviceResponse);
+            return unitService.getAdminUnit(adminEditObject.getClientID());
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
@@ -124,8 +147,14 @@ public class AdminUnitWebService {
     }
 
     @OPTIONS
-    @Path("/getCompanyUnit")
-    public void doOptionsForAdminGettingUnit() {
+    @Path("/companyUnits")
+    public void doOptionsForCompanyUnits() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/units")
+    public void doOptionsForAdminUnits() {
         HttpContextHeader.doOptions(httpServletResponse);
     }
 

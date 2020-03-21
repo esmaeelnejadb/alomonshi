@@ -12,18 +12,25 @@ import java.util.logging.Logger;
 public class TableServicePicture {
 
     public static void insertServicePic(ServicePicture servicePicture){
-        String command = "insert into servicepictures (serviceID, pictureURL, isActive) values(?, ?, ?)";
+        String command = "INSERT INTO servicepictures (serviceID," +
+                " pictureURL," +
+                " isActive)" +
+                " values(?, ?, ?)";
         executeInsertUpdate(servicePicture, command);
     }
 
-    public static void updateUnitPic(ServicePicture servicePicture){
-        String command = "update servicepictures set serviceID = ?, pictureURL = ?, isActive = ?";
+    public static void updateServicePic(ServicePicture servicePicture){
+        String command = "UPDATE servicepictures SET " +
+                "serviceID = ?," +
+                " pictureURL = ?," +
+                " isActive = ?" +
+                " WHERE ID = " + servicePicture.getID();
         executeInsertUpdate(servicePicture, command);
     }
 
     public static void delete(ServicePicture servicePicture){
         servicePicture.setActive(false);
-        updateUnitPic(servicePicture);
+        updateServicePic(servicePicture);
     }
 
     private static void executeInsertUpdate(ServicePicture servicePicture, String command)
@@ -54,42 +61,35 @@ public class TableServicePicture {
     }
 
     static List<ServicePicture> getServicePictures(int serviceID){
-        String command = "select * from servicepictures where serviceID = " + serviceID + " AND isActive IS TRUE";
+        String command = "SELECT * FROM servicepictures where serviceID = " + serviceID + " AND isActive IS TRUE";
         Connection conn = DBConnection.getConnection();
         List<ServicePicture> servicePictures = new ArrayList<>();
-        try
-        {
+        try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(command);
             fillServicePictures(rs, servicePictures);
             if (!servicePictures.isEmpty())
                 return servicePictures;
             else return null;
-        }catch(SQLException e)
-        {
+        }catch(SQLException e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
             return null;
-        }finally
-        {
-            if(conn != null)
-            {
-                try
-                {
+        }finally {
+            if(conn != null) {
+                try {
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 }
             }
         }
-
     }
 
     private static void prepare(PreparedStatement preparedStatement, ServicePicture servicePicture){
         try{
-            preparedStatement.setInt(2, servicePicture.getServiceID());
-            preparedStatement.setString(3, servicePicture.getPicURL());
-            preparedStatement.setBoolean(4, servicePicture.isActive());
+            preparedStatement.setInt(1, servicePicture.getServiceID());
+            preparedStatement.setString(2, servicePicture.getPicURL());
+            preparedStatement.setBoolean(3, servicePicture.isActive());
         }catch (SQLException e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
         }

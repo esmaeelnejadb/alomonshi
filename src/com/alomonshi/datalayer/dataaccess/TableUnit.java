@@ -16,7 +16,7 @@ import com.alomonshi.object.tableobjects.Units;
 public class TableUnit {
 
 	public static int insertUnit(Units unit){
-		String command = "insert into UNITS(Comp_ID" +
+		String command = "INSERT INTO UNITS(Comp_ID" +
 				", unit_name" +
 				", unit_step_time" +
 				", IS_ACTIVE" +
@@ -25,12 +25,12 @@ public class TableUnit {
 				", CREATE_DATE" +
 				", UPDATE_DATE" +
 				", REMOVE_DATE" +
-				") values(?, ?, ?, ?, ?, ?, ?, ?, ? )";
+				") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? )";
 		return executeInsert(unit, command);
 	}
 
 	public static boolean updateUnit(Units unit){
-		String command = "update UNITS set" +
+		String command = "UPDATE UNITS SET" +
 				" Comp_ID = ?" +
 				", unit_name = ?" +
 				", unit_step_time = ?" +
@@ -244,7 +244,7 @@ public class TableUnit {
 	 * @param managerID intended manager id
 	 * @return unit object
 	 */
-	static List<Units> getAdminUnit(int managerID)
+	public static List<Units> getAdminUnit(int managerID)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<Units> units = new ArrayList<>();

@@ -11,7 +11,6 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +49,7 @@ public class ServicesService {
         if (!services.isEmpty()) {
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
-                    .setResponseData(Collections.singletonList(services));
+                    .setResponseData(services);
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.SERVICEERROR_01);
     }
@@ -98,7 +97,7 @@ public class ServicesService {
         }else
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.SERVICEERROR_02)
-                    .setResponseData(Collections.singletonList(reserveTimes));
+                    .setResponseData(reserveTimes);
     }
 
     /**

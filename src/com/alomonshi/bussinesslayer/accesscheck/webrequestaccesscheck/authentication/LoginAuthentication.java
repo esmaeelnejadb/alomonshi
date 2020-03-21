@@ -73,4 +73,22 @@ public class LoginAuthentication {
         }else
             return null;
     }
+
+    /**
+     * Checking token is valid or not then generating json web token
+     * @param password to be checked
+     * @return json web token
+     */
+    public String handleAdminLogin(String password){
+        if (clientPrimaryCheck.isAdminRegistered() && isPasswordValid(password)) {
+            if (!clientPrimaryCheck.isTokenValid()) {
+                user.setToken(WebTokenHandler.generateNewToken());
+                user.setExpirationDate(generateExpirationDate());
+                if(!TableClient.update(user))
+                    return null;
+            }
+            return webTokenHandler.generateWebToken();
+        }else
+            return null;
+    }
 }

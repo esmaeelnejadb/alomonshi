@@ -1,5 +1,6 @@
 package com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck;
 
+import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.object.tableobjects.Users;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,16 @@ public class ClientInformationCheck {
      */
     public boolean isClientRegistered(){
         return user.getClientID() != 0 && user.isActive();
+    }
+
+    /**
+     * check if user is registered
+     * @return true if user is registered
+     */
+    public boolean isAdminRegistered(){
+        return user.getClientID() != 0
+                && user.isActive()
+                && user.getUserLevel().getValue() > UserLevels.CLIENT.getValue();
     }
 
     /**

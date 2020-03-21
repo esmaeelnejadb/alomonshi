@@ -1,9 +1,7 @@
 package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.restwebservices.views.JsonViews;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-//import org.codehaus.jackson.annotate.JsonIgnore;
 
 public class ServicePicture {
     private int ID;

@@ -40,7 +40,7 @@ public class AdminCommentService {
         if (!comments.isEmpty()) {
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
-                    .setResponseData(Collections.singletonList(comments));
+                    .setResponseData(comments);
         }else
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.COMMENTERROR_01);

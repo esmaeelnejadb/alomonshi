@@ -57,7 +57,7 @@ public class TableService {
 				", CREATE_DATE = ?" +
 				", UPDATE_DATE = ?" +
 				", REMOVE_DATE = ?" +
-				" WHERE ID = ";
+				" WHERE ID = " + service.getID();
 		boolean response = executeInsertUpdate(service, updateCommand + service.getID(), connection);
 		DBConnection.closeConnection(connection);
 		return response;
@@ -100,7 +100,7 @@ public class TableService {
 	 */
 	public static boolean deleteUnitServices(int unitID)
 	{
-		Connection conn = DBConnection.getConnection(); 
+		Connection conn = DBConnection.getConnection();
 		try {
 			String command = "UPDATE SERVICES" +
 					" SET" +
@@ -111,7 +111,7 @@ public class TableService {
 			PreparedStatement ps = conn.prepareStatement(command);
 			int i = ps.executeUpdate();
 			return i >= 0;
-			
+
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -120,14 +120,14 @@ public class TableService {
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
+						conn.close();
+				} catch (SQLException e)
+				{
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 	}
 
@@ -232,7 +232,6 @@ public class TableService {
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
 		}finally
 		{
 			if(conn != null)
@@ -247,40 +246,6 @@ public class TableService {
 			}
 		}
 		return serviceIDs;
-	}
-	
-	public static Set<Integer> getSearchedServices(String serviceName)
-	{
-		Set<Integer> unitIDs = new LinkedHashSet<>();
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			Statement stmt =conn.createStatement();
-			String command = "select UNIT_ID from SERVICES where IS_ACTIVE is true AND SERVICE_NAME like '%" + serviceName + "%'";
-			ResultSet rs = stmt.executeQuery(command);
-			while(rs.next())
-			{
-				int unitID = rs.getInt(1);
-				unitIDs.add(unitID);
-			}
-			return unitIDs;
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
 	}
 
 	private static void prepare(PreparedStatement preparedStatement, Services service){
@@ -337,5 +302,4 @@ public class TableService {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
-
 }

@@ -2,6 +2,7 @@ package com.alomonshi.restwebservices.servicesclient;
 
 import com.alomonshi.bussinesslayer.company.CompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
+import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,7 +24,7 @@ public class CompanyWebService{
      * @param categoryID intended category id for getting related companies
      * @return list of companies
      */
-    @JsonView(JsonViews.ClientViews.class)
+    @JsonView(JsonViews.NormalViews.class)
     @GET
     @Path("/getCategoryList")
     @Produces(MediaType.APPLICATION_JSON)
@@ -59,13 +60,13 @@ public class CompanyWebService{
      * return list of best companies
      *
      */
-    @JsonView(JsonViews.ClientViews.class)
+    @JsonView(JsonViews.NormalViews.class)
     @GET
     @Path("/getBestList")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Company> getBestList(){
         try {
-            return TableCompanies.getBestCompanies(10);
+            return TableCompanies.getTopBestCompanies(10);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -76,13 +77,30 @@ public class CompanyWebService{
      *
      * @return list of newest company list
      */
-    @JsonView(JsonViews.ClientViews.class)
+    @JsonView(JsonViews.NormalViews.class)
     @GET
     @Path("/getNewestList")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Company> getNewestList(){
         try {
             return TableCompanies.getNewestCompanies(10);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @return list of newest company list
+     */
+    @JsonView(JsonViews.NormalViews.class)
+    @GET
+    @Path("/getDiscountList")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Company> getDiscountList(){
+        try {
+            return TableCompanies.getDiscountCompanies(10);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -98,18 +116,56 @@ public class CompanyWebService{
      * @param lon longitude of user
      * @return list of searched companies
      */
-    @JsonView(JsonViews.ClientViews.class)
+    @JsonView(JsonViews.NormalViews.class)
     @GET
     @Path("/getSearchedList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getSearchedList(@QueryParam("categoryID") int categoryID, @QueryParam("companyName") String companyName,
-                                         @QueryParam("serviceName") String serviceName, @QueryParam("lat") float lat,
+    public List<Company> getSearchedList(@QueryParam("categoryID") int categoryID,
+                                         @QueryParam("companyName") String companyName,
+                                         @QueryParam("serviceName") String serviceName,
+                                         @QueryParam("lat") float lat,
                                          @QueryParam("lon") float lon){
         try {
-            List<Company> companies = CompanyService.getSearchedCompanies(categoryID, companyName, serviceName);
-            if(lat != 0 && lon != 0)
-                companies = CompanyService.getNearestCompanies(companies, lat, lon);
-            return companies;
+            return CompanyService.getSearchedCompanies(companyName, serviceName, lat, lon, categoryID);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
+    @JsonView(JsonViews.NormalViews.class)
+    @GET
+    @Path("/getFilteredList")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Company> getFilteredList(@QueryParam("categoryID") int categoryID,
+                                         @QueryParam("lat") float lat,
+                                         @QueryParam("lon") float lon,
+                                         @QueryParam("filterItem")FilterItem filterItem){
+        try {
+            return CompanyService.getFilteredCompanies(lat, lon, categoryID, filterItem);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
+    @JsonView(JsonViews.NormalViews.class)
+    @GET
+    @Path("/getFilteredSearchedList")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Company> getFilteredSearchedList(@QueryParam("categoryID") int categoryID,
+                                                 @QueryParam("companyName") String companyName,
+                                                 @QueryParam("serviceName") String serviceName,
+                                                 @QueryParam("lat") float lat,
+                                                 @QueryParam("lon") float lon,
+                                                 @QueryParam("filterItem")FilterItem filterItem){
+        try {
+            return CompanyService.getFilteredSearchedCompanies(companyName,
+                    serviceName,
+                    lat,
+                    lon,
+                    categoryID,
+                    filterItem);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;

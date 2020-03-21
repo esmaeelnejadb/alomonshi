@@ -15,6 +15,7 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.ClientReservedTime;
+import com.alomonshi.utility.UtilityFunctions;
 
 public class TableReserveTime {
 
@@ -192,21 +193,23 @@ public class TableReserveTime {
 	/**
 	 * Delete reserve times between days
 	 * @param startDate start day for deleting times
-	 * @param endDate end day for de;leting time
+	 * @param endDate end day for deleting time
 	 * @param unitID intended unit to be changed
 	 * @return true if all statuses change successfully
 	 */
 
-    public static boolean deleteAllDayReserveTimesBetweenDays(int startDate, int endDate, int unitID)
+    public static boolean deleteAllDayReserveTimesBetweenDays(int startDate,
+															  int endDate,
+															  int unitID)
     {
         Connection conn = DBConnection.getConnection();
         try {
 			String command = "UPDATE RESERVETIMES " +
-					"SET " +
-					"    STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+					" SET " +
+					" STATUS = " + ReserveTimeStatus.DELETED.getValue() +
 					" WHERE" +
-					"    DAY_ID BETWEEN " + startDate + " AND " + endDate +
-					"        AND UNIT_ID = " + unitID +
+					" DAY_ID BETWEEN " + startDate + " AND " + endDate +
+					" AND UNIT_ID = " + unitID +
 					" AND STATUS != " + ReserveTimeStatus.RESERVED.getValue();
             PreparedStatement ps = conn.prepareStatement(command);
             int i = ps.executeUpdate();
@@ -231,6 +234,48 @@ public class TableReserveTime {
     }
 
 	/**
+	 * Deleting reserve times of a list of day
+	 * @param startDate start day for deleting times
+	 * @param endDate end day for deleting time
+	 * @param unitID intended unit to be changed
+	 * @param dayIDs to be deleted
+	 * @return result status
+	 */
+	public static boolean deleteADayListReserveTimesBetweenDays(int startDate,
+																int endDate,
+																int unitID,
+																List<Integer> dayIDs)
+	{
+		Connection conn = DBConnection.getConnection();
+		try {
+			String command = "UPDATE reservetimes rt," +
+					" calendar cal" +
+					" SET" +
+					" rt.STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+					" WHERE " +
+					" rt.DAY_ID = cal.ID" +
+					" AND rt.DAY_ID BETWEEN " + startDate + " AND " + endDate +
+					" AND rt.UNIT_ID = " + unitID +
+					" AND rt.STATUS != " + ReserveTimeStatus.RESERVED.getValue() +
+					getToBeDeletedDayListMiddleQuery(dayIDs);
+			PreparedStatement ps = conn.prepareStatement(command);
+			int i = ps.executeUpdate();
+			return i >= 0 ;
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+			return false;
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Deleting midday reserve times between days
 	 * @param startDate start day for deleting
 	 * @param endDate end day for deleting
@@ -244,16 +289,65 @@ public class TableReserveTime {
 			, MiddayID middayID)
 	{
 		String command = "UPDATE RESERVETIMES " +
-				"SET " +
-				"    STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+				" SET " +
+				" STATUS = " + ReserveTimeStatus.DELETED.getValue() +
 				" WHERE" +
-				"    DAY_ID BETWEEN " + startDate + " AND " + endDate +
-				"        AND UNIT_ID = " + unitID +
+				" DAY_ID BETWEEN " + startDate + " AND " + endDate +
+				" AND UNIT_ID = " + unitID +
 				" AND MIDDAY_ID = " + middayID.getValue() +
 				" AND STATUS != " + ReserveTimeStatus.RESERVED.getValue();
 		Connection conn = DBConnection.getConnection();
 		try
 		{
+			PreparedStatement ps = conn.prepareStatement(command);
+			int i = ps.executeUpdate();
+			return i >= 0 ;
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+			return false;
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Deleting midday reserve times between days
+	 * @param startDate start day for deleting
+	 * @param endDate end day for deleting
+	 * @param unitID intended unit to be changed
+	 * @param middayID intended midday to be deleted
+	 * @return true if all statuses change to deleted
+	 */
+	public static boolean deleteMiddayADayListReserveTimesBetweenDays(int startDate,
+																	  int endDate,
+																	  int unitID,
+																	  List<Integer> dayIDs,
+																	  MiddayID middayID)
+	{
+		Connection conn = DBConnection.getConnection();
+		try {
+			String command = "UPDATE reservetimes rt," +
+					" calendar cal" +
+					" SET" +
+					" rt.STATUS = " + ReserveTimeStatus.DELETED.getValue() +
+					" WHERE" +
+					" rt.DAY_ID = cal.ID" +
+					" AND rt.DAY_ID BETWEEN " + startDate + " AND " + endDate +
+					" AND rt.UNIT_ID = " + unitID +
+					" AND rt.STATUS != " + ReserveTimeStatus.RESERVED.getValue() +
+					" AND rt.MIDDAY_ID = " + middayID.getValue() +
+					getToBeDeletedDayListMiddleQuery(dayIDs);
 			PreparedStatement ps = conn.prepareStatement(command);
 			int i = ps.executeUpdate();
 			return i >= 0 ;
@@ -340,10 +434,10 @@ public class TableReserveTime {
 		return reserveTime;
 	}
 	
-	public static List<ReserveTime> getAdminUnitReserveTimeInADay(int dateID, int unitID)
+	public static Map<MiddayID, List<ReserveTime>> getAdminUnitReserveTimeInADay(int dateID, int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
-		List<ReserveTime> reserveTimes = new ArrayList<>();
+		Map<MiddayID, List<ReserveTime>> reserveTimes = new HashMap<>();
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
@@ -1058,6 +1152,15 @@ public class TableReserveTime {
 		}catch (Exception e) {
 			return false;
 		}
+	}
 
+	/**
+	 * Getting middle query for deleting reserve times of a day list
+	 * @param dayIDs intended list
+	 * @return query
+	 */
+	private static String getToBeDeletedDayListMiddleQuery (List<Integer> dayIDs) {
+		StringBuilder columnName = new StringBuilder(" AND cal.dayofweek IN (");
+		return UtilityFunctions.getDayNumbersMiddleQuery(columnName, dayIDs);
 	}
 }

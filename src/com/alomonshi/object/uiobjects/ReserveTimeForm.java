@@ -3,27 +3,26 @@ package com.alomonshi.object.uiobjects;
 import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalTime;
+import java.util.List;
 
 public class ReserveTimeForm {
     private int clientID;
     private int unitID;
     private int startDate;
     private int endDate;
+    private List<Integer> dayNumbers;
     private MiddayID midday;
     private LocalTime morningStartTime;
     private LocalTime morningEndTime;
     private LocalTime afternoonStartTime;
     private LocalTime afternoonEndTime;
 
-    @NotNull
     public int getClientID() {
         return clientID;
     }
 
-    @NotNull
     public int getUnitID() {
         return unitID;
     }
@@ -34,6 +33,10 @@ public class ReserveTimeForm {
 
     public int getEndDate() {
         return endDate;
+    }
+
+    public List<Integer> getDayNumbers() {
+        return dayNumbers;
     }
 
     public MiddayID getMidday() {
@@ -74,6 +77,10 @@ public class ReserveTimeForm {
 
     public void setEndDate(int endDate) {
         this.endDate = endDate;
+    }
+
+    public void setDayNumbers(List<Integer> dayNumbers) {
+        this.dayNumbers = dayNumbers;
     }
 
     public void setMidday(MiddayID midday) {

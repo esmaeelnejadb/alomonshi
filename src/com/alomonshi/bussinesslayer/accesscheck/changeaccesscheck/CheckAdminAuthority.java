@@ -3,6 +3,8 @@ package com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck;
 import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.tableobjects.ReserveTime;
+import com.alomonshi.object.tableobjects.ServiceDiscount;
+import com.alomonshi.object.uiobjects.ServiceDiscountList;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -74,5 +76,22 @@ public class CheckAdminAuthority {
         //Getting reserve time of the comment to get unit id from that
         ReserveTime reserveTime = TableReserveTime.getReserveTime(comment.getReserveTimeID());
         return isUserUnitAuthorized(comment.getClientID(), reserveTime.getUnitID());
+    }
+
+    /**
+     * Check if all service discount is correct
+     * @param serviceDiscountList to be checked
+     * @return result
+     */
+    public static boolean isServiceDiscountListEditAuthorized(ServiceDiscountList serviceDiscountList) {
+        List<Integer> serviceIDs = TableService.getUnitServiceIDs(serviceDiscountList.getUnitID());
+        if (isUserUnitAuthorized(serviceDiscountList.getClientID(), serviceDiscountList.getUnitID())) {
+            for (ServiceDiscount serviceDiscount : serviceDiscountList.getServiceDiscounts()) {
+                if (!serviceIDs.contains(serviceDiscount.getServiceID()))
+                    return false;
+            }
+        }else
+            return false;
+        return true;
     }
 }

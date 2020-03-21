@@ -186,6 +186,28 @@ public class AdminReserveTimesWebService {
         }
     }
 
+    @CompanySubAdminSecured
+    @DELETE
+    @Path("/cancelReservedTimesBetweenDays")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse cancelClientReservedTimesBetweenDays(ReserveTimeForm reserveTimeForm) {
+        serviceResponse = new ServiceResponse();
+        try {
+            reserveTimeService = new ReserveTimeService(serviceResponse);
+            if (CheckAdminAuthority.isUserUnitAuthorized(reserveTimeForm.getClientID()
+                    , reserveTimeForm.getUnitID()))
+                return reserveTimeService
+                        .setReserveTimeForm(reserveTimeForm)
+                        .cancelReservedTimeBetweenDays();
+            else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot cancel reserved times " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
     @OPTIONS
     @Path("/getUnitReserveTimes")
     public void doOptionsForAdminGettingReserveTimes() {
@@ -201,6 +223,12 @@ public class AdminReserveTimesWebService {
     @OPTIONS
     @Path("/reserveTime")
     public void doOptionsForAdminReserveTime() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/cancelReservedTimesBetweenDays")
+    public void doOptionsForCancelReservedTimesBetweenDays() {
         HttpContextHeader.doOptions(httpServletResponse);
     }
 

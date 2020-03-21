@@ -22,7 +22,9 @@ public class Initializer implements ServletContextListener {
         ConfigurationParameter.databasePassword = config.getKey("programming.status.development").equals("on")
                 ? config.getKey("database.properties.localPassword")
                 : config.getKey("database.properties.serverPassword");
-
+        ConfigurationParameter.smsPanelUserName = config.getKey("SMSUtil.SMSPanel.userName");
+        ConfigurationParameter.smsPanelPassword = config.getKey("SMSUtil.SMSPanel.smsPass");
+        ConfigurationParameter.smsPanelFromNumber = config.getKey("SMSUtil.SMSPanel.fromNumber");
 
     }
 

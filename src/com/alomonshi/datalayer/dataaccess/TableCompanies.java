@@ -12,27 +12,52 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 
 public class TableCompanies {
 
-	public TableCompanies()
-	{}
-
 	public static boolean insert(Company company){
-		String command="insert into COMPANIES (COMP_CAT_ID, COMP_NAME, COMP_ADDRESS, COMP_PHONE1, COMP_PHONE2"
-				+ ", COMP_PHONE3, LOCATION_LAT, LOCATION_LON, " +
-				"COMP_WEBSITE, COMP_RATE, COMP_STAT, COMP_PICURL," +
-				" COMP_LOCALITY, CITY_ID, DISTRICT_ID, IS_ACTIVE, COMP_COMMERTIALCODE)"
+		String command = "INSERT INTO COMPANIES (" +
+				"COMP_CAT_ID," +
+				" COMP_NAME," +
+				" COMP_ADDRESS," +
+				" COMP_PHONE1," +
+				" COMP_PHONE2," +
+				" COMP_PHONE3," +
+				" LOCATION_LAT," +
+				" LOCATION_LON, " +
+				" COMP_WEBSITE," +
+				" COMP_RATE, COMP_STAT, COMP_PICURL," +
+				" COMP_LOCALITY," +
+				" CITY_ID," +
+				" DISTRICT_ID," +
+				" IS_ACTIVE," +
+				" COMP_COMMERTIALCODE" +
+                " )"
 				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdateCommand(company, command);
 	}
 
 	public static boolean update(Company company){
-		String command = "UPDATE COMPANIES SET COMP_CAT_ID = ?, COMP_NAME = ?, COMP_ADDRESS = ?, " +
-				"COMP_PHONE1 = ?, COMP_PHONE2 = ? , COMP_PHONE3 = ?, LOCATION_LAT = ?, LOCATION_LON = ?," +
-				"COMP_WEBSITE = ?, COMP_RATE = ?, COMP_STAT = ?, COMP_PICURL = ?, COMP_LOCALITY = ?, " +
-				"CITY_ID = ?, DISTRICT_ID = ?, IS_ACTIVE = ? , COMP_COMMERTIALCODE = ? WHERE ID = "  + company.getID();
+		String command = "UPDATE COMPANIES SET COMP_CAT_ID = ?," +
+				" COMP_NAME = ?," +
+				" COMP_ADDRESS = ?," +
+				" COMP_PHONE1 = ?," +
+				" COMP_PHONE2 = ?," +
+				" COMP_PHONE3 = ?," +
+				" LOCATION_LAT = ?," +
+				" LOCATION_LON = ?," +
+				" COMP_WEBSITE = ?," +
+				" COMP_RATE = ?," +
+				" COMP_STAT = ?," +
+				" COMP_PICURL = ?," +
+				" COMP_LOCALITY = ?," +
+				" CITY_ID = ?," +
+				" DISTRICT_ID = ?," +
+				" IS_ACTIVE = ?," +
+				" COMP_COMMERTIALCODE = ?" +
+				" WHERE ID = "  + company.getID();
 		return executeInsertUpdateCommand(company, command);
 	}
 
@@ -41,7 +66,13 @@ public class TableCompanies {
 		return update(company);
 	}
 
-		
+
+	/**
+	 * Executing insert update company
+	 * @param company to be inserted or updated
+	 * @param command to be executed
+	 * @return execution result
+	 */
 	private static boolean executeInsertUpdateCommand(Company company, String command)
 	{		
 		Connection conn = DBConnection.getConnection();
@@ -50,50 +81,60 @@ public class TableCompanies {
 			PreparedStatement ps = conn.prepareStatement(command);
 			prepare(ps, company);
 			int i = ps.executeUpdate();
-			return i==1;
+			return i == 1;
 			
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
 		}		
 	}
+
+	/**
+	 * Getting company
+	 * @param companyID to be got from database
+	 * @return company object
+	 */
 	public static Company getCompany(int companyID) {
-		String command="select * from COMPANIES where ID = " + companyID;
 		Connection conn = DBConnection.getConnection();
 		Company company = new Company();
-		try
-		{
+		try {
+            String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" WHERE comp.ID = " + companyID;
 			Statement stmt =conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
+			while(rs.next()) {
 				fillCompany(rs, company);
 			}
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try  {
 						conn.close();
-				} catch (SQLException e)  
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}	
@@ -101,40 +142,33 @@ public class TableCompanies {
 		return company;
 	}
 
-	public static List<Company> getAllCompanies() {
-		String command="select * from COMPANIES where IS_ACTIVE IS TRUE";
-		Connection conn = DBConnection.getConnection();
-		List<Company> companies = new ArrayList<>();
-		try
-		{
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(command);
-			fillCompanies(rs, companies);
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
-		}
-		return companies;
-	}
-	
+	/**
+	 * Getting list of companies in a category
+	 * @param categoryID to got
+	 * @return list of company objects
+	 */
 	public static List<Company> getCompanies(int categoryID) {
-		String command = "select * from COMPANIES where IS_ACTIVE IS TRUE AND COMP_CAT_ID = " + categoryID;
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
-		try
-		{
+		try {
+            String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" GROUP BY comp.ID" +
+					" ORDER BY comp.ID";
 			Statement stmt =conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
 			fillCompanies(rs, companies);
@@ -157,12 +191,33 @@ public class TableCompanies {
 		return companies;
 	}
 
-	public static List<Company> getBestCompanies(int limitNumber) {
-		String command="select * from COMPANIES where IS_ACTIVE IS TRUE ORDER BY COMP_RATE DESC LIMIT " + limitNumber;
+	/**
+	 * Getting top best companies sorted by their rate for first page
+	 * @param limitNumber limitation number
+	 * @return list of best companies
+	 */
+	public static List<Company> getTopBestCompanies(int limitNumber) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
-		try
-		{
+		try {
+            String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" GROUP BY comp.ID" +
+					" ORDER BY comp.COMP_RATE DESC" +
+                    " LIMIT " + limitNumber;
 			Statement stmt =conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
 			fillCompanies(rs, companies);
@@ -184,13 +239,36 @@ public class TableCompanies {
 		}
 		return companies;
 	}
-	
-	public static List<Company> getNewestCompanies(int limitNumber) {
-		String command="select * from COMPANIES where IS_ACTIVE IS TRUE ORDER BY id DESC LIMIT " + limitNumber;
+
+	/**
+	 * Getting newest companies
+	 * @param limitNumber number of company should be returned
+	 * @return list of company object
+	 */
+	public static List<Company> getDiscountCompanies(int limitNumber) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
-		try
-		{
+		try {
+			String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp," +
+					" units unit," +
+					" services serv," +
+					" servicediscount servdis" +
+					" WHERE" +
+					" comp.id = unit.comp_id" +
+					" AND unit.id = serv.unit_id" +
+					" AND serv.id = servdis.service_id" +
+					" AND unit.is_active IS TRUE" +
+					" AND serv.is_active IS TRUE" +
+					" AND comp.is_active IS TRUE" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" GROUP BY comp.id" +
+					" ORDER BY comp.id" +
+					" LIMIT " + limitNumber;
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
 			fillCompanies(rs, companies);
@@ -201,329 +279,457 @@ public class TableCompanies {
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
 					conn.close();
-				} catch (SQLException e)  
+				} catch (SQLException e)
 				{
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
-		}
-		return companies;
-	}
-	
-	public static List<Company> getSearchedCompanies(String compName, int categoryID) {
-		String command="select * from COMPANIES where IS_ACTIVE is true AND COMP_NAME LIKE '%" + compName +  "%' AND COMP_CAT_ID = " + categoryID;
-		Connection conn = DBConnection.getConnection();
-		List<Company> companies = new ArrayList<>();
-		try
-		{
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(command);
-			fillCompanies(rs, companies);
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
+			}
 		}
 		return companies;
 	}
 
-	
-	public static int getCompanyNumbers(int catID)
-	{
-		String command ="select count(*) from COMPANIES where IS_ACTIVE is true AND COMP_CAT_ID = " + catID;
+
+	/**
+	 * Getting newest companies
+	 * @param limitNumber number of company should be returned
+	 * @return list of company object
+	 */
+	public static List<Company> getNewestCompanies(int limitNumber) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+			String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" GROUP BY comp.ID" +
+					" ORDER BY comp.ID DESC" +
+					" LIMIT " + limitNumber;
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+	/**
+	 * Getting top best companies sorted by their rate for first page
+	 * @return list of best companies
+	 */
+	public static List<Company> getFilteredBestCompanies(int categoryID) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+            String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" GROUP BY comp.ID" +
+					" ORDER BY comp.COMP_RATE DESC";
+			Statement stmt =conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+	/**
+	 * Getting searched companies
+	 * @param lon location longitude
+	 * @param lat location latitude
+	 * @param categoryID intended category to be searched
+	 * @return list of company object
+	 */
+	public static List<Company> getFilteredNearestCompanies(float lat, float lon, int categoryID) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+			String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount," +
+					" SQRT(POW(comp.location_lat - "+ lat +", 2) + POW(comp.location_lon - "+ lon +", 2)) AS distance" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" GROUP BY comp.ID" +
+					" ORDER BY distance ASC";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+	/**
+	 * Getting filtered cheapest company
+	 * @param categoryID intended category to be searched
+	 * @return list of company object
+	 */
+	public static List<Company> getFilteredCheapestCompanies(int categoryID) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+
+			String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount," +
+					" AVG(serv.service_price) AS price" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" GROUP BY comp.ID" +
+					" ORDER BY price ASC";
+
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+	/**
+	 * Getting filtered most expensive company
+	 * @param categoryID intended category to be searched
+	 * @return list of company object
+	 */
+	public static List<Company> getFilteredMostExpensiveCompanies(int categoryID) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+
+			String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount," +
+					" AVG(serv.service_price) AS price" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN" +
+					" units unit ON comp.id = unit.comp_id" +
+					" AND unit.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" services serv ON unit.id = serv.unit_id" +
+					" AND serv.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" servicediscount servdis ON serv.id = servdis.service_id" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" GROUP BY comp.ID" +
+					" ORDER BY price DESC ";
+
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+	/**
+	 * Getting newest companies
+	 * @param categoryID searched category
+	 * @return list of company object
+	 */
+	public static List<Company> getFilteredDiscountCompanies(int categoryID) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+			String command = "SELECT" +
+					" comp.*," +
+					" max(servdis.discount) as discount" +
+					" FROM" +
+					" companies comp," +
+					" units unit," +
+					" services serv," +
+					" servicediscount servdis" +
+					" WHERE" +
+					" comp.id = unit.comp_id" +
+					" AND unit.id = serv.unit_id" +
+					" AND serv.id = servdis.service_id" +
+					" AND unit.is_active IS TRUE" +
+					" AND serv.is_active IS TRUE" +
+					" AND comp.is_active IS TRUE" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" AND comp.COMP_CAT_ID = " + categoryID +
+					" GROUP BY comp.id" +
+					" ORDER BY comp.id";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+
+    /**
+     * Getting searched companies
+     * @param companyName name of company to be searched
+     * @param categoryID intended category to be searched
+     * @param lat location latitude
+     * @param lon location longitude
+     * @param serviceName searched service name
+     * @return list of company object
+     */
+    public static List<Company> getSearchedCompanies(String companyName,
+                                                     String serviceName,
+                                                     float lat,
+                                                     float lon,
+                                                     int categoryID) {
+        Connection conn = DBConnection.getConnection();
+        List<Company> companies = new ArrayList<>();
+        try {
+			serviceName = getFilterAndSearchServiceName(serviceName);
+			companyName = getFilterAndSearchCompanyName(companyName);
+
+            String middleQuery = "";
+
+            String command = getSearchAndFilterCommand(
+                    companyName,
+                    serviceName,
+                    lat,
+                    lon,
+                    categoryID,
+                    middleQuery,
+                    getFilterAndSearchOrder(companyName, serviceName, lat, lon));
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(command);
+            fillCompanies(rs, companies);
+        }catch(SQLException e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }finally {
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+                }
+            }
+        }
+        return companies;
+    }
+
+    /**
+     * Getting best searched companies
+     * @param companyName name of company to be searched
+     * @param categoryID intended category to be searched
+     * @param lat location latitude
+     * @param lon location longitude
+     * @param serviceName searched service name
+     * @return list of company object
+     */
+    public static List<Company> getFilteredSearchedCompanies(String companyName,
+                                                             String serviceName,
+                                                             float lat,
+                                                             float lon,
+                                                             int categoryID,
+                                                             FilterItem filterItem) {
+        Connection conn = DBConnection.getConnection();
+        List<Company> companies = new ArrayList<>();
+        try {
+            serviceName = getFilterAndSearchServiceName(serviceName);
+            companyName = getFilterAndSearchCompanyName(companyName);
+
+            String middleQuery = "";
+
+            //Getting second sorting order based on filter item
+            String filterSecondaryOrder = "";
+            switch (filterItem) {
+                case BEST:
+                    filterSecondaryOrder = " , comp.comp_rate DESC";
+                    break;
+                case CHEAPEST:
+                    filterSecondaryOrder = " , price ASC";
+                    break;
+                case EXPENSIVE:
+                    filterSecondaryOrder = " , price DESC";
+                    break;
+				case DISCOUNT:
+					filterSecondaryOrder = " , discount DESC";
+					middleQuery = " AND servdis.is_active IS TRUE ";
+                default:
+                    break;
+            }
+
+            String order = getFilterAndSearchOrder(companyName, serviceName, lat, lon) + filterSecondaryOrder;
+
+            String command = getSearchAndFilterCommand(
+                    companyName,
+                    serviceName,
+                    lat,
+                    lon,
+                    categoryID,
+                    middleQuery,
+                    order);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(command);
+            fillCompanies(rs, companies);
+        }catch(SQLException e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }finally {
+            if(conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+                }
+            }
+        }
+        return companies;
+    }
+
+	/**
+	 * Getting number of company in a category
+	 * @param catID category id
+	 * @return company numbers
+	 */
+	static int getCompanyNumbers(int catID) {
+		String command = "SELECT" +
+                " COUNT(*)" +
+                " FROM" +
+                " COMPANIES" +
+                " WHERE" +
+                " IS_ACTIVE IS TRUE AND COMP_CAT_ID = " + catID;
 		Connection conn = DBConnection.getConnection();
 		int count = 0;
-		try
-		{
+		try {
 			Statement stmt =conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
+			while(rs.next()) {
 				count =  rs.getInt(1);
 			}
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{
+		}finally {
+			if(conn != null) {
+				try {
+						conn.close();
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return count;
-	}
-	
-	public static int getIDByUsername(String username)
-	{
-		String command="select ID from COMPANIES where comp_username = '" + username + "'";
-		Connection conn = DBConnection.getConnection();
-		int id = 0;
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				id = rs.getInt(1);
-			}
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-		return id;
-	}
-	
-	public static int getID(String name, int categoryID)
-	{
-		String command="select ID from COMPANIES where comp_cat_ID = " + categoryID + " and comp_name = '" + name + "'";
-		Connection conn = DBConnection.getConnection();
-		int id = 0;
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				id  = rs.getInt(1);
-			}
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
-		}
-		return id;
-	}
-	public static int getCategoryID(int companyID)
-	{
-		String command="select comp_cat_ID from COMPANIES where ID = " + companyID;
-		Connection conn = DBConnection.getConnection();
-		int id = 0;
-		try
-		{
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(command);
-			while(rs.next())
-			{
-				id =  rs.getInt(1);
-			}
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-		return id;
-	}
-
-
-	public static String getName(int companyID)
-	{
-		String command = "select comp_name from COMPANIES where ID = " + companyID;
-		Connection conn = DBConnection.getConnection();
-		String name = null;
-		try
-		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				name = rs.getString(1);
-			}
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-		return name;
-	}
-
-	public static boolean setPhone(String phone, int companyID)
-	{
-		String command = "update COMPANIES set COMP_PHONE = ? where ID = ?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setString(1, phone);
-			ps.setInt(2, companyID);
-			int i=ps.executeUpdate();
-			return i == 1;
-			
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-	}
-	
-	public static boolean setName(String name, int companyID)
-	{
-		String command = "update COMPANIES set COMP_NAME = ? where ID = ?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setString(1, name);
-			ps.setInt(2, companyID);
-			int i=ps.executeUpdate();
-			return i == 1;
-			
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-						conn.close();		
-				} catch (SQLException e)  
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-	}
-
-	public static boolean setWebSite(String website, int companyID)
-	{
-		String command = "update COMPANIES set COMP_WEBSITE = ? where ID = ?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setString(1, website);
-			ps.setInt(2, companyID);
-			int i = ps.executeUpdate();
-			return i == 1;
-			
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-	}
-	
-	public static boolean setAddress(String address, int companyID)
-	{
-		String command = "update COMPANIES set COMP_ADDRESS = ? where ID = ?";
-		Connection conn = DBConnection.getConnection(); 
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			ps.setString(1, address);
-			ps.setInt(2, companyID);
-			int i = ps.executeUpdate();
-			return i == 1;
-			
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
 	}
 
 	private static void prepare(PreparedStatement preparedStatement, Company company){
@@ -562,13 +768,15 @@ public class TableCompanies {
 			company.setLocationLon(resultSet.getFloat(9));
 			company.setWebsite(resultSet.getString(10));
 			company.setRate(resultSet.getFloat(11));
-			company.setPicURL(resultSet.getString(12));
+			company.setLogoURL(resultSet.getString(12));
 			company.setLocality(resultSet.getString(13));
 			company.setCityID(resultSet.getInt(14));
 			company.setDistrictID(resultSet.getInt(15));
 			company.setActive(resultSet.getBoolean(16));
 			company.setCommercialCode(resultSet.getString(17));
+			company.setDiscount(resultSet.getInt("discount"));
 			company.setUnits(TableUnit.getUnits(company.getID(), true));
+			company.setCompanyPictures(TableCompanyPicture.getCompanyPictures(company.getID()));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -585,4 +793,90 @@ public class TableCompanies {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
+
+
+    /**
+     * Getting command for search and filter request
+     * @param companyName company name
+     * @param serviceName service name
+     * @param lat location latitude
+     * @param lon location longitude
+     * @param categoryID searched or filtered category id
+     * @param middleQuery middle query determined by search type
+     * @param order ordering sort determined by filter or search type
+     * @return filter or search command
+     */
+	private static String getSearchAndFilterCommand (String companyName,
+                                                     String serviceName,
+                                                     float lat,
+                                                     float lon,
+                                                     int categoryID,
+                                                     String middleQuery,
+                                                     String order) {
+        return "SELECT" +
+				" comp.*," +
+				" (match(comp.comp_name) against ('" + companyName + "' IN BOOLEAN MODE)" +
+				" + match(serv.service_name) against ('" + serviceName + "' IN BOOLEAN MODE))/2 as point," +
+				" SQRT(POW(comp.location_lat - "+ lat + ", 2) + POW(comp.location_lon - "+ lon +", 2)) AS distance," +
+				" AVG(serv.service_price) AS price," +
+				" max(servdis.discount) as discount," +
+				" AVG(serv.service_price) AS price" +
+				" FROM" +
+				" companies comp" +
+				" LEFT JOIN" +
+				" units unit ON comp.id = unit.comp_id" +
+				" AND unit.is_active IS TRUE" +
+				" LEFT JOIN" +
+				" services serv ON unit.id = serv.unit_id" +
+				" AND serv.is_active IS TRUE" +
+				" LEFT JOIN" +
+				" servicediscount servdis ON serv.id = servdis.service_id" +
+				" AND servdis.is_active IS TRUE" +
+				" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+				" WHERE comp.COMP_CAT_ID = " + categoryID +
+				middleQuery +
+				" GROUP BY comp.id" +
+				" ORDER BY "+ order;
+    }
+
+	/**
+	 * Getting order for filter and search requests sorting data
+	 * @param companyName search item
+	 * @param serviceName search item
+	 * @param lat location latitude
+	 * @param lon location longitude
+	 * @return order for sorting data
+	 */
+    private static String getFilterAndSearchOrder(String companyName,
+												  String serviceName,
+												  float lat,
+												  float lon) {
+		String order = "id DESC";
+		//If no location is entered
+		if(lat == 0 || lon == 0) {
+			//If service and company names are not entered
+			if (!companyName.equals("") || !serviceName.equals("")) {
+				order = "point DESC";
+			}
+		} else {
+			if (!companyName.equals("") || !serviceName.equals("")) {
+				order = "point * distance DESC";
+			}
+			else
+				order = "distance DESC";
+		}
+		return order;
+	}
+
+	private static String getFilterAndSearchCompanyName (String companyName) {
+		return companyName == null ? ""
+				:  (companyName.equals("") ? companyName : "*" + companyName + "*");
+	}
+
+	private static String getFilterAndSearchServiceName (String serviceName) {
+    	return serviceName == null ? ""
+				: (serviceName.equals("") ? serviceName : "*" + serviceName + "*") ;
+	}
+
+
 }

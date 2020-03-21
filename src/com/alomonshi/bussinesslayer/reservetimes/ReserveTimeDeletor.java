@@ -7,7 +7,6 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.uiobjects.ReserveTimeForm;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,21 +31,38 @@ class ReserveTimeDeletor {
                 , reserveTimeForm.getEndDate());
         //Check if any reserved time is existed in that period or not
         if (reserveTimes.isEmpty()) {
-            boolean result = TableReserveTime
-                    .deleteAllDayReserveTimesBetweenDays(
-                            reserveTimeForm.getStartDate()
-                            , reserveTimeForm.getEndDate()
-                            , reserveTimeForm.getUnitID());
-            if (result)
-                return serviceResponse.setResponse(true)
-                        .setMessage(ServerMessage.SUCCESSMESSAGE);
-            else
-                return serviceResponse.setResponse(false)
-                        .setMessage(ServerMessage.FAULTMESSAGE);
+            //If all days between start and end date should be deleted
+            if (reserveTimeForm.getDayNumbers() == null || reserveTimeForm.getDayNumbers().isEmpty()) {
+                boolean result = TableReserveTime
+                        .deleteAllDayReserveTimesBetweenDays(
+                                reserveTimeForm.getStartDate(),
+                                reserveTimeForm.getEndDate(),
+                                reserveTimeForm.getUnitID());
+                if (result)
+                    return serviceResponse.setResponse(true)
+                            .setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    return serviceResponse.setResponse(false)
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+            }
+            //If some days between start and end date should be deleted
+            else {
+                boolean result = TableReserveTime
+                        .deleteADayListReserveTimesBetweenDays(reserveTimeForm.getStartDate(),
+                                reserveTimeForm.getEndDate(),
+                                reserveTimeForm.getUnitID(),
+                                reserveTimeForm.getDayNumbers());
+                if (result)
+                    return serviceResponse.setResponse(true)
+                            .setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    return serviceResponse.setResponse(false)
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+            }
         } else
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.RESERVETIMEERROR_01)
-                    .setResponseData(Collections.singletonList(reserveTimes));
+                    .setResponseData(reserveTimes);
     }
 
     /**
@@ -61,18 +77,42 @@ class ReserveTimeDeletor {
                 , reserveTimeForm.getEndDate()
                 , reserveTimeForm.getMidday());
         //Check if any reserved time is existed in that period or not
-        if (reserveTimes.isEmpty())
-            return serviceResponse.setResponse(TableReserveTime
-                    .deleteMiddayReserveTimesBetweenDays(
-                            reserveTimeForm.getStartDate()
-                            , reserveTimeForm.getEndDate()
-                            , reserveTimeForm.getUnitID()
-                            , reserveTimeForm.getMidday()))
-                    .setMessage(ServerMessage.SUCCESSMESSAGE);
-        else
+        if (reserveTimes.isEmpty()) {
+            //If all days midday times to be deleted
+            if (reserveTimeForm.getDayNumbers() == null || reserveTimeForm.getDayNumbers().isEmpty()) {
+                boolean result = TableReserveTime
+                        .deleteMiddayReserveTimesBetweenDays(
+                                reserveTimeForm.getStartDate()
+                                , reserveTimeForm.getEndDate()
+                                , reserveTimeForm.getUnitID()
+                                , reserveTimeForm.getMidday());
+                if (result)
+                    return serviceResponse.setResponse(true)
+                            .setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    return serviceResponse.setResponse(false)
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+            }
+            //If all days midday times to be deleted
+            else {
+                boolean result = TableReserveTime
+                        .deleteMiddayADayListReserveTimesBetweenDays(
+                                reserveTimeForm.getStartDate(),
+                                reserveTimeForm.getEndDate(),
+                                reserveTimeForm.getUnitID(),
+                                reserveTimeForm.getDayNumbers(),
+                                reserveTimeForm.getMidday());
+                if (result)
+                    return serviceResponse.setResponse(true)
+                            .setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    return serviceResponse.setResponse(false)
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+            }
+        } else
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.RESERVETIMEERROR_01)
-                    .setResponseData(Collections.singletonList(reserveTimes));
+                    .setResponseData(reserveTimes);
     }
 
     /**

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="jaxrs">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/web/WEB-INF/lib/jaxrs" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/web/WEB-INF/lib/jaxrs" recursive="false" />
+  </library>
+</component>

@@ -2,6 +2,7 @@ package com.alomonshi.datalayer.dataaccess;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.CalendarDate;
+import com.alomonshi.utility.UtilityFunctions;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,26 +16,25 @@ import java.util.logging.Logger;
 public class TableCalendar {
 
 	public static CalendarDate getDate(int dateID){
-        String command = "select * from CALENDAR where ID = " + dateID;
+        String command = "SELECT" +
+				" *" +
+				" FROM" +
+				" CALENDAR" +
+				" WHERE" +
+				" ID =" + dateID;
         Connection conn = DBConnection.getConnection();
         CalendarDate date = new CalendarDate();
-        try
-        {
+        try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(command);
             fillSingleDate(rs, date);
-        }catch(SQLException e)
-        {
+        }catch(SQLException e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-        }finally
-        {
-            if(conn != null)
-            {
-                try
-                {
+        }finally {
+            if(conn != null) {
+                try {
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
                 }
             }
@@ -42,27 +42,30 @@ public class TableCalendar {
         return date;
 	}
 
-	public static List<CalendarDate> getDates(int formDateID, int toDateID){
-		String command = "select * from CALENDAR where ID between " + formDateID + " and " + toDateID ;
+	public static List<CalendarDate> getDates(int fromDateID, int toDateID, List<Integer> dayNumbers){
 		List<CalendarDate> dates = new ArrayList<>();
 		Connection conn = DBConnection.getConnection();
-		try
-		{
+		try {
+			String middleQuery = dayNumbers == null || dayNumbers.isEmpty()
+					? " "
+					: getDatesMiddleQuery(dayNumbers);
+			String command = "SELECT" +
+					" *" +
+					" FROM" +
+					" CALENDAR" +
+					" WHERE" +
+					" ID BETWEEN " + fromDateID + " AND " + toDateID
+					+ middleQuery;
 			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
+			ResultSet rs = stmt.executeQuery(command);
             fillDates(rs, dates);
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -79,6 +82,7 @@ public class TableCalendar {
 			date.setDayOfMonth(resultSet.getInt(5));
 			date.setMonthName(resultSet.getString(6));
 			date.setDayName(resultSet.getString(7));
+			date.setDayOfWeek(resultSet.getInt(8));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -105,4 +109,9 @@ public class TableCalendar {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }
     }
+
+    private static String getDatesMiddleQuery (List<Integer> dayNumbers) {
+		StringBuilder columnName = new StringBuilder(" AND dayofweek IN ( ");
+		return UtilityFunctions.getDayNumbersMiddleQuery(columnName, dayNumbers);
+	}
 }

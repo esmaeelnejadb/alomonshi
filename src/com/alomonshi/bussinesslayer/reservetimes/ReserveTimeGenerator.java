@@ -28,23 +28,26 @@ class ReserveTimeGenerator {
      * Generating morning and afternoon reserve time
      * @return List of generated reserve time
      */
-
     List<ReserveTime> generateReserveTimes(){
         List<ReserveTime> reserveTimes = new ArrayList<>();
         if (primaryCheck()){
             if (checkMorningTime())
                 reserveTimes.addAll(
-                        generateMiddayReserveTimes(reserveTimeForm.getUnitID(),
+                        generateMiddayReserveTimes(
+                                reserveTimeForm.getUnitID(),
                                 reserveTimeForm.getStartDate(),
                                 reserveTimeForm.getEndDate(),
+                                reserveTimeForm.getDayNumbers(),
                                 MiddayID.MORNING,
                                 reserveTimeForm.getMorningStartTime(),
                                 reserveTimeForm.getMorningEndTime()));
             if (checkAfternoonTime())
                 reserveTimes.addAll(
-                        generateMiddayReserveTimes(reserveTimeForm.getUnitID(),
+                        generateMiddayReserveTimes(
+                                reserveTimeForm.getUnitID(),
                                 reserveTimeForm.getStartDate(),
                                 reserveTimeForm.getEndDate(),
+                                reserveTimeForm.getDayNumbers(),
                                 MiddayID.AFTERNOON,
                                 reserveTimeForm.getAfternoonStartTime(),
                                 reserveTimeForm.getAfternoonEndTime()));
@@ -54,23 +57,27 @@ class ReserveTimeGenerator {
 
     /**
      * Generate reserve times of a unit
-     * @param unitID intended unit id
-     * @param startDay start date of devoting reserve times
-     * @param endDay end date of devoting reserve times
      * @param middayID middle date of reserve times
-     * @param startTime start time of reserve times
-     * @param endTime end time of reserve times
      * @return list of generated reserve times to be inserted in database
      */
-
-    static List<ReserveTime> generateMiddayReserveTimes(int unitID, int startDay, int endDay, MiddayID middayID, LocalTime startTime, LocalTime endTime)
+    static List<ReserveTime> generateMiddayReserveTimes(int unitID,
+                                                        int startDate,
+                                                        int endDate,
+                                                        List<Integer> dayNumbers,
+                                                        MiddayID middayID,
+                                                        LocalTime startTime,
+                                                        LocalTime endTime)
     {
         // All duration including service, unit or reserve time duration
         // are in type of int and are considered as minutes
         List<ReserveTime> allReserveTimes = new ArrayList<>();
-        List<CalendarDate> dates = TableCalendar.getDates(startDay, endDay);
+        List<CalendarDate> dates = TableCalendar.getDates(
+                startDate,
+                endDate,
+                dayNumbers);
         LocalTime startTimeOfButton = startTime;
-        int duration = Objects.requireNonNull(TableUnit.getUnit(unitID, false)).getUnitDuration();
+        int duration = Objects.requireNonNull(TableUnit.getUnit(unitID,
+                false)).getUnitDuration();
         if(duration != 0) {
             for(CalendarDate date : dates)
             {
@@ -113,7 +120,6 @@ class ReserveTimeGenerator {
      * Primary check of input generating time data
      * @return true if all input data be entered correctly
      */
-
     private boolean primaryCheck(){
         return reserveTimeForm.getUnitID() != 0
                 && reserveTimeForm.getEndDate() >= reserveTimeForm.getStartDate()
@@ -124,7 +130,6 @@ class ReserveTimeGenerator {
      * checking morning input time
      * @return true if all input data be entered correctly
      */
-
     private boolean checkMorningTime(){
         if (reserveTimeForm.getMorningStartTime() != null
                 && reserveTimeForm.getMorningEndTime() != null)
@@ -154,7 +159,6 @@ class ReserveTimeGenerator {
      * checking afternoon input time
      * @return true if all input data be entered correctly
      */
-
     private boolean checkAfternoonTime(){
         if (reserveTimeForm.getAfternoonStartTime() != null
                 && reserveTimeForm.getAfternoonEndTime() != null)

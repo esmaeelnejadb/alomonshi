@@ -8,6 +8,7 @@ public class CalendarDate {
     private int dayOfMonth;
     private String monthName;
     private String dayName;
+    private int dayOfWeek;
 
     public int getID() {
         return ID;
@@ -37,6 +38,10 @@ public class CalendarDate {
         return dayName;
     }
 
+    public int getDayOfWeek() {
+        return dayOfWeek;
+    }
+
     public void setID(int ID) {
         this.ID = ID;
     }
@@ -63,5 +68,9 @@ public class CalendarDate {
 
     public void setDayName(String dayName) {
         this.dayName = dayName;
+    }
+
+    public void setDayOfWeek(int dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 }

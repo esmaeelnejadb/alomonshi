@@ -13,7 +13,6 @@ import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.uiobjects.CompanyAdmin;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -50,7 +49,7 @@ public class AdminManagementService {
         if (!companyAdmins.isEmpty()) {
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
-                    .setResponseData(Collections.singletonList(companyAdmins));
+                    .setResponseData(companyAdmins);
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.ADMINERROR_01);
     }

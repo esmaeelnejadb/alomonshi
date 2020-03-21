@@ -1,6 +1,9 @@
 package com.alomonshi.utility;
 
 import java.security.SecureRandom;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UtilityFunctions {
 	
@@ -85,5 +88,27 @@ public class UtilityFunctions {
 		SecureRandom random = new SecureRandom();
 		int num = random.nextInt(100000);
 		return String.format("%05d", num);
+	}
+
+
+	/**
+	 * Getting query of a column be equal to some specific days
+	 * @param columnName intended column name
+	 * @param dayList list of days
+	 * @return intended query
+	 */
+	public static String getDayNumbersMiddleQuery (StringBuilder columnName, List<Integer> dayList) {
+		try {
+			if (dayList != null && !dayList.isEmpty()) {
+				for (int i = 0; i < dayList.size(); i ++) {
+					columnName.append(dayList.get(i));
+					if (i < dayList.size() - 1)
+						columnName.append(" ,");
+				}
+			}
+		}catch (Exception e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+		return columnName.append(")").toString();
 	}
 }

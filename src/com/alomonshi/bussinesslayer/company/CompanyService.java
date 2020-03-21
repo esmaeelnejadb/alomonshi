@@ -1,88 +1,79 @@
 package com.alomonshi.bussinesslayer.company;
 
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
-import com.alomonshi.datalayer.dataaccess.TableService;
-import com.alomonshi.datalayer.dataaccess.TableUnit;
+import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 
 import java.util.*;
 
+/**
+ * Company Service
+ */
 public class CompanyService {
-    public static List<Company> getNearestCompanies(List<Company> companies, float lat, float lon)
-    {
-        int nearNum = companies.size();
-        List<Company> nearestCompanies = new ArrayList<>();
-        List<Float> sortedDistances = new ArrayList<>();
-        Map<Company, Float> distancesMap = new LinkedHashMap<>();
-        for(Company company : companies)
-        {
-            float lat_distance = Math.abs(company.getLocationLat() - lat);
-            float lon_distance = Math.abs(company.getLocationLon() - lon);
-            float distance = (float) Math.sqrt(Math.pow(lat_distance, 2) + Math.pow(lon_distance, 2));
-            sortedDistances.add(distance);
-            distancesMap.put(company, distance);
-        }
-        Collections.sort(sortedDistances);
-        for(int i = 0; i<Math.min(sortedDistances.size(), nearNum); i++)
-        {
-            for (Map.Entry<Company, Float> entry : distancesMap.entrySet()) {
-                if(sortedDistances.get(i) == (float)entry.getValue())
-                    nearestCompanies.add(entry.getKey());
-            }
-        }
-        return nearestCompanies;
+
+    /**
+     * Getting searched companies
+     * @param compName company name
+     * @param serveName service name
+     * @param lat client location latitude
+     * @param lon client location longiture
+     * @param categoryID searched category id
+     * @return list of company
+     */
+    public static List<Company> getSearchedCompanies(String compName,
+                                                     String serveName,
+                                                     float lat,
+                                                     float lon,
+                                                     int categoryID) {
+        return TableCompanies.getSearchedCompanies(compName, serveName, lat, lon, categoryID);
     }
 
-    public static List<Company> getSearchedCompanies(int categoryID, String compName, String serveName)
-    {
-        List<Company> companies = new ArrayList<>();
-        List<Integer> companyIDs = new ArrayList<>();
-        Iterator<Integer> it;
-        if (serveName == null){
-            if (compName == null){
-                companies = TableCompanies.getCompanies(categoryID);
-            }else {
-                companies = TableCompanies.getSearchedCompanies(compName, categoryID);
-            }
-        }else {
-            it = Objects.requireNonNull(TableService.getSearchedServices(serveName)).iterator();
-            if (compName == null){
-                while (it.hasNext()) {
-                    int unitID = it.next();
-                    int companyID = TableUnit.getCompanyID(unitID);
-                    if(!companyIDs.contains(companyID))
-                    {
-                        if(TableCompanies.getCompany(companyID).getCompanyCatID() == categoryID)
-                        {
-                            Company company =  TableCompanies.getCompany(companyID);
-                            companies.add(company);
-                            companyIDs.add(companyID);
-                        }
-                    }
-                }
-            }else {
-                List<Company> companies1 = TableCompanies.getSearchedCompanies(compName, categoryID);
-                List<Company> companies2 = new ArrayList<>();
-                it = Objects.requireNonNull(TableService.getSearchedServices(serveName)).iterator();
-                while (it.hasNext()) {
-                    int unitID = it.next();
-                    int companyID = TableUnit.getCompanyID(unitID);
-                    if(!companyIDs.contains(companyID))
-                    {
-                        if(TableCompanies.getCompany(companyID).getCompanyCatID() == categoryID)
-                        {
-                            Company company =  TableCompanies.getCompany(companyID);
-                            companies2.add(company);
-                            companyIDs.add(companyID);
-                        }
-                    }
-                }
-                Set<Company> hs = new LinkedHashSet<>();
-                hs.addAll(companies1);
-                hs.addAll(companies2);
-                companies.addAll(hs);
-            }
+    /**
+     * Getting filtered nearest companies
+     * @param categoryID filtered category id
+     * @param filterItem filtered item
+     * @return list of filtered companies
+     */
+    public static List<Company> getFilteredCompanies(float lat,
+                                                     float lon,
+                                                     int categoryID,
+                                                     FilterItem filterItem) {
+        switch (filterItem) {
+            case BEST:
+                return TableCompanies.getFilteredBestCompanies(categoryID);
+            case NEAREST:
+                return TableCompanies.getFilteredNearestCompanies(lat, lon, categoryID);
+            case CHEAPEST:
+                return TableCompanies.getFilteredCheapestCompanies(categoryID);
+            case EXPENSIVE:
+                return TableCompanies.getFilteredMostExpensiveCompanies(categoryID);
+            case DISCOUNT:
+                return TableCompanies.getFilteredDiscountCompanies(categoryID);
         }
-        return companies;
+        return null;
+    }
+
+    /**
+     * Getting filtered searched companies
+     * @param compName company name
+     * @param serveName service name
+     * @param lat client location latitude
+     * @param lon client location longitude
+     * @param categoryID searched category id
+     * @param filterItem to be filtered by
+     * @return list of company
+     */
+    public static List<Company> getFilteredSearchedCompanies(String compName,
+                                                     String serveName,
+                                                     float lat,
+                                                     float lon,
+                                                     int categoryID,
+                                                     FilterItem filterItem) {
+        return TableCompanies.getFilteredSearchedCompanies(compName,
+                serveName,
+                lat,
+                lon,
+                categoryID,
+                filterItem);
     }
 }

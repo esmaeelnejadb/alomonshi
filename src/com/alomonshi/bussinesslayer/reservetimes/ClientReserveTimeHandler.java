@@ -71,6 +71,7 @@ class ClientReserveTimeHandler {
                             .generateMiddayReserveTimes(reserveTime.getUnitID()
                                     , reserveTime.getDateID()
                                     , reserveTime.getDateID()
+                                    , null
                                     , reserveTime.getMiddayID()
                                     , startTime
                                     , endReserveTime.getStartTime().plusMinutes(endReserveTime.getDuration()));
@@ -103,8 +104,7 @@ class ClientReserveTimeHandler {
      */
 
     //////////////////////////////////////Canceling a Time//////////////////////////////////////////////
-    static synchronized boolean cancelClientReserveTime(ReserveTime reserveTime)
-    {
+    static synchronized boolean cancelClientReserveTime(ReserveTime reserveTime) {
         List<ReserveTime> newReserveTimes, shouldBeDeletedTimes;
 
         //Getting all the times in that midday and day
@@ -128,6 +128,7 @@ class ClientReserveTimeHandler {
                     reserveTime.getUnitID(),
                     reserveTime.getDateID(),
                     reserveTime.getDateID(),
+                    null,
                     reserveTime.getMiddayID(),
                     oldReserveTimes.get(reserveTimeIndex - 1).getStartTime(),
                     endReserveTime.getStartTime().plusMinutes(endReserveTime.getDuration()));
@@ -138,6 +139,7 @@ class ClientReserveTimeHandler {
                     reserveTime.getUnitID(),
                     reserveTime.getDateID(),
                     reserveTime.getDateID(),
+                    null,
                     reserveTime.getMiddayID(),
                     reserveTime.getStartTime(),
                     endReserveTime.getStartTime().plusMinutes(endReserveTime.getDuration()));
