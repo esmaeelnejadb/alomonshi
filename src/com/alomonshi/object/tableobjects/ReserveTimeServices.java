@@ -7,6 +7,8 @@ public class ReserveTimeServices {
     private int unitID;
     private boolean isActive;
     private int clientID;
+    private int servicePrice;
+    private int discountID;
 
     public int getId() {
         return id;
@@ -32,6 +34,14 @@ public class ReserveTimeServices {
         return isActive;
     }
 
+    public int getServicePrice() {
+        return servicePrice;
+    }
+
+    public int getDiscountID() {
+        return discountID;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -54,5 +64,13 @@ public class ReserveTimeServices {
 
     public void setClientID(int clientID) {
         this.clientID = clientID;
+    }
+
+    public void setServicePrice(int servicePrice) {
+        this.servicePrice = servicePrice;
+    }
+
+    public void setDiscountID(int discountID) {
+        this.discountID = discountID;
     }
 }

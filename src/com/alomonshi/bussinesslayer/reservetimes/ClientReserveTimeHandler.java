@@ -173,6 +173,11 @@ class ClientReserveTimeHandler {
         holdReserveTime.setStartTime(startTime);
     }
 
+    /**
+     * Filling reserve time service object to be inserted in table to new time registration
+     * @param reserveTimeServices to be filled and inserted
+     * @param reserveTime to be registered
+     */
     private static void fillReserveTimeServices(List<ReserveTimeServices> reserveTimeServices, ReserveTime reserveTime) {
         for (Integer serviceID : reserveTime.getServiceIDs()) {
             ReserveTimeServices reserveTimeService = new ReserveTimeServices();

@@ -6,14 +6,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.Services;
+import com.alomonshi.object.uiobjects.AdminReport;
 
 public class TableService {
 
@@ -142,11 +142,16 @@ public class TableService {
 		try {
 			Statement stmt =conn.createStatement();
 			String command = "SELECT" +
-					" *" +
+					" s.*, sd.ID as discountID, sd.DISCOUNT as discount" +
 					" FROM" +
-					" SERVICES" +
+					" services s" +
+					" LEFT JOIN" +
+					" servicediscount sd ON s.id = sd.service_id" +
+					" AND s.IS_ACTIVE IS TRUE" +
+					" AND sd.IS_ACTIVE IS TRUE" +
+					" AND NOW() BETWEEN sd.CREATE_DATE AND sd.EXPIRE_DATE" +
 					" WHERE" +
-					" IS_ACTIVE IS TRUE AND ID = " + serviceID;
+					" s.ID =" + serviceID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillObject(rs, service);
 		}catch(SQLException e)
@@ -181,11 +186,16 @@ public class TableService {
 		{
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
-					" *" +
+					" s.*, sd.ID as discountID, sd.DISCOUNT as discount" +
 					" FROM" +
-					" SERVICES" +
+					" services s" +
+					" LEFT JOIN" +
+					" servicediscount sd ON s.id = sd.service_id" +
+					" AND s.IS_ACTIVE IS TRUE" +
+					" AND sd.IS_ACTIVE IS TRUE" +
+					" AND NOW() BETWEEN sd.CREATE_DATE AND sd.EXPIRE_DATE" +
 					" WHERE" +
-					" IS_ACTIVE IS TRUE AND UNIT_ID = " + unitID;
+					" s.IS_ACTIVE IS TRUE AND s.UNIT_ID = " + unitID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillServices(rs, services);
 		}catch(SQLException e)
@@ -248,6 +258,49 @@ public class TableService {
 		return serviceIDs;
 	}
 
+	public static List<AdminReport> getAdminReport (int unitID, int startDate, int endDate) {
+		Connection conn = DBConnection.getConnection();
+		List<AdminReport> adminReports = new ArrayList<>();
+		try {
+			String command = "SELECT" +
+					" s.ID AS serviceID," +
+					" s.SERVICE_NAME AS serviceName," +
+					" SUM(s.SERVICE_TIME) / (" + startDate + " - " + endDate + " + 1) AS dayDuration," +
+					" SUM(s.SERVICE_TIME) AS totalDuration," +
+					" SUM(s.SERVICE_PRICE) / (" + startDate + " - " + endDate + " + 1) AS dayIncome," +
+					" SUM(s.SERVICE_PRICE) AS totalIncome" +
+					" FROM" +
+					" units u" +
+					" LEFT JOIN" +
+					" services s ON u.id = s.unit_id AND s.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" reservetimeservices rs ON s.id = rs.service_id" +
+					" AND rs.is_active IS TRUE" +
+					" LEFT JOIN" +
+					" reservetimes rt ON rs.res_time_id = rt.id AND rt.status = "
+					+ ReserveTimeStatus.RESERVED.getValue() +
+					" AND rt.day_id BETWEEN "+ startDate +" AND " + endDate +
+					" WHERE" +
+					" u.id = " + unitID +
+					" GROUP BY s.id" +
+					" ORDER BY s.ID DESC";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillAdminReportList(rs, adminReports);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return adminReports;
+	}
+
 	private static void prepare(PreparedStatement preparedStatement, Services service){
 		try {
 			preparedStatement.setInt(1, service.getUnitID());
@@ -263,6 +316,7 @@ public class TableService {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
+
 	private static void fillService(ResultSet resultSet, Services service){
 		try {
 			service.setID(resultSet.getInt(1));
@@ -275,7 +329,45 @@ public class TableService {
 			service.setCreateDate(resultSet.getObject(8, LocalDateTime.class));
 			service.setUpdateDate(resultSet.getObject(9, LocalDateTime.class));
 			service.setRemoveDate(resultSet.getObject(10, LocalDateTime.class));
+			service.setDiscountID(resultSet.getInt("discountID"));
+			service.setDiscount(resultSet.getInt("discount"));
 			service.setPictureURLs(TableServicePicture.getServicePictures(service.getID()));
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
+	 * Fill admin report object
+	 * @param resultSet result from executing query got from JDBC
+	 * @param adminReport to be filled object
+	 */
+	private static void fillAdminReport(ResultSet resultSet, AdminReport adminReport){
+		try {
+			adminReport.setServiceID(resultSet.getInt("serviceID"));
+			adminReport.setServiceName(resultSet.getString("serviceName"));
+			adminReport.setAverageDayHourWorking(resultSet.getString("dayDuration"));
+			adminReport.setTotalHourWorking(resultSet.getString("totalDuration"));
+			adminReport.setAverageDayIncome(resultSet.getInt("dayIncome"));
+			adminReport.setTotalIncome(resultSet.getInt("totalIncome"));
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
+	 * Fiulling admin report list got from database
+	 * @param resultSet returned from JDBC
+	 * @param adminReportList to be filled
+	 */
+	private static void fillAdminReportList (ResultSet resultSet,
+											 List<AdminReport> adminReportList) {
+		try {
+			while (resultSet.next()){
+				AdminReport adminReport = new AdminReport();
+				fillAdminReport(resultSet,adminReport);
+				adminReportList.add(adminReport);
+			}
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}

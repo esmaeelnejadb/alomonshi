@@ -26,10 +26,13 @@ public class ServerMessage {
     //******Error in comment services******//
     public static final String COMMENTERROR_01 = "متأسفانه در این واحد نظری ثبت نشده است.";
 
-    //******Error in admin manageement services******//
+    //******Error in admin management services******//
     public static final String ADMINERROR_01 = "متأسفانه در این مجموعه مدیری ثبت نشده است.";
     public static final String ADMINERROR_02 = "متأسفانه این شماره تماس ثبت نشده است. دارنده شماره باید ابتدا در وب سایت ثبت نام نماید.";
     public static final String ADMINERROR_03 = "ادمین انتخابی، قبلاً به عنوان ادمین این مجموعه تعریف نشده است.";
     public static final String ADMINERROR_04 = "فهرست واحد های انتخابی خالی است.";
     public static final String ADMINERROR_05 = "ادمین انتخابی، قبلاً به عنوان ادمین این مجموعه تعریف شده است.";
+
+    //******Error in admin report services******//
+    public static final String REPORTERROR_01 = "متأسفانه برای این واحد خدمتی تعریف نشده است.";
 }
