@@ -6,6 +6,7 @@ import com.alomonshi.bussinesslayer.adminmanagement.AdminManagementService;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.object.uiobjects.CompanyAdmin;
 import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
+import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -132,5 +133,17 @@ public class AdminManagementWebService {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
+    }
+
+    @OPTIONS
+    @Path("/getAdminList")
+    public void doOptionsForGetAdminList() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/admin")
+    public void doOptionsForGetAdmin() {
+        HttpContextHeader.doOptions(httpServletResponse);
     }
 }

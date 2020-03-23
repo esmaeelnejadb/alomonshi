@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.Units;
+import com.alomonshi.utility.DateTimeUtility;
 
 public class TableUnit {
 
@@ -332,7 +333,8 @@ public class TableUnit {
 	 * @param unit to be set
 	 */
 	private static void fillUnitServicesAndComments (Units unit) {
-		unit.setServices(TableService.getUnitServices(unit.getID()));
+		unit.setServices(TableService.getUnitServices(unit.getID(),
+				DateTimeUtility.getCurrentGregorianDate()));
 		unit.setUnitComments(TableComment.getUnitComments(unit.getID()));
 	}
 

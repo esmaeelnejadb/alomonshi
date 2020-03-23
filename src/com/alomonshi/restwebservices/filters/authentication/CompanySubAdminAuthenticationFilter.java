@@ -1,8 +1,8 @@
 package com.alomonshi.restwebservices.filters.authentication;
 
-import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.authorization.Authorization;
 import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
+import com.alomonshi.restwebservices.filters.authentication.dofilter.DoAuthenticationFilter;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
@@ -21,15 +21,6 @@ public class CompanySubAdminAuthenticationFilter implements ContainerRequestFilt
      */
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        RequestHeaderCheck requestHeaderCheck = new RequestHeaderCheck(requestContext);
-        if(requestHeaderCheck.isAuthorizationHeaderValid()) {
-            Authorization authorization = new Authorization(requestHeaderCheck
-                    .getTokenFromRequest(), UserLevels.COMPANY_SUB_ADMIN);
-            if(authorization.isNotAuthorized()
-                    || (authorization
-                    .isNotWebTokenBelongedToRequestedUser(requestHeaderCheck.getClientIDFromRequestBody())
-                    && requestHeaderCheck.getClientIDFromRequestBody() != 0))
-                requestHeaderCheck.abortWithUnauthorized();
-        }
+        DoAuthenticationFilter.doFilter(requestContext, UserLevels.COMPANY_SUB_ADMIN);
     }
 }

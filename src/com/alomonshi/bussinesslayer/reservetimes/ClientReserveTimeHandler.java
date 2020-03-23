@@ -2,9 +2,12 @@ package com.alomonshi.bussinesslayer.reservetimes;
 
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.datalayer.dataaccess.TableReserveTimeServices;
+import com.alomonshi.datalayer.dataaccess.TableService;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.tableobjects.ReserveTimeServices;
+import com.alomonshi.object.tableobjects.Services;
+import com.alomonshi.utility.DateTimeUtility;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -12,12 +15,12 @@ import java.util.List;
 
 class ClientReserveTimeHandler {
 
+    //////////////////////////////////////Inserting a new Time//////////////////////////////////////////////
     /**
      * Reserved a time for client
-     *
+     * @param reserveTime to be registered
      * @return true if reserved correctly
      */
-//////////////////////////////////////Inserting a new Time//////////////////////////////////////////////
     synchronized static boolean setNewReserveTime(ReserveTime reserveTime) {
         int unitDuration = reserveTime.getDuration();
         int serviceDuration = ReserveTimeUtils.getReserveTimeServiceDuration(reserveTime);
@@ -102,7 +105,6 @@ class ClientReserveTimeHandler {
      * @param reserveTime to be canceled
      * @return true if canceled truly
      */
-
     //////////////////////////////////////Canceling a Time//////////////////////////////////////////////
     static synchronized boolean cancelClientReserveTime(ReserveTime reserveTime) {
         List<ReserveTime> newReserveTimes, shouldBeDeletedTimes;
@@ -181,13 +183,17 @@ class ClientReserveTimeHandler {
     private static void fillReserveTimeServices(List<ReserveTimeServices> reserveTimeServices, ReserveTime reserveTime) {
         for (Integer serviceID : reserveTime.getServiceIDs()) {
             ReserveTimeServices reserveTimeService = new ReserveTimeServices();
+            Services service = TableService.getService(serviceID,
+                    DateTimeUtility.convertPersianToGregorianStringDate(reserveTime.getDateID()));
             reserveTimeService.setActive(true);
             reserveTimeService.setUnitID(reserveTime.getUnitID());
             reserveTimeService.setServiceID(serviceID);
             reserveTimeService.setReserveTimeID(reserveTime.getID());
             reserveTimeService.setClientID(reserveTime.getClientID());
             reserveTimeServices.add(reserveTimeService);
+            reserveTimeService.setServicePrice((int)((1 - (double)service.getDiscount()/100)
+                    * service.getServicePrice()));
+            reserveTimeService.setDiscountID(service.getDiscountID());
         }
     }
-
 }

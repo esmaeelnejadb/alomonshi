@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.filters.authentication;
+package com.alomonshi.restwebservices.filters.authentication.dofilter;
 
 import org.apache.http.HttpHeaders;
 import org.json.JSONObject;

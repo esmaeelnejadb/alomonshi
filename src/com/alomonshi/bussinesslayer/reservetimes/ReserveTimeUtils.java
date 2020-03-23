@@ -3,7 +3,9 @@ package com.alomonshi.bussinesslayer.reservetimes;
 import com.alomonshi.datalayer.dataaccess.TableService;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ReserveTime;
+import com.alomonshi.utility.DateTimeUtility;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +35,8 @@ class ReserveTimeUtils {
     static int getReserveTimeServiceDuration(ReserveTime reserveTime) {
         int duration = 0;
         for (Integer serviceID : reserveTime.getServiceIDs()) {
-            duration += Objects.requireNonNull(TableService.getService(serviceID)).getServiceDuration();
+            duration += Objects.requireNonNull(TableService.getService(serviceID,
+                    DateTimeUtility.getCurrentGregorianDate())).getServiceDuration();
         }
         return duration;
     }

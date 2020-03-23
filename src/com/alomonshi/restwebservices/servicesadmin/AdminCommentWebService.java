@@ -7,11 +7,13 @@ import com.alomonshi.bussinesslayer.comment.AdminCommentService;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
+import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -72,5 +74,17 @@ public class AdminCommentWebService {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
         }
+    }
+
+    @OPTIONS
+    @Path("/getAdminUnitComments")
+    public void doOptionsForGetAdminComments() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/comment")
+    public void doOptionsForComment() {
+        HttpContextHeader.doOptions(httpServletResponse);
     }
 }

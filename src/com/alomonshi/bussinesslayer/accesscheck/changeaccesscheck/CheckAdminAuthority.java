@@ -5,6 +5,7 @@ import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.tableobjects.ServiceDiscount;
 import com.alomonshi.object.uiobjects.ServiceDiscountList;
+import com.alomonshi.utility.DateTimeUtility;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -64,7 +65,8 @@ public class CheckAdminAuthority {
      * @return true if service belongs to unit
      */
     public static boolean isServiceBelongToUnit(int serviceID, int unitID) {
-        return TableService.getService(serviceID).getUnitID() == unitID;
+        return TableService.getService(serviceID,
+                DateTimeUtility.getCurrentGregorianDate()).getUnitID() == unitID;
     }
 
     /**

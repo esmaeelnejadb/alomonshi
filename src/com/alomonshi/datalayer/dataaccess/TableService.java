@@ -136,11 +136,11 @@ public class TableService {
 	 * @param serviceID to be got from database
 	 * @return service object
 	 */
-	public static Services getService(int serviceID) {
+	public static Services getService(int serviceID, String discountDate) {
 		Services service = new Services();
 		Connection conn = DBConnection.getConnection();
 		try {
-			Statement stmt =conn.createStatement();
+			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" s.*, sd.ID as discountID, sd.DISCOUNT as discount" +
 					" FROM" +
@@ -149,23 +149,18 @@ public class TableService {
 					" servicediscount sd ON s.id = sd.service_id" +
 					" AND s.IS_ACTIVE IS TRUE" +
 					" AND sd.IS_ACTIVE IS TRUE" +
-					" AND NOW() BETWEEN sd.CREATE_DATE AND sd.EXPIRE_DATE" +
+					" AND '" + discountDate + "' BETWEEN sd.CREATE_DATE AND sd.EXPIRE_DATE" +
 					" WHERE" +
 					" s.ID =" + serviceID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillObject(rs, service);
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
+		}finally {
+			if(conn != null) {
+				try {
 					conn.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -178,12 +173,11 @@ public class TableService {
 	 * @param unitID intended unit id
 	 * @return list of services
 	 */
-	public static List<Services> getUnitServices(int unitID)
+	public static List<Services> getUnitServices(int unitID, String discountDate)
 	{
 		List<Services> services = new ArrayList<>();
 		Connection conn = DBConnection.getConnection(); 
-		try
-		{
+		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" s.*, sd.ID as discountID, sd.DISCOUNT as discount" +
@@ -193,26 +187,21 @@ public class TableService {
 					" servicediscount sd ON s.id = sd.service_id" +
 					" AND s.IS_ACTIVE IS TRUE" +
 					" AND sd.IS_ACTIVE IS TRUE" +
-					" AND NOW() BETWEEN sd.CREATE_DATE AND sd.EXPIRE_DATE" +
+					" AND '" + discountDate + "' BETWEEN sd.CREATE_DATE AND sd.EXPIRE_DATE" +
 					" WHERE" +
 					" s.IS_ACTIVE IS TRUE AND s.UNIT_ID = " + unitID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillServices(rs, services);
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
+		}finally {
+			if(conn != null) {
+				try {
 						conn.close();		
-				} catch (SQLException e)  
-				{	
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return services;
 	}
@@ -263,27 +252,31 @@ public class TableService {
 		List<AdminReport> adminReports = new ArrayList<>();
 		try {
 			String command = "SELECT" +
-					" s.ID AS serviceID," +
-					" s.SERVICE_NAME AS serviceName," +
-					" SUM(s.SERVICE_TIME) / (" + startDate + " - " + endDate + " + 1) AS dayDuration," +
-					" SUM(s.SERVICE_TIME) AS totalDuration," +
-					" SUM(s.SERVICE_PRICE) / (" + startDate + " - " + endDate + " + 1) AS dayIncome," +
-					" SUM(s.SERVICE_PRICE) AS totalIncome" +
-					" FROM" +
-					" units u" +
-					" LEFT JOIN" +
-					" services s ON u.id = s.unit_id AND s.is_active IS TRUE" +
-					" LEFT JOIN" +
-					" reservetimeservices rs ON s.id = rs.service_id" +
-					" AND rs.is_active IS TRUE" +
-					" LEFT JOIN" +
-					" reservetimes rt ON rs.res_time_id = rt.id AND rt.status = "
-					+ ReserveTimeStatus.RESERVED.getValue() +
-					" AND rt.day_id BETWEEN "+ startDate +" AND " + endDate +
-					" WHERE" +
-					" u.id = " + unitID +
-					" GROUP BY s.id" +
-					" ORDER BY s.ID DESC";
+                    " s.ID AS serviceID," +
+                    " s.SERVICE_NAME AS serviceName," +
+                    " IF(rs.is_active IS TRUE," +
+                    " SUM(s.SERVICE_TIME) / (" + endDate + " - " + startDate + " + 1)," +
+                    " 0) AS dayDuration," +
+                    " IF(rs.is_active IS TRUE," +
+                    " SUM(s.SERVICE_TIME)," +
+                    " 0) AS totalDuration," +
+                    " SUM(rs.SERVICE_PRICE) / (" + endDate + " - " + startDate + " + 1) AS dayIncome," +
+                    " SUM(rs.SERVICE_PRICE) AS totalIncome" +
+                    " FROM" +
+                    " units u" +
+                    " LEFT JOIN" +
+                    " services s ON u.id = s.unit_id AND s.is_active IS TRUE" +
+                    " LEFT JOIN" +
+                    " reservetimeservices rs ON s.id = rs.service_id" +
+                    " AND rs.is_active IS TRUE" +
+                    " LEFT JOIN" +
+                    " reservetimes rt ON rs.res_time_id = rt.id AND rt.status = "
+                    + ReserveTimeStatus.RESERVED.getValue() +
+                    " AND rt.day_id BETWEEN " + startDate + " AND " + endDate +
+                    " WHERE" +
+                    " u.id = " + unitID +
+                    " GROUP BY s.id" +
+                    " ORDER BY s.ID DESC";
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
 			fillAdminReportList(rs, adminReports);

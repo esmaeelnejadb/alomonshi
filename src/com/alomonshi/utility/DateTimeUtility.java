@@ -16,7 +16,6 @@ public class DateTimeUtility {
      * Getting current persian date time
      * @return current date time
      */
-
     public static String getPersianCurrentDateTime() {
         Calendar cal = Calendar.getInstance();
         JalaliCalendar jalaliDate = new JalaliCalendar(cal.getTime());
@@ -27,7 +26,6 @@ public class DateTimeUtility {
      * Getting current persian day id
      * @return current persian day id
      */
-
     public static int getCurrentPersianDate(){
         Calendar cal = Calendar.getInstance();
         JalaliCalendar jalaliDate = new JalaliCalendar(cal.getTime());
@@ -52,7 +50,7 @@ public class DateTimeUtility {
     }
 
     /**
-     * Beautifying [ersion date
+     * Beautifying persian date
      * @param dateID to be beautify
      * @return beautified persian date
      */
@@ -80,6 +78,20 @@ public class DateTimeUtility {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
+    /**
+     * convert persian to gregorian date
+     * @param dayID to be converted
+     * @return converted date
+     */
+    public static String convertPersianToGregorianStringDate(int dayID) {
+        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYear(dayID), getMonth(dayID), getDay(dayID));
+        String date = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                .format(jalaliCalendar.toGregorian()
+                        .toZonedDateTime()
+                        .toLocalDate());
+        return date;
+    }
+
 
     /**
      * convert gregorian to persian date
@@ -89,6 +101,14 @@ public class DateTimeUtility {
     public static String convertGregorianToPersianDate(LocalDate localDate) {
         JalaliCalendar jalaliCalendar = new JalaliCalendar(localDate);
         return jalaliCalendar.getYear() + "/" + jalaliCalendar.getMonth() + "/" + jalaliCalendar.getDay();
+    }
+
+    /**
+     * Getting current Gregorian date as string
+     * @return current Gregorian date
+     */
+    public static String getCurrentGregorianDate () {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now());
     }
 
     private static int getYear (int dayID) {

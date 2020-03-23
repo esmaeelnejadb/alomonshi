@@ -7,6 +7,7 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.utility.CopyNotNullProperties;
+import com.alomonshi.utility.DateTimeUtility;
 import org.apache.commons.beanutils.BeanUtilsBean;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,7 +26,6 @@ public class ServicesService {
      * Constructor
      * @param serviceResponse injected object
      */
-
     public ServicesService(Services service, ServiceResponse serviceResponse) {
         this.service = service;
         this.serviceResponse = serviceResponse;
@@ -35,7 +35,6 @@ public class ServicesService {
      * Constructor
      * @param serviceResponse injected object
      */
-
     public ServicesService(ServiceResponse serviceResponse) {
         this.serviceResponse = serviceResponse;
     }
@@ -45,7 +44,8 @@ public class ServicesService {
      * @return service response
      */
     public ServiceResponse getUnitServices(int unitID) {
-        List<Services> services = TableService.getUnitServices(unitID);
+        List<Services> services = TableService.getUnitServices(unitID,
+                DateTimeUtility.getCurrentGregorianDate());
         if (!services.isEmpty()) {
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
@@ -70,7 +70,6 @@ public class ServicesService {
      * Updating a service
      * @return service response
      */
-
     public ServiceResponse updateService() {
         prepareServiceForUpdate();
         if (TableService.updateService(service))
@@ -83,7 +82,6 @@ public class ServicesService {
      * Delete a service
      * @return service response
      */
-
     public ServiceResponse deleteService() {
         prepareServiceForDelete();
         // Check if any reserved time existed in that service
@@ -104,10 +102,10 @@ public class ServicesService {
      * Copy new updated fields into old object got from table
      * @return new updated service
      */
-
     private Services getCopiedServiceProperties() {
         BeanUtilsBean utilsBean = new CopyNotNullProperties();
-        Services newService = TableService.getService(service.getID());
+        Services newService = TableService.getService(service.getID(),
+                DateTimeUtility.getCurrentGregorianDate());
         if (newService.getID() != service.getID())
             return null;
         try {
@@ -139,7 +137,6 @@ public class ServicesService {
     /**
      * Prepare service for delete
      */
-
     private void prepareServiceForDelete() {
         service.setServiceName(null);
         service.setServicePrice(0);
