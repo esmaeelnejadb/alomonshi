@@ -3,6 +3,7 @@ package com.alomonshi.datalayer.dataaccess;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.object.tableobjects.Admin;
+import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.uiobjects.CompanyAdmin;
 
 import java.sql.*;
@@ -122,17 +123,16 @@ public class TableAdmin {
 
 	/**
 	 * Getting a manager companies
-	 * @param managerID intended manager
+	 * @param adminID intended manager
 	 * @return list of manager object
 	 */
-
-	public static List<Integer> getManagerCompanies(int managerID){
+	public static List<Integer> getAdminCompanyIDs(int adminID){
 		String command = "SELECT" +
 				" COMPANY_ID AS companyID" +
 				" FROM" +
 				" manager" +
 				" WHERE" +
-				" MNG_ID =  " + managerID +
+				" MNG_ID =  " + adminID +
 				" AND IS_ACTIVE IS TRUE";
 		Connection conn = DBConnection.getConnection();
 		List<Integer> companies = new ArrayList<>();
@@ -155,6 +155,49 @@ public class TableAdmin {
 					conn.close();
 				} catch (SQLException e)
 				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+
+	/**
+	 * Getting a manager companies
+	 * @param adminID intended manager
+	 * @return list of manager object
+	 */
+	public static List<Company> getAdminCompanies(int adminID){
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try
+		{
+			String command = "SELECT" +
+					" comp.id AS companyID, comp.comp_name AS companyName" +
+					" FROM" +
+					" manager mng" +
+					" LEFT JOIN" +
+					" companies comp ON mng.company_id = comp.id" +
+					" AND mng.IS_ACTIVE IS TRUE" +
+					" AND comp.is_active IS TRUE" +
+					" WHERE" +
+					" mng.mng_id = " + adminID;
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				Company company = new Company();
+				company.setID(rs.getInt("companyID"));
+				company.setCompanyName(rs.getString("companyName"));
+				companies.add(company);
+			}
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}

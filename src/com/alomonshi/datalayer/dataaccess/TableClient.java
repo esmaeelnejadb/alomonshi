@@ -18,9 +18,17 @@ public class TableClient {
 	 * @return true if executes properly
 	 */
 	public static boolean insert(Users user) {
-		String command = "insert into CLIENTINFO (VERIFICATION_CODE, NAME, USERNAME, PASSWORD, PHONE, EMAIL," +
-				" CLIENT_STAT, TOKEN, EXPIRATION_DATE, IS_ACTIVE) "
-				+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String command = "INSERT INTO CLIENTINFO (VERIFICATION_CODE," +
+				" NAME," +
+				" USERNAME," +
+				" PASSWORD," +
+				" PHONE," +
+				" EMAIL," +
+				" CLIENT_STAT," +
+				" TOKEN," +
+				" EXPIRATION_DATE," +
+				" IS_ACTIVE) "
+				+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdate(user, command);
 	}
 
@@ -31,8 +39,19 @@ public class TableClient {
 	 */
 
 	public static boolean update(Users user) {
-		String command = "update CLIENTINFO set VERIFICATION_CODE = ?, NAME = ?, USERNAME = ?, PASSWORD = ?" +
-				", PHONE = ?, EMAIL = ?, CLIENT_STAT = ?, TOKEN = ?, EXPIRATION_DATE = ?, IS_ACTIVE = ? WHERE ID = " + user.getClientID();
+		String command = "UPDATE CLIENTINFO SET" +
+				" VERIFICATION_CODE = ?," +
+				" NAME = ?," +
+				" USERNAME = ?," +
+				" PASSWORD = ?," +
+				" PHONE = ?," +
+				" EMAIL = ?," +
+				" CLIENT_STAT = ?," +
+				" TOKEN = ?," +
+				" EXPIRATION_DATE = ?," +
+				" IS_ACTIVE = ?" +
+				" WHERE ID = "
+				+ user.getClientID();
 		return executeInsertUpdate(user, command);
 	}
 
@@ -53,32 +72,18 @@ public class TableClient {
 	 * @param command to be executed
 	 * @return true id query is executed correctly
 	 */
-
 	private static boolean executeInsertUpdate(Users user, String command)
 	{
 		Connection conn = DBConnection.getConnection();
-		try
-		{
+		try {
 			PreparedStatement ps = conn.prepareStatement(command);
 			prepare(ps, user);
 			return ps.executeUpdate() == 1;
-			
-		}catch(SQLException e)
-		{
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 			return false;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-				    conn.close();
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
+		}finally {
+			DBConnection.closeConnection(conn);
 		}
 	}
 
@@ -87,101 +92,62 @@ public class TableClient {
 	 * Getting user by user id
 	 * @return user
 	 */
-	
 	public static Users getUser(int userID) {
-		String command="select * from CLIENTINFO where ID = " + userID ;
 		Connection conn = DBConnection.getConnection();
 		Users user = new Users();
 		try
 		{
-			Statement stmt =conn.createStatement();
-			ResultSet rs=stmt.executeQuery(command);
-			while(rs.next())
-			{
-				fillUser(rs, user);
-			}
+			String command = "SELECT" +
+					" *" +
+					" FROM" +
+					" CLIENTINFO" +
+					" WHERE" +
+					" ID = " + userID;
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillSingleUser(rs, user);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally
 		{
-			if(conn != null)
-			{
-				try 
-				{
-				    conn.close();
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
+			DBConnection.closeConnection(conn);
 		}
 		return user;
 	}
 
+	/**
+	 * Getting user with his/her phone number
+	 * @param phoneNumber to be got user from
+	 * @return user object
+	 */
 	public static Users getUser(String phoneNumber) {
-		String command = "select * from CLIENTINFO where PHONE = '" + phoneNumber + "'";
+		String command = "SELECT" +
+				" *" +
+				" FROM" +
+				" CLIENTINFO" +
+				" WHERE" +
+				" PHONE = '" + phoneNumber + "'";
 		Connection conn = DBConnection.getConnection();
 		Users user = new Users();
 		try
 		{
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
-			while(rs.next())
-			{
-				fillUser(rs, user);
-			}
-		}catch(SQLException e)
-		{
+			fillSingleUser(rs, user);
+		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
+		}finally {
+			DBConnection.closeConnection(conn);
 		}
 		return user;
 	}
 
 	/**
-	 * Author Behzad
-	 * Getting user by user id
-	 * @return user
+	 * Preparing statement object for executing update insert actions
+	 * @param preparedStatement JDBC object
+	 * @param user to be inserted or updated
 	 */
-
-	public static boolean deleteUserTemporary(String phoneNumber) {
-		String command="delete from CLIENTINFO where PHONE = '" + phoneNumber + "'" ;
-		Connection conn = DBConnection.getConnection();
-		try
-		{
-			PreparedStatement ps = conn.prepareStatement(command);
-			return ps.executeUpdate() == 1;
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
-		}
-		return false;
-	}
-
 	private static void prepare(PreparedStatement preparedStatement, Users user){
 		try {
 			preparedStatement.setInt(1, user.getVerificationCode());
@@ -199,6 +165,11 @@ public class TableClient {
 		}
 	}
 
+	/**
+	 * filling user object with result returned from database
+	 * @param resultSet JDBC object returned from database
+	 * @param user to be filled
+	 */
 	private static void fillUser(ResultSet resultSet, Users user){
 		try {
 			user.setClientID(resultSet.getInt(1));
@@ -212,6 +183,21 @@ public class TableClient {
 			user.setToken(resultSet.getString(9));
 			user.setExpirationDate(resultSet.getObject( 10, LocalDateTime.class ));
 			user.setActive(resultSet.getBoolean(11));
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
+		}
+	}
+
+	/**
+	 * Filling single user object
+	 * @param resultSet JDBC object returned from database
+	 * @param user to be filled
+	 */
+	private static void fillSingleUser(ResultSet resultSet, Users user) {
+		try {
+			while (resultSet.next()) {
+				fillUser(resultSet, user);
+			}
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
 		}

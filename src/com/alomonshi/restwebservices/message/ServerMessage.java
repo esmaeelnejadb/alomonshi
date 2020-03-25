@@ -35,4 +35,7 @@ public class ServerMessage {
 
     //******Error in admin report services******//
     public static final String REPORTERROR_01 = "متأسفانه برای این واحد خدمتی تعریف نشده است.";
+
+    //******Error in admin company services******//
+    public static final String COMPANYERROR_01 = "متأسفانه فهرست مجموعه های تحت کنترل شما خالی است.";
 }

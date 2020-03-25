@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Company Service
  */
-public class CompanyService {
+public class ClientCompanyService {
 
     /**
      * Getting searched companies

@@ -1,6 +1,6 @@
 package com.alomonshi.restwebservices.servicesclient;
 
-import com.alomonshi.bussinesslayer.company.CompanyService;
+import com.alomonshi.bussinesslayer.company.ClientCompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
@@ -126,7 +126,7 @@ public class CompanyWebService{
                                          @QueryParam("lat") float lat,
                                          @QueryParam("lon") float lon){
         try {
-            return CompanyService.getSearchedCompanies(companyName, serviceName, lat, lon, categoryID);
+            return ClientCompanyService.getSearchedCompanies(companyName, serviceName, lat, lon, categoryID);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -142,7 +142,7 @@ public class CompanyWebService{
                                          @QueryParam("lon") float lon,
                                          @QueryParam("filterItem")FilterItem filterItem){
         try {
-            return CompanyService.getFilteredCompanies(lat, lon, categoryID, filterItem);
+            return ClientCompanyService.getFilteredCompanies(lat, lon, categoryID, filterItem);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -160,7 +160,7 @@ public class CompanyWebService{
                                                  @QueryParam("lon") float lon,
                                                  @QueryParam("filterItem")FilterItem filterItem){
         try {
-            return CompanyService.getFilteredSearchedCompanies(companyName,
+            return ClientCompanyService.getFilteredSearchedCompanies(companyName,
                     serviceName,
                     lat,
                     lon,

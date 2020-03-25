@@ -39,7 +39,7 @@ public class CheckAdminAuthority {
      */
     public static boolean isUserCompanyAuthorized(int userID, int companyID){
         try {
-            List<Integer> managers = TableAdmin.getManagerCompanies(userID);
+            List<Integer> managers = TableAdmin.getAdminCompanyIDs(userID);
             if (managers.contains(companyID))
                 return true;
         }catch (Exception e) {

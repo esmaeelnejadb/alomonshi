@@ -25,6 +25,7 @@ public class Units {
 	private LocalDateTime createDate;
 	private LocalDateTime updateDate;
 	private LocalDateTime removeDate;
+	private boolean onlineReserve;
 
 
 	@JsonView(JsonViews.NormalViews.class)
@@ -64,7 +65,7 @@ public class Units {
 	}
 
 	@JsonView(JsonViews.ManagerViews.class)
-	public Boolean getActive() {
+	public Boolean isActive() {
 		return isActive;
 	}
 
@@ -95,6 +96,11 @@ public class Units {
 	@JsonView(JsonViews.ManagerViews.class)
 	public LocalDateTime getRemoveDate() {
 		return removeDate;
+	}
+
+	@JsonView(JsonViews.SubAdminViews.class)
+	public boolean isOnlineReserve() {
+		return onlineReserve;
 	}
 
 	public void setID(int id) {
@@ -147,5 +153,9 @@ public class Units {
 
 	public void setRemoveDate(LocalDateTime removeDate) {
 		this.removeDate = removeDate;
+	}
+
+	public void setOnlineReserve(boolean onlineReserve) {
+		this.onlineReserve = onlineReserve;
 	}
 }

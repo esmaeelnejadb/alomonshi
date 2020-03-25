@@ -17,30 +17,33 @@ import com.alomonshi.utility.DateTimeUtility;
 public class TableUnit {
 
 	public static int insertUnit(Units unit){
-		String command = "INSERT INTO UNITS(Comp_ID" +
-				", unit_name" +
-				", unit_step_time" +
-				", IS_ACTIVE" +
-				", PICTURE_URL" +
-				", REMARK " +
-				", CREATE_DATE" +
-				", UPDATE_DATE" +
-				", REMOVE_DATE" +
+		String command = "INSERT INTO UNITS(" +
+				" Comp_ID," +
+				" unit_name," +
+				" unit_step_time," +
+				" IS_ACTIVE," +
+				" PICTURE_URL," +
+				" REMARK, " +
+				" CREATE_DATE," +
+				" UPDATE_DATE," +
+				" REMOVE_DATE," +
+				" ONLINE_RESERVE" +
 				") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? )";
 		return executeInsert(unit, command);
 	}
 
 	public static boolean updateUnit(Units unit){
 		String command = "UPDATE UNITS SET" +
-				" Comp_ID = ?" +
-				", unit_name = ?" +
-				", unit_step_time = ?" +
-				", IS_ACTIVE = ?" +
-				", PICTURE_URL = ?" +
-				", REMARK = ?" +
-				", CREATE_DATE = ?" +
-				", UPDATE_DATE = ?" +
-				", REMOVE_DATE = ?" +
+				" Comp_ID, = ?" +
+				" unit_name, = ?" +
+				" unit_step_time, = ?" +
+				" IS_ACTIVE, = ?" +
+				" PICTURE_URL, = ?" +
+				" REMARK, = ?" +
+				" CREATE_DATE, = ?" +
+				" UPDATE_DATE, = ?" +
+				" REMOVE_DATE, = ?" +
+				" ONLINE_RESERVE, = ?" +
 				" WHERE ID = " + unit.getID();
 
 		return executeUpdate(unit, command);
@@ -294,12 +297,13 @@ public class TableUnit {
 			preparedStatement.setInt(1, unit.getCompanyID());
 			preparedStatement.setString(2, unit.getUnitName());
 			preparedStatement.setInt(3, unit.getUnitDuration());
-			preparedStatement.setBoolean(4, unit.getActive());
+			preparedStatement.setBoolean(4, unit.isActive());
 			preparedStatement.setString(5, unit.getPictureURL());
 			preparedStatement.setString(6, unit.getRemark());
 			preparedStatement.setObject(7, unit.getCreateDate());
 			preparedStatement.setObject(8, unit.getUpdateDate());
 			preparedStatement.setObject(9, unit.getRemoveDate());
+			preparedStatement.setBoolean(10, unit.isOnlineReserve());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -323,6 +327,7 @@ public class TableUnit {
 			unit.setCreateDate(resultSet.getObject(8, LocalDateTime.class));
 			unit.setUpdateDate(resultSet.getObject(9, LocalDateTime.class));
 			unit.setRemoveDate(resultSet.getObject(10, LocalDateTime.class));
+			unit.setOnlineReserve(resultSet.getBoolean(11));
 		}catch(SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
