@@ -67,9 +67,20 @@ public class AdminManagementService {
             //Check if client is registered in web site
             clientInformationCheck = new ClientInformationCheck(user);
             if (clientInformationCheck.isClientRegistered()) {
-                if (TableAdmin.insertManager(admin)) {
-                    //Inserting admin units
-                    return editAdminUnits();
+                //Setting admin id in company admin object for editing admin unit table
+                companyAdmin.setAdminID(user.getClientID());
+                //Updating user level in table client
+                if (user.getUserLevel() == UserLevels.CLIENT) {
+                    user.setUserLevel(UserLevels.COMPANY_SUB_ADMIN);
+                    TableClient.update(user);
+                    //Inserting admin in manager table
+                    if (TableAdmin.insertManager(admin)) {
+                        //Inserting admin units
+                        return editAdminUnits();
+                    }else
+                        return serviceResponse
+                                .setResponse(false)
+                                .setMessage(ServerMessage.FAULTMESSAGE);
                 }else
                     return serviceResponse
                             .setResponse(false)
@@ -134,6 +145,14 @@ public class AdminManagementService {
             if (admin.getManagerLevel().getValue() < UserLevels.COMPANY_ADMIN.getValue()) {
                 boolean response = TableAdmin.deleteAdmin(admin)
                         && TableUnitAdmin.deleteAdmin(companyAdmin.getAdminID(), companyAdmin.getCompanyID());
+
+                //Check if this user is admin of any other companies to change his level in client info table
+                List<Integer> adminCompanies = TableAdmin.getAdminCompanyIDs(admin.getID());
+                if (adminCompanies.isEmpty()) {
+                    Users user = TableClient.getUser(admin.getManagerID());
+                    user.setUserLevel(UserLevels.CLIENT);
+                    TableClient.update(user);
+                }
                 if (response)
                     return serviceResponse
                             .setResponse(true)

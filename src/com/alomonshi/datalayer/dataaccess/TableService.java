@@ -57,7 +57,7 @@ public class TableService {
 				", CREATE_DATE = ?" +
 				", UPDATE_DATE = ?" +
 				", REMOVE_DATE = ?" +
-				" WHERE ID = " + service.getID();
+				" WHERE ID = ";
 		boolean response = executeInsertUpdate(service, updateCommand + service.getID(), connection);
 		DBConnection.closeConnection(connection);
 		return response;

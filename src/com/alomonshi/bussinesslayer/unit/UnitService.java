@@ -160,8 +160,11 @@ public class UnitService {
      */
     private void prepareUnitForUpdate() {
         unit.setUpdateDate(LocalDateTime.now());
+        boolean onlineReserve  = unit.isOnlineReserve();
         // fill null properties which get from ui with properties get from database
         unit = getCopiedUnitProperties();
+        assert unit != null;
+        unit.setOnlineReserve(onlineReserve);
     }
 
     /**

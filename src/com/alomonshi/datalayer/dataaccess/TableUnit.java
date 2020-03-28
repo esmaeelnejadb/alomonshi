@@ -28,22 +28,22 @@ public class TableUnit {
 				" UPDATE_DATE," +
 				" REMOVE_DATE," +
 				" ONLINE_RESERVE" +
-				") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? )";
+				") VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsert(unit, command);
 	}
 
 	public static boolean updateUnit(Units unit){
 		String command = "UPDATE UNITS SET" +
-				" Comp_ID, = ?" +
-				" unit_name, = ?" +
-				" unit_step_time, = ?" +
-				" IS_ACTIVE, = ?" +
-				" PICTURE_URL, = ?" +
-				" REMARK, = ?" +
-				" CREATE_DATE, = ?" +
-				" UPDATE_DATE, = ?" +
-				" REMOVE_DATE, = ?" +
-				" ONLINE_RESERVE, = ?" +
+				" Comp_ID = ?," +
+				" unit_name = ?," +
+				" unit_step_time = ?," +
+				" IS_ACTIVE = ?," +
+				" PICTURE_URL = ?," +
+				" REMARK = ?," +
+				" CREATE_DATE = ?," +
+				" UPDATE_DATE = ?," +
+				" REMOVE_DATE = ?," +
+				" ONLINE_RESERVE = ?" +
 				" WHERE ID = " + unit.getID();
 
 		return executeUpdate(unit, command);

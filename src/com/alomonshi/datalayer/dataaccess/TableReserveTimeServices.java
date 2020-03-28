@@ -52,7 +52,7 @@ public class TableReserveTimeServices {
 	 * @return true if ok
 	 */
 
-	public static synchronized boolean insertList(List<ReserveTimeServices> reserveTimeServices) {
+	public static boolean insertList(List<ReserveTimeServices> reserveTimeServices) {
 		Connection connection = DBConnection.getConnection();
 		for (ReserveTimeServices reserveTimeService: reserveTimeServices) {
 			if (!executeInsertUpdate(reserveTimeService, connection, insertCommand)) {
@@ -82,7 +82,7 @@ public class TableReserveTimeServices {
 	 * @return true if ok
 	 */
 
-	public static synchronized boolean updateList(List<ReserveTimeServices> reserveTimeServices) {
+	public static boolean updateList(List<ReserveTimeServices> reserveTimeServices) {
 		Connection connection = DBConnection.getConnection();
 		for (ReserveTimeServices reserveTimeService: reserveTimeServices) {
 			if (!executeInsertUpdate(reserveTimeService, connection
@@ -112,7 +112,7 @@ public class TableReserveTimeServices {
 	 * @return true if ok
 	 */
 
-	public static synchronized boolean deleteList(List<ReserveTimeServices> reserveTimeServices) {
+	public static boolean deleteList(List<ReserveTimeServices> reserveTimeServices) {
 		Connection connection = DBConnection.getConnection();
 		for (ReserveTimeServices reserveTimeService: reserveTimeServices) {
 			reserveTimeService.setActive(false);

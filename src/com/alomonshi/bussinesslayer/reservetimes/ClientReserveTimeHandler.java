@@ -21,7 +21,7 @@ class ClientReserveTimeHandler {
      * @param reserveTime to be registered
      * @return true if reserved correctly
      */
-    synchronized static boolean setNewReserveTime(ReserveTime reserveTime) {
+    static boolean setNewReserveTime(ReserveTime reserveTime) {
         int unitDuration = reserveTime.getDuration();
         int serviceDuration = ReserveTimeUtils.getReserveTimeServiceDuration(reserveTime);
         prepareReserveTimeForRegister(reserveTime);
@@ -106,7 +106,7 @@ class ClientReserveTimeHandler {
      * @return true if canceled truly
      */
     //////////////////////////////////////Canceling a Time//////////////////////////////////////////////
-    static synchronized boolean cancelClientReserveTime(ReserveTime reserveTime) {
+    static boolean cancelClientReserveTime(ReserveTime reserveTime) {
         List<ReserveTime> newReserveTimes, shouldBeDeletedTimes;
 
         //Getting all the times in that midday and day

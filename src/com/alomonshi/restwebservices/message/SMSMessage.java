@@ -1,5 +1,6 @@
 package com.alomonshi.restwebservices.message;
 
+import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.uiobjects.ClientReservedTime;
 import com.alomonshi.utility.DateTimeUtility;
 
@@ -47,5 +48,19 @@ public class SMSMessage {
                 "جهت اطلاع از وقت های رزرو شده خود می توانید به وب سایت الومنشی مراجعه نمایید: " +
                 "\n" +
                 "www.alomonshi.ir";
+    }
+
+    /**
+     * Getting password retrieve message
+     * @param user to be got password
+     * @return message
+     */
+    public static String getPasswordRetriveMessage (Users user) {
+        return " باسلام، \n" +
+                "پسورود شما: \n" +
+                user.getPassword() +
+                "\n" +
+                "جهت ورود به سایت الومنشی به آدرس زیر مراجعه فرمایید: \n" +
+                "https://alomonshi.ir/login";
     }
 }

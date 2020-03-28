@@ -7,6 +7,7 @@ import com.alomonshi.bussinesslayer.comment.AdminCommentService;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
+import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
@@ -58,7 +59,7 @@ public class AdminCommentWebService {
     }
 
     @JsonView(JsonViews.SubAdminViews.class)
-    @CompanyAdminSecured
+    @CompanySubAdminSecured
     @POST
     @Path("/comment")
     @Produces(MediaType.APPLICATION_JSON)

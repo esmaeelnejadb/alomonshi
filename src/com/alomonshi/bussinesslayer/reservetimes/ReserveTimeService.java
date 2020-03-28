@@ -64,7 +64,7 @@ public class ReserveTimeService{
      * will be returned with true response, otherwise response will set to false with empty response data
      * @return service response
      */
-	public synchronized ServiceResponse handleGeneratingReserveTime(){
+	public ServiceResponse handleGeneratingReserveTime(){
 	    try {
             ReserveTimeGenerator reserveTimeGenerator = new ReserveTimeGenerator();
             List<ReserveTime> reserveTimes = reserveTimeGenerator
@@ -103,7 +103,7 @@ public class ReserveTimeService{
      * Deleting reserve time in all days
      * @return service response
      */
-	public synchronized ServiceResponse deleteReserveTimes(){
+	public ServiceResponse deleteReserveTimes(){
 	    reserveTimeDeletor = new ReserveTimeDeletor(serviceResponse);
 	    //if all day reserve times should be deleted
 	    if (reserveTimeForm.getMidday() == null)

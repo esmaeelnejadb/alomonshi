@@ -41,4 +41,14 @@ public class SMSUtils {
 			return false;
 		}
 	}
+
+
+	/**
+	 * Getting to number format to send message to  a single phone
+	 * @param phone intended number
+	 * @return toNumber format
+	 */
+	public static String[] getSingleToNumber (String phone) {
+		return new String[]{phone};
+	}
 }

@@ -5,7 +5,6 @@ import com.alomonshi.datalayer.dataaccess.TableComment;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
-import java.util.Collections;
 import java.util.List;
 
 public class AdminCommentService {

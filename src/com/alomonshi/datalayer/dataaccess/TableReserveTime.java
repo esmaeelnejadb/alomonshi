@@ -62,7 +62,7 @@ public class TableReserveTime {
 	 * @return true if all data inserted truly
 	 */
 
-	public static synchronized boolean insertReserveTimeList(List<ReserveTime> reserveTimes){
+	public static boolean insertReserveTimeList(List<ReserveTime> reserveTimes){
 		Connection connection = DBConnection.getConnection();
 		for(ReserveTime reserveTime : reserveTimes) {
 			if(!executeInsertUpdate(reserveTime, insertCommand, connection)) {
@@ -85,8 +85,7 @@ public class TableReserveTime {
 		DBConnection.closeConnection(connection);
 		return response;
 	}
-
-
+	
 	/**
 	 * updating a list of time
 	 * @param reserveTimes list to be updated in database
@@ -513,31 +512,40 @@ public class TableReserveTime {
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT " +
-					"    r.id AS id," +
-					"    r.DAY_ID AS dayID," +
-					"    r.ST_TIME AS startTime," +
-					"    r.DURATION AS duration," +
-					"    r.RES_CODE_ID AS reserveCode," +
-					"    r.RESERVE_GR_TIME AS gregorianDate," +
-					"    c.id AS companyID," +
-					"    c.COMP_NAME AS companyName," +
-					"    u.ID AS unitID," +
-					"    u.UNIT_NAME AS unitName," +
-					"    IFNULL(com.comment, ' ') AS comment," +
-					"    IFNULL(com.SERVICE_RATE, 0) AS commentRate," +
-					"    IFNULL(com.ID, 0) AS commentID," +
-					"    IFNULL(com.SERVICE_RATE, 0) AS serviceRate" +
+					" r.ID AS id," +
+					" r.DAY_ID AS dayID," +
+					" r.ST_TIME AS startTime," +
+					" r.DURATION AS duration," +
+					" r.RES_CODE_ID AS reserveCode," +
+					" r.RESERVE_GR_TIME AS gregorianDate," +
+					" SUM(rs.SERVICE_PRICE) AS cost," +
+					" c.ID AS companyID," +
+					" c.COMP_NAME AS companyName," +
+					" u.ID AS unitID," +
+					" u.UNIT_NAME AS unitName," +
+					" IFNULL(com.comment, ' ') AS comment," +
+					" IFNULL(com.SERVICE_RATE, 0) AS commentRate," +
+					" IFNULL(com.ID, 0) AS commentID," +
+					" IFNULL(com.SERVICE_RATE, 0) AS serviceRate," +
+					" IF(com.ID IS NULL and date_add(now(), interval r.DURATION minute)" +
+                    " > r.RESERVE_GR_TIME, TRUE, FALSE) AS commentable" +
 					" FROM" +
-					"    alomonshi.reservetimes r" +
-					"        LEFT JOIN" +
-					"    alomonshi.comments com ON com.RES_TIME_ID = r.ID," +
-					"    alomonshi.units u," +
-					"    alomonshi.companies c" +
+					" alomonshi.reservetimes r" +
+					" LEFT JOIN" +
+					" alomonshi.comments com ON com.RES_TIME_ID = r.ID" +
+					" AND com.IS_ACTIVE IS TRUE" +
+					" LEFT JOIN" +
+					" reservetimeservices rs ON rs.RES_TIME_ID = r.ID" +
+					" AND rs.IS_ACTIVE IS TRUE" +
+					" LEFT JOIN" +
+					" units u ON r.UNIT_ID = u.ID AND u.IS_ACTIVE IS TRUE" +
+					" LEFT JOIN" +
+					" companies c ON u.COMP_ID = c.ID AND c.IS_ACTIVE IS TRUE" +
 					" WHERE" +
-					"    r.unit_id = u.id AND u.comp_id = c.id" +
-					"        AND r.status = " + ReserveTimeStatus.RESERVED.getValue() +
-					"        AND r.client_id = " + clientID +
-					" ORDER BY r.day_id DESC;";
+					" r.STATUS = " + ReserveTimeStatus.RESERVED.getValue() +
+					" AND r.CLIENT_ID = " + clientID +
+					" GROUP BY r.ID" +
+					" ORDER BY r.DAY_ID DESC, r.ST_TIME DESC ";
 			ResultSet rs = stmt.executeQuery(command);
 			fillClientReserveTimeList(rs, clientReservedTimes);
 		}catch(SQLException e) {
@@ -1067,9 +1075,9 @@ public class TableReserveTime {
 			clientReservedTime.setCompanyName(resultSet.getString("companyName"));
 			clientReservedTime.setUnitID(resultSet.getInt("unitID"));
 			clientReservedTime.setUnitName(resultSet.getString("unitName"));
+			clientReservedTime.setCost(resultSet.getInt("cost"));
 			clientReservedTime.setServices(TableReserveTimeServices
 					.getServices(clientReservedTime.getReserveTimeID()));
-			clientReservedTime.setCost(getServicesTotalCost(clientReservedTime.getServices()));
 		}catch (SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -1086,9 +1094,8 @@ public class TableReserveTime {
 			clientReservedTime.setCommentID(resultSet.getInt("commentID"));
 			clientReservedTime.setComment(resultSet.getString("comment"));
 			clientReservedTime.setCommentRate(resultSet.getFloat("commentRate"));
+			clientReservedTime.setCommentable(resultSet.getBoolean("commentable"));
 			clientReservedTime.setCancelable(isTimeCancelable(clientReservedTime));
-			clientReservedTime.setCommentable(clientReservedTime.getCommentID() == 0
-					&& !clientReservedTime.isCancelable());
 
 		}catch (SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -1132,15 +1139,6 @@ public class TableReserveTime {
 	}
 
 	/**
-	 * Getting total cost of service list
-	 * @param services to be calculated their cost
-	 * @return total cost
-	 */
-	private static int getServicesTotalCost(List<Services> services){
-		return services.stream().mapToInt(Services::getServicePrice).sum();
-	}
-
-	/**
 	 * Check if time is can be canceled or not
 	 * @param clientReservedTime to be checked
 	 * @return true if it can be canceled
@@ -1148,7 +1146,7 @@ public class TableReserveTime {
 	private static boolean isTimeCancelable(ClientReservedTime clientReservedTime) {
 		//Reserved time can be canceled until 1 hour before time is reached
 		try {
-			return clientReservedTime.getGregorianDateTime().minusHours(1).isAfter(LocalDateTime.now());
+			return clientReservedTime.getGregorianDateTime().minusHours(12).isAfter(LocalDateTime.now());
 		}catch (Exception e) {
 			return false;
 		}
