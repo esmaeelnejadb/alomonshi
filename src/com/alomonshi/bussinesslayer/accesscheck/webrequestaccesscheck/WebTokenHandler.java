@@ -2,7 +2,6 @@ package com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck;
 
 import com.alomonshi.object.tableobjects.Users;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

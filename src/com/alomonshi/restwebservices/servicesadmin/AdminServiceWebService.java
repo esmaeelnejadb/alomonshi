@@ -1,7 +1,7 @@
 package com.alomonshi.restwebservices.servicesadmin;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
+import com.alomonshi.bussinesslayer.accesscheck.dbchangeaccesscheck.CheckAdminAuthority;
 import com.alomonshi.bussinesslayer.service.ServiceDiscountService;
 import com.alomonshi.bussinesslayer.service.ServicesService;
 import com.alomonshi.object.tableobjects.ServiceDiscount;
@@ -117,6 +117,25 @@ public class AdminServiceWebService {
     @JsonView(JsonViews.SubAdminViews.class)
     @CompanySubAdminSecured
     @POST
+    @Path("/getServiceDiscounts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse getUnitServiceDiscount(AdminEditObject adminEditObject) {
+        serviceResponse = new ServiceResponse();
+        try {
+            if (CheckAdminAuthority.isUserUnitAuthorized(adminEditObject.getClientID(), adminEditObject.getUnitID())) {
+                servicesService = new ServicesService(serviceResponse);
+                return servicesService.getUnitServicesDiscount(adminEditObject.getUnitID());
+            }else
+                return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    @JsonView(JsonViews.SubAdminViews.class)
+    @CompanySubAdminSecured
+    @POST
     @Path("/serviceDiscounts")
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceResponse insertServiceDiscount(ServiceDiscountList serviceDiscounts) {
@@ -209,7 +228,13 @@ public class AdminServiceWebService {
     }
 
     @OPTIONS
-    @Path("/serviceDiscountList")
+    @Path("/getServiceDiscounts")
+    public void doOptionsForGetServiceDiscountList() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/serviceDiscounts")
     public void doOptionsForServiceDiscountList() {
         HttpContextHeader.doOptions(httpServletResponse);
     }

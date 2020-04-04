@@ -13,6 +13,10 @@ public class ClientInformationCheck {
         this.user = user;
     }
 
+    /**
+     * Check if client id registered han token is valid
+     * @return result
+     */
     public boolean isPrimaryCheckPass(){
         return isClientRegistered() && isTokenValid();
     }

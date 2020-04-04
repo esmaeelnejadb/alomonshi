@@ -191,9 +191,9 @@ class ClientReserveTimeHandler {
             reserveTimeService.setReserveTimeID(reserveTime.getID());
             reserveTimeService.setClientID(reserveTime.getClientID());
             reserveTimeServices.add(reserveTimeService);
-            reserveTimeService.setServicePrice((int)((1 - (double)service.getDiscount()/100)
+            reserveTimeService.setServicePrice((int)((1 - (double)service.getDiscount().getDiscount()/100)
                     * service.getServicePrice()));
-            reserveTimeService.setDiscountID(service.getDiscountID());
+            reserveTimeService.setDiscountID(service.getDiscount().getID());
         }
     }
 }

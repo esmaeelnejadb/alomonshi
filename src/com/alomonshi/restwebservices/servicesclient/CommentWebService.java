@@ -1,7 +1,7 @@
 package com.alomonshi.restwebservices.servicesclient;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckClientAuthority;
+import com.alomonshi.bussinesslayer.accesscheck.dbchangeaccesscheck.CheckClientAuthority;
 import com.alomonshi.bussinesslayer.comment.ClientCommentService;
 import com.alomonshi.datalayer.dataaccess.TableComment;
 import com.alomonshi.object.tableobjects.Comments;
@@ -23,7 +23,6 @@ public class CommentWebService {
 
     private ClientCommentService clientCommentService;
     private ServiceResponse serviceResponse;
-    private CheckClientAuthority checkClientAuthority;
 
     @Context
     HttpServletResponse httpServletResponse;
@@ -41,8 +40,7 @@ public class CommentWebService {
     public ServiceResponse insertNewComment(Comments comment) {
         serviceResponse = new ServiceResponse();
         try {
-            checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
-            if (checkClientAuthority.isAuthorizedToChangeComment()) {
+            if (CheckClientAuthority.isAuthorizedToChangeComment(comment.getClientID(), comment.getReserveTimeID())) {
                 clientCommentService = new ClientCommentService(comment, serviceResponse);
                 return clientCommentService.insertNewComment();
             }else
@@ -68,8 +66,7 @@ public class CommentWebService {
     public ServiceResponse updateClientComment(Comments comment){
         serviceResponse = new ServiceResponse();
         try {
-            checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
-            if (checkClientAuthority.isAuthorizedToChangeComment()) {
+            if (CheckClientAuthority.isAuthorizedToChangeComment(comment.getClientID(), comment.getReserveTimeID())) {
                 clientCommentService = new ClientCommentService(comment, serviceResponse);
                 return clientCommentService.updateComment();
             }else
@@ -94,8 +91,7 @@ public class CommentWebService {
     public ServiceResponse deleteComment(Comments comment) {
         serviceResponse = new ServiceResponse();
         try {
-            checkClientAuthority = new CheckClientAuthority(comment.getClientID(), comment.getReserveTimeID());
-            if (checkClientAuthority.isAuthorizedToChangeComment()) {
+            if (CheckClientAuthority.isAuthorizedToChangeComment(comment.getClientID(), comment.getReserveTimeID())) {
                 //Getting to be deleted comment from database to set only is_active field to false
                 Comments toBeDeleted = TableComment.getComment(comment.getID());
                 clientCommentService = new ClientCommentService(toBeDeleted, serviceResponse);

@@ -1,7 +1,7 @@
 package com.alomonshi.restwebservices.servicesadmin;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
+import com.alomonshi.bussinesslayer.accesscheck.dbchangeaccesscheck.CheckAdminAuthority;
 import com.alomonshi.bussinesslayer.adminmanagement.AdminManagementService;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.object.uiobjects.CompanyAdmin;

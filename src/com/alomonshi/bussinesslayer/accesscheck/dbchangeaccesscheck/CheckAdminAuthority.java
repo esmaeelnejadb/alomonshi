@@ -1,4 +1,4 @@
-package com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck;
+package com.alomonshi.bussinesslayer.accesscheck.dbchangeaccesscheck;
 
 import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.object.tableobjects.Comments;
@@ -13,15 +13,11 @@ import java.util.logging.Logger;
 
 public class CheckAdminAuthority {
 
-    public CheckAdminAuthority() {
-    }
-
 
     /**
      * check the intended unit id is in the list of related user unit ids
      * @return true is yes
      */
-
     public static boolean isUserUnitAuthorized(int userID, int unitID){
         try {
             List<Integer> unitIDs = TableUnitAdmin.getAdminUnitIDs(userID);

@@ -55,6 +55,20 @@ public class ServicesService {
     }
 
     /**
+     * Getting unit services from database
+     * @return service response
+     */
+    public ServiceResponse getUnitServicesDiscount(int unitID) {
+        List<Services> services = TableService.getUnitServiceDiscounts(unitID);
+        if (!services.isEmpty()) {
+            return serviceResponse.setResponse(true)
+                    .setMessage(ServerMessage.SUCCESSMESSAGE)
+                    .setResponseData(services);
+        }else
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.SERVICEERROR_01);
+    }
+
+    /**
      * Inserting new service
      * @return service response
      */

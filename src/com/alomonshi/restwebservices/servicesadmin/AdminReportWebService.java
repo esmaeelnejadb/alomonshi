@@ -2,7 +2,7 @@ package com.alomonshi.restwebservices.servicesadmin;
 
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.accesscheck.changeaccesscheck.CheckAdminAuthority;
+import com.alomonshi.bussinesslayer.accesscheck.dbchangeaccesscheck.CheckAdminAuthority;
 import com.alomonshi.bussinesslayer.report.ReportService;
 import com.alomonshi.object.uiobjects.ReserveTimeForm;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;

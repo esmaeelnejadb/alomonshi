@@ -19,8 +19,7 @@ public class Services {
 	private String serviceName;
 	private int serviceDuration; // Service duration has been considered in minute
 	private int servicePrice;
-	private int discountID;
-	private int discount;
+	private ServiceDiscount discount;
 	private boolean isActive;
 	private List<ServicePicture> pictureURLs;
 	private String remark;
@@ -59,13 +58,8 @@ public class Services {
 		return servicePrice;
 	}
 
-	@JsonView(JsonViews.HiddenViews.class)
-	public int getDiscountID() {
-		return discountID;
-	}
-
 	@JsonView(JsonViews.NormalViews.class)
-	public int getDiscount() {
+	public ServiceDiscount getDiscount() {
 		return discount;
 	}
 
@@ -124,11 +118,7 @@ public class Services {
 		this.servicePrice = servicePrice;
 	}
 
-	public void setDiscountID(int discountID) {
-		this.discountID = discountID;
-	}
-
-	public void setDiscount(int discount) {
+	public void setDiscount(ServiceDiscount discount) {
 		this.discount = discount;
 	}
 

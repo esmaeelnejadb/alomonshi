@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.ReserveTimeStatus;
+import com.alomonshi.object.tableobjects.ServiceDiscount;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.AdminReport;
 
@@ -142,7 +144,7 @@ public class TableService {
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
-					" s.*, sd.ID as discountID, sd.DISCOUNT as discount" +
+					" s.*, sd.*" +
 					" FROM" +
 					" services s" +
 					" LEFT JOIN" +
@@ -180,7 +182,7 @@ public class TableService {
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
-					" s.*, sd.ID as discountID, sd.DISCOUNT as discount" +
+					" s.*, sd.*" +
 					" FROM" +
 					" services s" +
 					" LEFT JOIN" +
@@ -198,6 +200,43 @@ public class TableService {
 			if(conn != null) {
 				try {
 						conn.close();		
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return services;
+	}
+
+	/**
+	 * Get unit service discounts
+	 * @param unitID intended unit id
+	 * @return list of services
+	 */
+	public static List<Services> getUnitServiceDiscounts(int unitID)
+	{
+		List<Services> services = new ArrayList<>();
+		Connection conn = DBConnection.getConnection();
+		try {
+			Statement stmt = conn.createStatement();
+			String command = "SELECT" +
+					" s.*, sd.*" +
+					" FROM" +
+					" services s" +
+					" LEFT JOIN" +
+					" servicediscount sd ON s.id = sd.service_id" +
+					" AND s.IS_ACTIVE IS TRUE" +
+					" AND sd.IS_ACTIVE IS TRUE" +
+					" WHERE" +
+					" s.UNIT_ID = " + unitID;
+			ResultSet rs = stmt.executeQuery(command);
+			fillServices(rs, services);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
@@ -322,8 +361,16 @@ public class TableService {
 			service.setCreateDate(resultSet.getObject(8, LocalDateTime.class));
 			service.setUpdateDate(resultSet.getObject(9, LocalDateTime.class));
 			service.setRemoveDate(resultSet.getObject(10, LocalDateTime.class));
-			service.setDiscountID(resultSet.getInt("discountID"));
-			service.setDiscount(resultSet.getInt("discount"));
+			//Creating service discount object
+			if (resultSet.getInt(11) != 0) {
+				ServiceDiscount serviceDiscount = new ServiceDiscount();
+				serviceDiscount.setID(resultSet.getInt(11));
+				serviceDiscount.setDiscount(resultSet.getInt(12));
+				serviceDiscount.setCreateDate(resultSet.getObject(14, LocalDate.class));
+				serviceDiscount.setExpireDate(resultSet.getObject(15, LocalDate.class));
+				//Setting service discount object into service
+				service.setDiscount(serviceDiscount);
+			}
 			service.setPictureURLs(TableServicePicture.getServicePictures(service.getID()));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

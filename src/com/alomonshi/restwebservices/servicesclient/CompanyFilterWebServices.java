@@ -22,7 +22,7 @@ public class CompanyFilterWebServices {
     @GET
     @Path("/getFilterItems")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<FilterItem, String> getSearchedList(){
+    public Map<FilterItem, String> getFilterItems(){
         try {
             return FilterItem.getFilterItemMap();
         }catch (Exception e){
