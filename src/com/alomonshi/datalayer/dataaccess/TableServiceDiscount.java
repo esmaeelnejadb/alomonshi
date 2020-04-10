@@ -2,9 +2,7 @@ package com.alomonshi.datalayer.dataaccess;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.tableobjects.ServiceDiscount;
-import com.alomonshi.object.tableobjects.Services;
 
-import javax.xml.ws.Service;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

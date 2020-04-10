@@ -6,10 +6,14 @@ import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.authentica
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.object.enums.UserLevels;
+import com.alomonshi.restwebservices.annotation.ClientSecured;
+import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.SMSMessage;
 import com.alomonshi.utility.sendsms.SMSUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.logging.Level;
@@ -22,12 +26,21 @@ public class AuthenticationWebService {
    private HandleRegistration handleRegistration;
    private ClientInformationCheck clientPrimaryCheck;
 
+    @Context
+    HttpServletResponse httpServletResponse;
+
     /**
-     * check client request for login
-     * @param phoneNumber entered phone by user
-     * @param password entered password by user
+     * check client authority for login
      * @return ok if user is valid and server error if not
      */
+
+    @ClientSecured
+    @POST
+    @Path("/checkAuthority")
+    public Response confirmLoginRequest(){
+        return Response.ok().build();
+    }
+
     @POST
     @Path("/clientPasswordLogin")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -124,5 +137,11 @@ public class AuthenticationWebService {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
+    }
+
+    @OPTIONS
+    @Path("/checkAuthority")
+    public void doOptionsForCheckAuthority() {
+        HttpContextHeader.doOptions(httpServletResponse);
     }
 }

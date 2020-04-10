@@ -92,7 +92,7 @@ public class CompanyWebService{
 
     /**
      *
-     * @return list of newest company list
+     * @return list of doscount company list
      */
     @JsonView(JsonViews.NormalViews.class)
     @GET

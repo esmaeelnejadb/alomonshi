@@ -1,8 +1,5 @@
 package com.alomonshi.bussinesslayer;
 
-
-import java.util.List;
-
 public class ServiceResponse {
     private Object responseData;
     private boolean response;
