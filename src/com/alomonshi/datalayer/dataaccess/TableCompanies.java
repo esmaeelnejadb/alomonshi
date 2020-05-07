@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
+import com.alomonshi.object.tableobjects.CompanyCategories;
 
 public class TableCompanies {
 
@@ -98,7 +99,67 @@ public class TableCompanies {
 		}		
 	}
 
-	/**
+    /**
+     * Getting best list of each category
+     * @return list of best companies in each category
+     */
+
+	public static List<CompanyCategories> getBestList(int limitNumber) {
+        List<CompanyCategories> companyCategories = TableCompanyCategory
+                .getCompanyCategoryList(2);
+        Connection connection = DBConnection.getConnection();
+        for (CompanyCategories companyCategory : companyCategories) {
+            companyCategory.setCompanies(getTopBestCompanies(
+                    companyCategory.getID(),
+                    limitNumber,
+                    connection));
+            companyCategory.setCompanySize(companyCategory.getCompanies().size());
+        }
+        DBConnection.closeConnection(connection);
+        return companyCategories;
+    }
+
+    /**
+     * Getting discount list of each category
+     * @return list of discount companies in each category
+     */
+
+    public static List<CompanyCategories> getDiscountList(int limitNumber) {
+        List<CompanyCategories> companyCategories = TableCompanyCategory
+                .getCompanyCategoryList(2);
+        Connection connection = DBConnection.getConnection();
+        for (CompanyCategories companyCategory : companyCategories) {
+            companyCategory.setCompanies(getDiscountCompanies(
+                    companyCategory.getID(),
+                    limitNumber,
+                    connection));
+            companyCategory.setCompanySize(companyCategory.getCompanies().size());
+        }
+        DBConnection.closeConnection(connection);
+        return companyCategories;
+    }
+
+    /**
+     * Getting newest list of each category
+     * @return list of newest companies in each category
+     */
+
+    public static List<CompanyCategories> getNewestList(int limitNumber) {
+        List<CompanyCategories> companyCategories = TableCompanyCategory
+                .getCompanyCategoryList(2);
+        Connection connection = DBConnection.getConnection();
+        for (CompanyCategories companyCategory : companyCategories) {
+            companyCategory.setCompanies(getNewestCompanies(
+                    companyCategory.getID(),
+                    limitNumber,
+                    connection));
+            companyCategory.setCompanySize(companyCategory.getCompanies().size());
+        }
+        DBConnection.closeConnection(connection);
+        return companyCategories;
+    }
+
+    /**
 	 * Getting company
 	 * @param companyID to be got from database
 	 * @return company object
@@ -126,7 +187,7 @@ public class TableCompanies {
 			Statement stmt =conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
 			while(rs.next()) {
-				fillCompany(rs, company);
+				fillCompany(rs, company, true);
 			}
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -196,8 +257,9 @@ public class TableCompanies {
 	 * @param limitNumber limitation number
 	 * @return list of best companies
 	 */
-	public static List<Company> getTopBestCompanies(int limitNumber) {
-		Connection conn = DBConnection.getConnection();
+	private static List<Company> getTopBestCompanies(int categoryID,
+                                                    int limitNumber,
+                                                    Connection connection) {
 		List<Company> companies = new ArrayList<>();
 		try {
             String command = "SELECT" +
@@ -215,90 +277,110 @@ public class TableCompanies {
 					" servicediscount servdis ON serv.id = servdis.service_id" +
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+                    " WHERE comp.COMP_CAT_ID = " + categoryID +
 					" GROUP BY comp.ID" +
 					" ORDER BY comp.COMP_RATE DESC" +
                     " LIMIT " + limitNumber;
-			Statement stmt =conn.createStatement();
+			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
 			fillCompanies(rs, companies);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
 		}
 		return companies;
 	}
+
+	/**
+     * Getting discount companies
+     * @param limitNumber number of company should be returned
+     * @return list of company object
+     */
+    private static List<Company> getDiscountCompanies(int categoryID,
+                                                      int limitNumber,
+                                                      Connection connection) {
+        List<Company> companies = new ArrayList<>();
+        try {
+            String command = "SELECT" +
+                    " comp.*," +
+                    " max(servdis.discount) as discount" +
+                    " FROM" +
+                    " companies comp," +
+                    " units unit," +
+                    " services serv," +
+                    " servicediscount servdis" +
+                    " WHERE" +
+                    " comp.id = unit.comp_id" +
+                    " AND unit.id = serv.unit_id" +
+                    " AND serv.id = servdis.service_id" +
+                    " AND unit.is_active IS TRUE" +
+                    " AND serv.is_active IS TRUE" +
+                    " AND comp.is_active IS TRUE" +
+                    " AND servdis.is_active IS TRUE" +
+                    " AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+                    " AND comp.COMP_CAT_ID = " + categoryID +
+                    " GROUP BY comp.id" +
+                    " ORDER BY comp.id" +
+                    " LIMIT " + limitNumber;
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(command);
+            fillCompanies(rs, companies);
+        }catch(SQLException e)
+        {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }
+        return companies;
+    }
+
+    /**
+     * Getting all discount companies
+     * @param limitNumber number of company should be returned
+     * @return list of company object
+     */
+    public static List<Company> getAllDiscountCompanies(int limitNumber) {
+        Connection connection = DBConnection.getConnection();
+        List<Company> companies = new ArrayList<>();
+        try {
+            String command = "SELECT" +
+                    " comp.*," +
+                    " max(servdis.discount) as discount" +
+                    " FROM" +
+                    " companies comp," +
+                    " units unit," +
+                    " services serv," +
+                    " servicediscount servdis" +
+                    " WHERE" +
+                    " comp.id = unit.comp_id" +
+                    " AND unit.id = serv.unit_id" +
+                    " AND serv.id = servdis.service_id" +
+                    " AND unit.is_active IS TRUE" +
+                    " AND serv.is_active IS TRUE" +
+                    " AND comp.is_active IS TRUE" +
+                    " AND servdis.is_active IS TRUE" +
+                    " AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+                    " GROUP BY comp.id" +
+                    " ORDER BY comp.id" +
+                    " LIMIT " + limitNumber;
+            Statement stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery(command);
+            fillCompanies(rs, companies);
+        }catch(SQLException e)
+        {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }
+        DBConnection.closeConnection(connection);
+        return companies;
+    }
+
 
 	/**
 	 * Getting newest companies
 	 * @param limitNumber number of company should be returned
 	 * @return list of company object
 	 */
-	public static List<Company> getDiscountCompanies(int limitNumber) {
-		Connection conn = DBConnection.getConnection();
-		List<Company> companies = new ArrayList<>();
-		try {
-			String command = "SELECT" +
-					" comp.*," +
-					" max(servdis.discount) as discount" +
-					" FROM" +
-					" companies comp," +
-					" units unit," +
-					" services serv," +
-					" servicediscount servdis" +
-					" WHERE" +
-					" comp.id = unit.comp_id" +
-					" AND unit.id = serv.unit_id" +
-					" AND serv.id = servdis.service_id" +
-					" AND unit.is_active IS TRUE" +
-					" AND serv.is_active IS TRUE" +
-					" AND comp.is_active IS TRUE" +
-					" AND servdis.is_active IS TRUE" +
-					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
-					" GROUP BY comp.id" +
-					" ORDER BY comp.id" +
-					" LIMIT " + limitNumber;
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery(command);
-			fillCompanies(rs, companies);
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
-		}
-		return companies;
-	}
-
-
-	/**
-	 * Getting newest companies
-	 * @param limitNumber number of company should be returned
-	 * @return list of company object
-	 */
-	public static List<Company> getNewestCompanies(int limitNumber) {
-		Connection conn = DBConnection.getConnection();
+	private static List<Company> getNewestCompanies(int categoryID,
+                                                    int limitNumber,
+                                                    Connection connection) {
 		List<Company> companies = new ArrayList<>();
 		try {
 			String command = "SELECT" +
@@ -316,27 +398,16 @@ public class TableCompanies {
 					" servicediscount servdis ON serv.id = servdis.service_id" +
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+                    " WHERE comp.COMP_CAT_ID = " + categoryID +
 					" GROUP BY comp.ID" +
 					" ORDER BY comp.ID DESC" +
 					" LIMIT " + limitNumber;
-			Statement stmt = conn.createStatement();
+			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
 			fillCompanies(rs, companies);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}finally
-		{
-			if(conn != null)
-			{
-				try
-				{
-					conn.close();
-				} catch (SQLException e)
-				{
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}
 		}
 		return companies;
 	}
@@ -755,7 +826,7 @@ public class TableCompanies {
 		}
 	}
 
-	private static void fillCompany(ResultSet resultSet, Company company){
+	private static void fillCompany(ResultSet resultSet, Company company, boolean isUnitSet){
 		try{
 			company.setID(resultSet.getInt(1));
 			company.setCompanyCatID(resultSet.getInt(2));
@@ -775,18 +846,20 @@ public class TableCompanies {
 			company.setActive(resultSet.getBoolean(16));
 			company.setCommercialCode(resultSet.getString(17));
 			company.setDiscount(resultSet.getInt("discount"));
-			company.setUnits(TableUnit.getUnits(company.getID(), true));
+			if (isUnitSet)
+			    company.setUnits(TableUnit.getUnits(company.getID(), true));
 			company.setCompanyPictures(TableCompanyPicture.getCompanyPictures(company.getID()));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
 
-	private static void fillCompanies(ResultSet resultSet, List<Company> companies){
+	private static void fillCompanies(ResultSet resultSet,
+                                      List<Company> companies){
 		try{
 			while (resultSet.next()){
 				Company company = new Company();
-				fillCompany(resultSet, company);
+				fillCompany(resultSet, company, false);
 				companies.add(company);
 			}
 		}catch (SQLException e){

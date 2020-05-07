@@ -1,6 +1,7 @@
 package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.restwebservices.adaptors.LocalDateTimeAdaptor;
+import com.alomonshi.restwebservices.adaptors.LocalDateTimeToDateAdaptor;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -43,19 +44,19 @@ public class Comments {
 		return comment;
 	}
 
-	@JsonView(JsonViews.SubAdminViews.class)
+	@JsonView(JsonViews.ClientViews.class)
 	public String getReplyComment() {
 		return replyComment;
 	}
 
 	@JsonView(JsonViews.ClientViews.class)
-	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
+	@XmlJavaTypeAdapter(LocalDateTimeToDateAdaptor.class)
 	public LocalDateTime getCommentDate() {
 		return commentDate;
 	}
 
-	@JsonView(JsonViews.SubAdminViews.class)
-	@XmlJavaTypeAdapter(LocalDateTimeAdaptor.class)
+	@JsonView(JsonViews.ClientViews.class)
+	@XmlJavaTypeAdapter(LocalDateTimeToDateAdaptor.class)
 	public LocalDateTime getReplyDate() {
 		return replyDate;
 	}

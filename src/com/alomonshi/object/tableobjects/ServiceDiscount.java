@@ -20,7 +20,7 @@ public class ServiceDiscount {
     private LocalDateTime removeDate;
     private boolean isActive;
 
-    @JsonView(JsonViews.SubAdminViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     public int getID() {
         return ID;
     }
@@ -35,12 +35,12 @@ public class ServiceDiscount {
         return unitID;
     }
 
-    @JsonView(JsonViews.SubAdminViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     public int getDiscount() {
         return discount;
     }
 
-    @JsonView(JsonViews.SubAdminViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     public int getServiceID() {
         return serviceID;
     }

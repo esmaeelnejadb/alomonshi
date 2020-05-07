@@ -59,7 +59,7 @@ public class TableCompanyCategory {
 	
 	public static List<CompanyCategories> getCompanyCategoryList(int typeID)
 	{
-		String command="select * from COMPANYCATS WHERE CAT_TYPE = " + typeID + " AND IS_ACTIVE IS TRUE ";
+		String command = "select * from COMPANYCATS WHERE CAT_TYPE = " + typeID + " AND IS_ACTIVE IS TRUE ";
 		List<CompanyCategories> companyCategories = new ArrayList<>();
 		Connection conn = DBConnection.getConnection(); 
 		try
@@ -71,7 +71,6 @@ public class TableCompanyCategory {
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return null;
 		}finally
 		{
 			if(conn != null)
@@ -85,11 +84,12 @@ public class TableCompanyCategory {
 				}
 			}	
 		}
+		return companyCategories;
 	}
 	
 	public static CompanyCategories getCompanyCategory(int categoryID)
 	{
-		String command="select * from COMPANYCATS WHERE ID = " + categoryID + " AND IS_ACTIVE IS TRUE ";
+		String command = "select * from COMPANYCATS WHERE ID = " + categoryID + " AND IS_ACTIVE IS TRUE ";
 		Connection conn = DBConnection.getConnection();
         CompanyCategories category = new CompanyCategories();
 		try

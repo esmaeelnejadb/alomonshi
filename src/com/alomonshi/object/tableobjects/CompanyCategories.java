@@ -1,7 +1,6 @@
 package com.alomonshi.object.tableobjects;
 
 import com.alomonshi.restwebservices.views.JsonViews;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,7 +25,7 @@ public class CompanyCategories {
 		return categoryName;
 	}
 
-	@JsonView(JsonViews.ManagerViews.class)
+	@JsonView(JsonViews.ClientViews.class)
 	public List<Company> getCompanies() {
 		return companies;
 	}

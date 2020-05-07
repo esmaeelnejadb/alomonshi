@@ -54,7 +54,7 @@ public class AuthenticationWebService {
                     : Response.status(Response.Status.FORBIDDEN).build();
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -79,11 +79,11 @@ public class AuthenticationWebService {
                 user.setPhoneNo(phoneNumber);
                 handleRegistration = new HandleRegistration(user);
                 return handleRegistration.handleVerification() ?
-                        Response.ok().build() : Response.status(Response.Status.FORBIDDEN).build();
+                        Response.ok().build() : Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
             }
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -106,12 +106,12 @@ public class AuthenticationWebService {
                 user.setUserLevel(UserLevels.CLIENT);
                 String token = handleRegistration.handleFinalRegistration();
                 return token != null ? Response.ok(token).build() :
-                        Response.status(Response.Status.NOT_ACCEPTABLE).build();
+                        Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
             }else
-                return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+                return Response.status(Response.Status.FORBIDDEN).build();
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -130,12 +130,12 @@ public class AuthenticationWebService {
             if (clientPrimaryCheck.isClientRegistered()) {
                 return SMSUtils.sendSMS(SMSUtils.getSingleToNumber(phoneNumber),
                         SMSMessage.getPasswordRetriveMessage(user)) ?
-                        Response.ok().build() : Response.status(Response.Status.EXPECTATION_FAILED).build();
+                        Response.ok().build() : Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
             }else
                 return Response.status(Response.Status.FORBIDDEN).build();
         }catch (Exception e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
-            return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

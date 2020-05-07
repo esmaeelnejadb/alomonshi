@@ -187,7 +187,8 @@ public class TableComment {
 					" com.reply_comment as replyComment," +
 					" com.REPLY_DATE as replyDate," +
 					" com.SERVICE_RATE as serviceRate," +
-					" cl.NAME as clientName" +
+					" cl.NAME as clientName," +
+					" cl.ID as clientID" +
 					" FROM" +
 					" alomonshi.comments com," +
 					" alomonshi.reservetimes rt," +
@@ -318,6 +319,8 @@ public class TableComment {
 			comment.setReplyDate(resultSet.getObject("replyDate", LocalDateTime.class));
 			comment.setServiceRate(resultSet.getFloat("serviceRate"));
 			comment.setClientName(resultSet.getString("clientName"));
+			comment.setClientID(resultSet.getInt("clientID"));
+
 			comment.setServiceNames(Objects.requireNonNull(TableReserveTimeServices
 					.getServices(comment.getReserveTimeID()))
 					.stream()

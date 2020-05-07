@@ -94,7 +94,7 @@ public class ReserveTimeService{
 
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception in generating reserve times " + e);
-            serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
+            serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
         }
 	    return serviceResponse;
 	}

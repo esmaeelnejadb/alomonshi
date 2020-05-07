@@ -13,4 +13,10 @@ public class ConfigurationParameter {
     public static String smsPanelUserName = "";
     public static String smsPanelPassword = "";
     public static String smsPanelFromNumber = "";
+
+    //*********Reserve Time Configuration***********/
+    public static int coulBeCancelelPeriod = 0; //in hour
+
+    //*********Companies limitation number***********/
+    public static int homePageCompaniesLimitationNumber = 10; //in hour
 }

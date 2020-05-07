@@ -1,8 +1,10 @@
 package com.alomonshi.bussinesslayer.company;
 
+import com.alomonshi.configuration.ConfigurationParameter;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
+import com.alomonshi.object.tableobjects.CompanyCategories;
 
 import java.util.*;
 
@@ -10,6 +12,40 @@ import java.util.*;
  * Company Service
  */
 public class ClientCompanyService {
+
+
+    /**
+     * Getting best list in each category
+     * @return list of best companies in each categories
+     */
+    public static List<CompanyCategories> getBestCompaniesInCategories() {
+        return TableCompanies.getBestList(ConfigurationParameter.homePageCompaniesLimitationNumber);
+    }
+
+    /**
+     * Getting discount list in each category
+     * @return list of discount companies in each categories
+     */
+    public static List<CompanyCategories> getDiscountCompaniesInCategories() {
+        return TableCompanies.getDiscountList(ConfigurationParameter.homePageCompaniesLimitationNumber);
+    }
+
+    /**
+     * Getting newest list in each category
+     * @return list of newest companies in each categories
+     */
+    public static List<CompanyCategories> getNewestCompaniesInCategories() {
+        return TableCompanies.getNewestList(ConfigurationParameter.homePageCompaniesLimitationNumber);
+    }
+
+    /**
+     * Getting all categories discounted companies
+     * @return list of companies
+     */
+    public static List<Company> getAllDiscountCompanies() {
+        return TableCompanies.getAllDiscountCompanies(ConfigurationParameter
+                .homePageCompaniesLimitationNumber);
+    }
 
     /**
      * Getting searched companies

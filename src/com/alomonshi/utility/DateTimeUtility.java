@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.regex.Pattern;
 
 public class DateTimeUtility {
 
@@ -101,6 +102,32 @@ public class DateTimeUtility {
     public static String convertGregorianToPersianDate(LocalDate localDate) {
         JalaliCalendar jalaliCalendar = new JalaliCalendar(localDate);
         return jalaliCalendar.getYear() + "/" + jalaliCalendar.getMonth() + "/" + jalaliCalendar.getDay();
+    }
+
+    /**
+     * Convert gregorian local date time to persian local date time
+     * @param localDateTime to be converted
+     * @return converted date time
+     */
+    public static String convertGregorianToPersianDateTime(LocalDateTime localDateTime) {
+        JalaliCalendar jalaliCalendar = new JalaliCalendar(localDateTime.toLocalDate());
+        return jalaliCalendar.getYear() +
+                "/" +
+                jalaliCalendar.getMonth() +
+                "/" +
+                jalaliCalendar.getDay() +
+                " " +
+                localDateTime.toLocalTime();
+    }
+
+    /**
+     * Converting persian date format to date id
+     * @param date to be converted
+     * @return converted date id
+     */
+    public static int convertPersianDateToPersianDateID (String date) {
+        String[] splitDate = date.split(Pattern.quote("/"));
+        return Integer.parseInt(splitDate[0] + splitDate[1] + splitDate[2]);
     }
 
     /**

@@ -34,7 +34,7 @@ public class AdminUnitWebService {
      */
 
     @JsonView(JsonViews.AdminViews.class)
-    @CompanyAdminSecured
+    @CompanySubAdminSecured
     @POST
     @Path("/companyUnits")
     @Produces(MediaType.APPLICATION_JSON)

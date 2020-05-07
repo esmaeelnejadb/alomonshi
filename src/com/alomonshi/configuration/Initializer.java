@@ -25,6 +25,11 @@ public class Initializer implements ServletContextListener {
         ConfigurationParameter.smsPanelUserName = config.getKey("SMSUtil.SMSPanel.userName");
         ConfigurationParameter.smsPanelPassword = config.getKey("SMSUtil.SMSPanel.smsPass");
         ConfigurationParameter.smsPanelFromNumber = config.getKey("SMSUtil.SMSPanel.fromNumber");
+        ConfigurationParameter.coulBeCancelelPeriod = Integer.
+                parseInt(config.
+                        getKey("reservetime.clientreservetime.couldBeCanceledPeriod"));
+        ConfigurationParameter.homePageCompaniesLimitationNumber =
+                Integer.parseInt(config.getKey("homepage.companies.limitationNumber"));
 
     }
 

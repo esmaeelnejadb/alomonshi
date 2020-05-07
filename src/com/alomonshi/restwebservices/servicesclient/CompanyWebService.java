@@ -4,6 +4,7 @@ import com.alomonshi.bussinesslayer.company.ClientCompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
+import com.alomonshi.object.tableobjects.CompanyCategories;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -60,13 +61,13 @@ public class CompanyWebService{
      * return list of best companies
      *
      */
-    @JsonView(JsonViews.NormalViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getBestList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getBestList(){
+    public List<CompanyCategories> getBestList(){
         try {
-            return TableCompanies.getTopBestCompanies(10);
+            return ClientCompanyService.getBestCompaniesInCategories();
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -74,16 +75,15 @@ public class CompanyWebService{
     }
 
     /**
-     *
      * @return list of newest company list
      */
-    @JsonView(JsonViews.NormalViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getNewestList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getNewestList(){
+    public List<CompanyCategories> getNewestList(){
         try {
-            return TableCompanies.getNewestCompanies(10);
+            return ClientCompanyService.getNewestCompaniesInCategories();
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -92,15 +92,15 @@ public class CompanyWebService{
 
     /**
      *
-     * @return list of doscount company list
+     * @return list of discount company list
      */
-    @JsonView(JsonViews.NormalViews.class)
+    @JsonView(JsonViews.ClientViews.class)
     @GET
     @Path("/getDiscountList")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Company> getDiscountList(){
         try {
-            return TableCompanies.getDiscountCompanies(10);
+            return ClientCompanyService.getAllDiscountCompanies();
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -133,6 +133,15 @@ public class CompanyWebService{
         }
     }
 
+    /**
+     * Getting filtered companies in a category
+     * @param categoryID selected category
+     * @param lat latitude
+     * @param lon longitude
+     * @param filterItem item to be filtered (Refer to Enum FilterItem in package enums)
+     * @return list of filtered companies
+     */
+
     @JsonView(JsonViews.NormalViews.class)
     @GET
     @Path("/getFilteredList")
@@ -148,6 +157,17 @@ public class CompanyWebService{
             return null;
         }
     }
+
+    /**
+     * Getting filtered searched companies in a category
+     * @param categoryID selected category
+     * @param serviceName searched service
+     * @param companyName searched company
+     * @param lat latitude
+     * @param lon longitude
+     * @param filterItem item to be filtered (Refer to Enum FilterItem in package enums)
+     * @return list of filtered companies
+     */
 
     @JsonView(JsonViews.NormalViews.class)
     @GET

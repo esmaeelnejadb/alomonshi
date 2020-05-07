@@ -1,6 +1,7 @@
 package com.alomonshi.bussinesslayer.clientinfo;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
+import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.WebTokenHandler;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
 import com.alomonshi.restwebservices.message.ServerMessage;
@@ -36,10 +37,13 @@ public class ClientProfile {
      */
     public ServiceResponse updateClientProfile() {
         this.deleteUnnecessaryProperties();
-        this.user = getCopiedCommentProperties();
+        this.user = getCopiedUserProperties();
+        WebTokenHandler webTokenHandler = new WebTokenHandler();
+        webTokenHandler.setUser(this.user);
         if (TableClient.update(user))
             return serviceResponse.setResponse(true)
-                    .setMessage(ServerMessage.SUCCESSMESSAGE);
+                    .setMessage(ServerMessage.SUCCESSMESSAGE)
+                    .setResponseData(webTokenHandler.generateWebToken());
         else
             return serviceResponse.setResponse(false)
                     .setMessage(ServerMessage.FAULTMESSAGE);
@@ -78,7 +82,7 @@ public class ClientProfile {
      * Copy properties of object got from ui to existed object
      * @return updated object
      */
-    private Users getCopiedCommentProperties() {
+    private Users getCopiedUserProperties() {
         BeanUtilsBean utilsBean = new CopyNotNullProperties();
         Users toBeUpdated = TableClient.getUser(user.getClientID());
         //Check client id and reserve time id is the same from table and UI

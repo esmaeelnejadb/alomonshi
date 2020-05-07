@@ -9,6 +9,8 @@ import java.time.LocalTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.alomonshi.configuration.ConfigurationParameter;
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ReserveTime;
@@ -583,14 +585,20 @@ public class TableReserveTime {
 					"    c.id AS companyID," +
 					"    c.COMP_NAME AS companyName," +
 					"    u.ID AS unitID," +
-					"    u.UNIT_NAME AS unitName" +
+					"    u.UNIT_NAME AS unitName," +
+                    "    SUM(rs.SERVICE_PRICE) AS cost" +
 					" FROM" +
 					"    alomonshi.reservetimes r," +
 					"    alomonshi.units u," +
-					"    alomonshi.companies c" +
+					"    alomonshi.companies c," +
+                    "    alomonshi.reservetimeservices rs" +
 					" WHERE" +
-					"    r.unit_id = u.id AND u.comp_id = c.id" +
-					"        AND r.ID = " + reserveTimeID;
+					"    r.unit_id = u.id" +
+                    " AND" +
+                    " u.comp_id = c.id" +
+                    " AND" +
+                    " r.id = rs.RES_TIME_ID" +
+					" AND r.ID = " + reserveTimeID;
 			ResultSet rs = stmt.executeQuery(command);
 			fillSingleClientReservedTime(rs, clientReservedTime);
 		}catch(SQLException e) {
@@ -880,7 +888,7 @@ public class TableReserveTime {
 					" AND RESERVE_GR_TIME >= NOW()" +
 					" ORDER BY ID DESC";
 			ResultSet rs = stmt.executeQuery(command);
-			fillBreifServerTimes(rs, reserveTimes);
+			fillBriefServerTimes(rs, reserveTimes);
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
@@ -920,7 +928,7 @@ public class TableReserveTime {
 					" AND rt.RESERVE_GR_TIME > NOW()" +
 					" ORDER BY rt.ID DESC;";
 			ResultSet rs = stmt.executeQuery(command);
-			fillBreifServerTimes(rs, reserveTimes);
+			fillBriefServerTimes(rs, reserveTimes);
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
@@ -961,7 +969,7 @@ public class TableReserveTime {
 	 * @param resultSet got from JDBC
 	 * @param reserveTimes list of reserve times
 	 */
-	private static void fillBreifServerTimes(ResultSet resultSet, List<ReserveTime> reserveTimes) {
+	private static void fillBriefServerTimes(ResultSet resultSet, List<ReserveTime> reserveTimes) {
 		try {
 			while (resultSet.next()) {
 				ReserveTime reserveTime = new ReserveTime();
@@ -1146,7 +1154,10 @@ public class TableReserveTime {
 	private static boolean isTimeCancelable(ClientReservedTime clientReservedTime) {
 		//Reserved time can be canceled until 1 hour before time is reached
 		try {
-			return clientReservedTime.getGregorianDateTime().minusHours(12).isAfter(LocalDateTime.now());
+			return clientReservedTime
+                    .getGregorianDateTime()
+                    .minusHours(ConfigurationParameter.coulBeCancelelPeriod)
+                    .isAfter(LocalDateTime.now());
 		}catch (Exception e) {
 			return false;
 		}

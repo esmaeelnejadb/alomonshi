@@ -3,6 +3,7 @@ package com.alomonshi.object.uiobjects;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.restwebservices.adaptors.LocalDateTimeAdaptor;
 import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
+import com.alomonshi.restwebservices.adaptors.PersianDateIDAdaptor;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -14,7 +15,7 @@ import java.util.List;
 public class ClientReservedTime {
 
     private int reserveTimeID;
-    private int dayID;
+    private Integer dayID;
     private LocalTime startTime;
     private int duration;
     private int cost;
@@ -36,8 +37,9 @@ public class ClientReservedTime {
         return reserveTimeID;
     }
 
+    @XmlJavaTypeAdapter(PersianDateIDAdaptor.class)
     @JsonView({JsonViews.ClientViews.class})
-    public int getDayID() {
+    public Integer getDayID() {
         return dayID;
     }
 
@@ -122,7 +124,7 @@ public class ClientReservedTime {
         this.reserveTimeID = reserveTimeID;
     }
 
-    public void setDayID(int dayID) {
+    public void setDayID(Integer dayID) {
         this.dayID = dayID;
     }
 

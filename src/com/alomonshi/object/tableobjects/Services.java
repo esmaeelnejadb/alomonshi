@@ -58,7 +58,7 @@ public class Services {
 		return servicePrice;
 	}
 
-	@JsonView(JsonViews.NormalViews.class)
+	@JsonView(JsonViews.ClientViews.class)
 	public ServiceDiscount getDiscount() {
 		return discount;
 	}

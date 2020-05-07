@@ -361,16 +361,7 @@ public class TableService {
 			service.setCreateDate(resultSet.getObject(8, LocalDateTime.class));
 			service.setUpdateDate(resultSet.getObject(9, LocalDateTime.class));
 			service.setRemoveDate(resultSet.getObject(10, LocalDateTime.class));
-			//Creating service discount object
-			if (resultSet.getInt(11) != 0) {
-				ServiceDiscount serviceDiscount = new ServiceDiscount();
-				serviceDiscount.setID(resultSet.getInt(11));
-				serviceDiscount.setDiscount(resultSet.getInt(12));
-				serviceDiscount.setCreateDate(resultSet.getObject(14, LocalDate.class));
-				serviceDiscount.setExpireDate(resultSet.getObject(15, LocalDate.class));
-				//Setting service discount object into service
-				service.setDiscount(serviceDiscount);
-			}
+			fillServiceDiscount(resultSet, service);
 			service.setPictureURLs(TableServicePicture.getServicePictures(service.getID()));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -430,6 +421,23 @@ public class TableService {
 				fillService(resultSet,service);
 				services.add(service);
 			}
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	private static void fillServiceDiscount(
+			ResultSet resultSet,
+			Services service) {
+		//Creating service discount object
+		ServiceDiscount serviceDiscount = new ServiceDiscount();
+		try {
+			serviceDiscount.setID(resultSet.getInt(11));
+			serviceDiscount.setDiscount(resultSet.getInt(12));
+			serviceDiscount.setCreateDate(resultSet.getObject(14, LocalDate.class));
+			serviceDiscount.setExpireDate(resultSet.getObject(15, LocalDate.class));
+			//Setting service discount object into service
+			service.setDiscount(serviceDiscount);
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
