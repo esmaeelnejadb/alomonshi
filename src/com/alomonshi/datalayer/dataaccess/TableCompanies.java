@@ -15,6 +15,8 @@ import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
+import com.alomonshi.object.tableobjects.Services;
+import com.alomonshi.object.uiobjects.DiscountCompany;
 
 public class TableCompanies {
 
@@ -164,15 +166,20 @@ public class TableCompanies {
 	 * @param companyID to be got from database
 	 * @return company object
 	 */
-	public static Company getCompany(int companyID) {
+	public static Company getCompany(int companyID, int clientID) {
 		Connection conn = DBConnection.getConnection();
 		Company company = new Company();
 		try {
             String command = "SELECT" +
 					" comp.*," +
-					" max(servdis.discount) as discount" +
+					" max(servdis.discount) as discount," +
+                    " fc.IS_ACTIVE as isFavorite" +
 					" FROM" +
 					" companies comp" +
+                    " LEFT JOIN" +
+                    " favoritecompanies fc " +
+                    " on fc.CLIENT_ID =  " + clientID +
+                    " and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 					" LEFT JOIN" +
 					" units unit ON comp.id = unit.comp_id" +
 					" AND unit.is_active IS TRUE" +
@@ -337,9 +344,9 @@ public class TableCompanies {
      * @param limitNumber number of company should be returned
      * @return list of company object
      */
-    public static List<Company> getAllDiscountCompanies(int limitNumber) {
+    public static List<DiscountCompany> getAllDiscountCompanies(int limitNumber) {
         Connection connection = DBConnection.getConnection();
-        List<Company> companies = new ArrayList<>();
+        List<DiscountCompany> companies = new ArrayList<>();
         try {
             String command = "SELECT" +
                     " comp.*," +
@@ -363,7 +370,7 @@ public class TableCompanies {
                     " LIMIT " + limitNumber;
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(command);
-            fillCompanies(rs, companies);
+            fillDiscountCompanies(rs, companies);
         }catch(SQLException e)
         {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -371,7 +378,6 @@ public class TableCompanies {
         DBConnection.closeConnection(connection);
         return companies;
     }
-
 
 	/**
 	 * Getting newest companies
@@ -416,15 +422,20 @@ public class TableCompanies {
 	 * Getting top best companies sorted by their rate for first page
 	 * @return list of best companies
 	 */
-	public static List<Company> getFilteredBestCompanies(int categoryID) {
+	public static List<Company> getFilteredBestCompanies(int categoryID, int clientID) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
 		try {
             String command = "SELECT" +
 					" comp.*," +
-					" max(servdis.discount) as discount" +
+					" max(servdis.discount) as discount," +
+					" fc.IS_ACTIVE as isFavorite" +
 					" FROM" +
 					" companies comp" +
+					" LEFT JOIN" +
+					" favoritecompanies fc " +
+					" on fc.CLIENT_ID =  " + clientID +
+					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 					" LEFT JOIN" +
 					" units unit ON comp.id = unit.comp_id" +
 					" AND unit.is_active IS TRUE" +
@@ -467,16 +478,24 @@ public class TableCompanies {
 	 * @param categoryID intended category to be searched
 	 * @return list of company object
 	 */
-	public static List<Company> getFilteredNearestCompanies(float lat, float lon, int categoryID) {
+	public static List<Company> getFilteredNearestCompanies(float lat,
+															float lon,
+															int categoryID,
+															int clientID) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
 		try {
 			String command = "SELECT" +
 					" comp.*," +
 					" max(servdis.discount) as discount," +
-					" SQRT(POW(comp.location_lat - "+ lat +", 2) + POW(comp.location_lon - "+ lon +", 2)) AS distance" +
+					" SQRT(POW(comp.location_lat - "+ lat +", 2) + POW(comp.location_lon - "+ lon +", 2)) AS distance," +
+					" fc.IS_ACTIVE as isFavorite" +
 					" FROM" +
 					" companies comp" +
+					" LEFT JOIN" +
+					" favoritecompanies fc " +
+					" on fc.CLIENT_ID =  " + clientID +
+					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 					" LEFT JOIN" +
 					" units unit ON comp.id = unit.comp_id" +
 					" AND unit.is_active IS TRUE" +
@@ -512,7 +531,7 @@ public class TableCompanies {
 	 * @param categoryID intended category to be searched
 	 * @return list of company object
 	 */
-	public static List<Company> getFilteredCheapestCompanies(int categoryID) {
+	public static List<Company> getFilteredCheapestCompanies(int categoryID, int clientID) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
 		try {
@@ -520,9 +539,14 @@ public class TableCompanies {
 			String command = "SELECT" +
 					" comp.*," +
 					" max(servdis.discount) as discount," +
-					" AVG(serv.service_price) AS price" +
+					" AVG(serv.service_price) AS price, " +
+					" fc.IS_ACTIVE as isFavorite" +
 					" FROM" +
 					" companies comp" +
+					" LEFT JOIN" +
+					" favoritecompanies fc " +
+					" on fc.CLIENT_ID =  " + clientID +
+					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 					" LEFT JOIN" +
 					" units unit ON comp.id = unit.comp_id" +
 					" AND unit.is_active IS TRUE" +
@@ -559,7 +583,7 @@ public class TableCompanies {
 	 * @param categoryID intended category to be searched
 	 * @return list of company object
 	 */
-	public static List<Company> getFilteredMostExpensiveCompanies(int categoryID) {
+	public static List<Company> getFilteredMostExpensiveCompanies(int categoryID, int clientID) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
 		try {
@@ -567,9 +591,14 @@ public class TableCompanies {
 			String command = "SELECT" +
 					" comp.*," +
 					" max(servdis.discount) as discount," +
-					" AVG(serv.service_price) AS price" +
+					" AVG(serv.service_price) AS price," +
+					" fc.IS_ACTIVE as isFavorite" +
 					" FROM" +
 					" companies comp" +
+					" LEFT JOIN" +
+					" favoritecompanies fc " +
+					" on fc.CLIENT_ID =  " + clientID +
+					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 					" LEFT JOIN" +
 					" units unit ON comp.id = unit.comp_id" +
 					" AND unit.is_active IS TRUE" +
@@ -606,15 +635,20 @@ public class TableCompanies {
 	 * @param categoryID searched category
 	 * @return list of company object
 	 */
-	public static List<Company> getFilteredDiscountCompanies(int categoryID) {
+	public static List<Company> getFilteredDiscountCompanies(int categoryID, int clientID) {
 		Connection conn = DBConnection.getConnection();
 		List<Company> companies = new ArrayList<>();
 		try {
 			String command = "SELECT" +
 					" comp.*," +
-					" max(servdis.discount) as discount" +
+					" max(servdis.discount) as discount," +
+					" fc.IS_ACTIVE as isFavorite" +
 					" FROM" +
-					" companies comp," +
+					" companies comp" +
+					" LEFT JOIN " +
+					" favoritecompanies fc " +
+					" on fc.CLIENT_ID =  " + clientID +
+					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true," +
 					" units unit," +
 					" services serv," +
 					" servicediscount servdis" +
@@ -653,6 +687,50 @@ public class TableCompanies {
 	}
 
 
+	/**
+	 * Getting favorite companies of a client
+	 * @param clientID intended client id
+	 * @return list of companies
+	 */
+	public static List<Company> getFavoriteClientCompanies (int clientID) {
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try {
+			String command = "SELECT" +
+					" comp.*," +
+					" fc.IS_ACTIVE as isFavorite" +
+					" FROM" +
+					" companies comp" +
+					" LEFT JOIN " +
+					" favoritecompanies fc " +
+					" on fc.CLIENT_ID =  " + clientID +
+					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
+					" WHERE fc.IS_ACTIVE is true" +
+					" GROUP BY comp.id" +
+					" ORDER BY comp.id";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillCompanies(rs, companies);
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally
+		{
+			if(conn != null)
+			{
+				try
+				{
+					conn.close();
+				} catch (SQLException e)
+				{
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+
     /**
      * Getting searched companies
      * @param companyName name of company to be searched
@@ -666,7 +744,8 @@ public class TableCompanies {
                                                      String serviceName,
                                                      float lat,
                                                      float lon,
-                                                     int categoryID) {
+                                                     int categoryID,
+													 int clientID) {
         Connection conn = DBConnection.getConnection();
         List<Company> companies = new ArrayList<>();
         try {
@@ -682,7 +761,8 @@ public class TableCompanies {
                     lon,
                     categoryID,
                     middleQuery,
-                    getFilterAndSearchOrder(companyName, serviceName, lat, lon));
+                    getFilterAndSearchOrder(companyName, serviceName, lat, lon),
+					clientID);
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(command);
             fillCompanies(rs, companies);
@@ -714,7 +794,8 @@ public class TableCompanies {
                                                              float lat,
                                                              float lon,
                                                              int categoryID,
-                                                             FilterItem filterItem) {
+                                                             FilterItem filterItem,
+															 int clientID) {
         Connection conn = DBConnection.getConnection();
         List<Company> companies = new ArrayList<>();
         try {
@@ -751,7 +832,8 @@ public class TableCompanies {
                     lon,
                     categoryID,
                     middleQuery,
-                    order);
+                    order,
+					clientID);
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(command);
             fillCompanies(rs, companies);
@@ -846,6 +928,7 @@ public class TableCompanies {
 			company.setActive(resultSet.getBoolean(16));
 			company.setCommercialCode(resultSet.getString(17));
 			company.setDiscount(resultSet.getInt("discount"));
+			company.setFavorite(resultSet.getBoolean("isFavorite"));
 			if (isUnitSet)
 			    company.setUnits(TableUnit.getUnits(company.getID(), true));
 			company.setCompanyPictures(TableCompanyPicture.getCompanyPictures(company.getID()));
@@ -861,6 +944,22 @@ public class TableCompanies {
 				Company company = new Company();
 				fillCompany(resultSet, company, false);
 				companies.add(company);
+			}
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	private static void fillDiscountCompanies(ResultSet resultSet,
+											  List<DiscountCompany> discountCompanies) {
+		try {
+			while (resultSet.next()) {
+				Company company = new Company();
+				List<Services> services = new ArrayList<>();
+				DiscountCompany discountCompany = new DiscountCompany(company, services);
+				fillCompany(resultSet, discountCompany.getCompany(), false);
+				discountCompany.setDiscountServices(TableService.getDiscountServices(discountCompany.getCompany().getID(), 3));
+				discountCompanies.add(discountCompany);
 			}
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -885,7 +984,8 @@ public class TableCompanies {
                                                      float lon,
                                                      int categoryID,
                                                      String middleQuery,
-                                                     String order) {
+                                                     String order,
+													 int clientID) {
         return "SELECT" +
 				" comp.*," +
 				" (match(comp.comp_name) against ('" + companyName + "' IN BOOLEAN MODE)" +
@@ -893,9 +993,14 @@ public class TableCompanies {
 				" SQRT(POW(comp.location_lat - "+ lat + ", 2) + POW(comp.location_lon - "+ lon +", 2)) AS distance," +
 				" AVG(serv.service_price) AS price," +
 				" max(servdis.discount) as discount," +
-				" AVG(serv.service_price) AS price" +
+				" AVG(serv.service_price) AS price," +
+				" fc.IS_ACTIVE as isFavorite" +
 				" FROM" +
 				" companies comp" +
+				" LEFT JOIN" +
+				" favoritecompanies fc " +
+				" on fc.CLIENT_ID =  " + clientID +
+				" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 				" LEFT JOIN" +
 				" units unit ON comp.id = unit.comp_id" +
 				" AND unit.is_active IS TRUE" +

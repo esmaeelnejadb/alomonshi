@@ -25,6 +25,7 @@ public class Company {
 	private List<CompanyPicture> companyPictures;
 	private float rate;
 	private int discount;
+	private boolean isFavorite;
 	private String logoURL;
 	private boolean isActive;
 	private String commercialCode;
@@ -120,6 +121,11 @@ public class Company {
 	}
 
 	@JsonView(JsonViews.NormalViews.class)
+	public boolean isFavorite() {
+		return isFavorite;
+	}
+
+	@JsonView(JsonViews.NormalViews.class)
 	public String getLogoURL() {
 		return logoURL;
 	}
@@ -195,6 +201,10 @@ public class Company {
 
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+
+	public void setFavorite(boolean favorite) {
+		isFavorite = favorite;
 	}
 
 	public void setLogoURL(String logoURL) {

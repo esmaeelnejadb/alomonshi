@@ -2,9 +2,12 @@ package com.alomonshi.bussinesslayer.company;
 
 import com.alomonshi.configuration.ConfigurationParameter;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
+import com.alomonshi.datalayer.dataaccess.TableFavoriteCompany;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
+import com.alomonshi.object.tableobjects.FavoriteCompany;
+import com.alomonshi.object.uiobjects.DiscountCompany;
 
 import java.util.*;
 
@@ -42,7 +45,7 @@ public class ClientCompanyService {
      * Getting all categories discounted companies
      * @return list of companies
      */
-    public static List<Company> getAllDiscountCompanies() {
+    public static List<DiscountCompany> getAllDiscountCompanies() {
         return TableCompanies.getAllDiscountCompanies(ConfigurationParameter
                 .homePageCompaniesLimitationNumber);
     }
@@ -60,8 +63,9 @@ public class ClientCompanyService {
                                                      String serveName,
                                                      float lat,
                                                      float lon,
-                                                     int categoryID) {
-        return TableCompanies.getSearchedCompanies(compName, serveName, lat, lon, categoryID);
+                                                     int categoryID,
+                                                     int clientID) {
+        return TableCompanies.getSearchedCompanies(compName, serveName, lat, lon, categoryID, clientID);
     }
 
     /**
@@ -73,18 +77,19 @@ public class ClientCompanyService {
     public static List<Company> getFilteredCompanies(float lat,
                                                      float lon,
                                                      int categoryID,
-                                                     FilterItem filterItem) {
+                                                     FilterItem filterItem,
+                                                     int clientID) {
         switch (filterItem) {
             case BEST:
-                return TableCompanies.getFilteredBestCompanies(categoryID);
+                return TableCompanies.getFilteredBestCompanies(categoryID, clientID);
             case NEAREST:
-                return TableCompanies.getFilteredNearestCompanies(lat, lon, categoryID);
+                return TableCompanies.getFilteredNearestCompanies(lat, lon, categoryID, clientID);
             case CHEAPEST:
-                return TableCompanies.getFilteredCheapestCompanies(categoryID);
+                return TableCompanies.getFilteredCheapestCompanies(categoryID, clientID);
             case EXPENSIVE:
-                return TableCompanies.getFilteredMostExpensiveCompanies(categoryID);
+                return TableCompanies.getFilteredMostExpensiveCompanies(categoryID, clientID);
             case DISCOUNT:
-                return TableCompanies.getFilteredDiscountCompanies(categoryID);
+                return TableCompanies.getFilteredDiscountCompanies(categoryID, clientID);
         }
         return null;
     }
@@ -100,16 +105,41 @@ public class ClientCompanyService {
      * @return list of company
      */
     public static List<Company> getFilteredSearchedCompanies(String compName,
-                                                     String serveName,
-                                                     float lat,
-                                                     float lon,
-                                                     int categoryID,
-                                                     FilterItem filterItem) {
+                                                             String serveName,
+                                                             float lat,
+                                                             float lon,
+                                                             int categoryID,
+                                                             FilterItem filterItem,
+                                                             int clientID) {
         return TableCompanies.getFilteredSearchedCompanies(compName,
                 serveName,
                 lat,
                 lon,
                 categoryID,
-                filterItem);
+                filterItem,
+                clientID);
+    }
+
+    /**
+     * Getting client favorite companies
+     * @param clientID intended client
+     * @return list of companies
+     */
+    public static List<Company> getFavoriteClientCompanies (int clientID) {
+        return TableCompanies.getFavoriteClientCompanies(clientID);
+    }
+
+    /**
+     * Inserting favorite company
+     * @param favoriteCompany to be inserted
+     */
+    public static boolean handleFavoriteCompany (FavoriteCompany favoriteCompany) {
+        TableFavoriteCompany.getFavoriteCompany(favoriteCompany);
+        if (favoriteCompany.getID() != 0)
+            return TableFavoriteCompany.deleteFavoriteCompany(favoriteCompany);
+        else {
+            favoriteCompany.setActive(true);
+            return TableFavoriteCompany.insertFavoriteCompany(favoriteCompany);
+        }
     }
 }

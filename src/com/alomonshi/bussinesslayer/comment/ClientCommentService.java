@@ -3,9 +3,11 @@ package com.alomonshi.bussinesslayer.comment;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableComment;
 import com.alomonshi.object.tableobjects.Comments;
+import com.alomonshi.object.uiobjects.ClientComment;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 public class ClientCommentService {
@@ -16,6 +18,19 @@ public class ClientCommentService {
     public ClientCommentService(Comments comment, ServiceResponse serviceResponse){
         this.serviceResponse = serviceResponse;
         this.comment = comment;
+    }
+
+
+    /**
+     * Getting client comments
+     * @return service response
+     */
+    public ServiceResponse getClientComments () {
+        List<ClientComment> clientCommentList = TableComment.getClientComments(comment.getClientID());
+        return serviceResponse
+                .setResponse(true)
+                .setResponseData(clientCommentList);
+
     }
 
     /**

@@ -29,6 +29,26 @@ public class CommentWebService {
 
     /**
      * Inserting new comment
+     * @return service response
+     */
+    @JsonView(JsonViews.ClientViews.class)
+    @ClientSecured
+    @POST
+    @Path("/getComment")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse getClientComments(Comments comment) {
+        serviceResponse = new ServiceResponse();
+        try {
+            clientCommentService = new ClientCommentService(comment, serviceResponse);
+            return clientCommentService.getClientComments();
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot post a comment " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
+    }
+
+    /**
+     * Inserting new comment
      * @param comment to be inserted
      * @return service response
      */
@@ -92,7 +112,7 @@ public class CommentWebService {
         serviceResponse = new ServiceResponse();
         try {
             if (CheckClientAuthority.isAuthorizedToChangeComment(comment.getClientID(), comment.getReserveTimeID())) {
-                //Getting to be deleted comment from database to set only is_active field to false
+                //Getting to_be_deleted comment from database to set only is_active field to false
                 Comments toBeDeleted = TableComment.getComment(comment.getID());
                 clientCommentService = new ClientCommentService(toBeDeleted, serviceResponse);
                 return clientCommentService.deleteComment();

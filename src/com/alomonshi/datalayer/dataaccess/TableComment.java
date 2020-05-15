@@ -16,6 +16,8 @@ import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.tableobjects.Services;
+import com.alomonshi.object.uiobjects.ClientComment;
+import com.mysql.fabric.xmlrpc.Client;
 
 public class TableComment {
 
@@ -128,43 +130,6 @@ public class TableComment {
 		}
 		return comment;
 	}
-	
-	public static Comments getCommentByResTimeID(int resTimeID)
-	{
-		Connection conn = DBConnection.getConnection();
-		Comments comment = new Comments();
-		try
-		{
-			Statement stmt =conn.createStatement();
-			String command = "SELECT" +
-					" *" +
-					" FROM" +
-					" COMMENTS" +
-					" WHERE" +
-					" IS_ACTIVE IS TRUE AND RES_TIME_ID = " + resTimeID;
-			ResultSet rs = stmt.executeQuery(command);
-			while (rs.next()) {
-				fillComment(rs, comment);
-			}
-			return comment;
-		}catch(SQLException e)
-		{
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return comment;
-		}finally
-		{
-			if(conn != null)
-			{
-				try 
-				{
-					conn.close();
-				} catch (SQLException e)  
-				{	
-					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-				}
-			}	
-		}
-	}
 
 	/**
 	 * Get unit comments
@@ -204,10 +169,8 @@ public class TableComment {
 					" ORDER BY com.COMMENT_DATE DESC";
 			ResultSet rs = stmt.executeQuery(command);
 			fillUnitComments(rs, comments);
-			return comments;
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return comments;
 		}finally {
 			if(conn != null) {
 				try {
@@ -217,6 +180,7 @@ public class TableComment {
 				}
 			}
 		}
+		return comments;
 	}
 
 	/**
@@ -224,22 +188,42 @@ public class TableComment {
 	 * @param clientID which its comments to be got
 	 * @return list of comments
 	 */
-	
-	public static List<Comments> getClientComments(int clientID)
+	public static List<ClientComment> getClientComments(int clientID)
 	{
 		Connection conn = DBConnection.getConnection();
-		List<Comments> comments = new LinkedList<>();
+		List<ClientComment> comments = new LinkedList<>();
 		try
 		{
 			Statement stmt =conn.createStatement();
-			String command="SELECT * FROM COMMENTS where IS_ACTIVE IS TRUE AND CLIENT_ID = " + clientID;
+			String command = "SELECT " +
+					"    com.ID AS commentID," +
+					"    com.reply_comment AS replyComment," +
+					"    com.comment AS comment," +
+					"    comp.COMP_NAME AS companyName," +
+					"    unit.UNIT_NAME AS unitName," +
+					"    com.COMMENT_DATE AS commentDate," +
+					"    com.REPLY_DATE AS replyDate," +
+					"    com.SERVICE_RATE AS rate," +
+					"    com.IS_ACTIVE AS isActive" +
+					" FROM" +
+					"    comments com" +
+					"        LEFT JOIN" +
+					"    reservetimes rt ON rt.id = com.res_time_id" +
+					"        AND rt.status =  " + ReserveTimeStatus.RESERVED.getValue() +
+					"        LEFT JOIN" +
+					"    units unit ON unit.id = rt.unit_id" +
+					"        AND unit.is_active IS TRUE" +
+					"        LEFT JOIN" +
+					"    companies comp ON comp.id = unit.comp_id" +
+					"        AND comp.is_active IS TRUE" +
+					" WHERE" +
+					"    com.client_id = " + clientID +
+					" ORDER BY com.COMMENT_DATE desc";
 			ResultSet rs=stmt.executeQuery(command);
-			fillComments(rs, comments);
-			return comments;
+			fillClientCommentList(rs, comments);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return comments;
 		}finally
 		{
 			if(conn != null)
@@ -253,6 +237,7 @@ public class TableComment {
 				}
 			}
 		}
+		return comments;
 	}
 
 	/**
@@ -337,6 +322,44 @@ public class TableComment {
 				Comments comment = new Comments();
 				fillUnitComment(resultSet, comment);
 				comments.add(comment);
+			}
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
+	 * Filling client comment object returned from database
+	 * @param resultSet returned from JDBC
+	 * @param clientComment to be filled
+	 */
+	private static void fillClientComment(ResultSet resultSet, ClientComment clientComment) {
+		try {
+			clientComment.setCommentID(resultSet.getInt("commentID"));
+			clientComment.setComment(resultSet.getString("comment"));
+			clientComment.setReplyComment(resultSet.getString("replyComment"));
+			clientComment.setCompanyName(resultSet.getString("companyName"));
+			clientComment.setUnitName(resultSet.getString("unitName"));
+			clientComment.setCommentDate(resultSet.getObject("commentDate", LocalDateTime.class));
+			clientComment.setReplyDate(resultSet.getObject("replyDate", LocalDateTime.class));
+			clientComment.setCommentRate(resultSet.getFloat("rate"));
+			clientComment.setActive(resultSet.getBoolean("isActive"));
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
+	 * Filling a list of client comments
+	 * @param resultSet returned from database
+	 * @param clientCommentList to be filled
+	 */
+	private static void fillClientCommentList (ResultSet resultSet, List<ClientComment> clientCommentList) {
+		try {
+			while (resultSet.next()) {
+				ClientComment clientComment = new ClientComment();
+				fillClientComment(resultSet, clientComment);
+				clientCommentList.add(clientComment);
 			}
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

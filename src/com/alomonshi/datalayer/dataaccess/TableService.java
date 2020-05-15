@@ -286,6 +286,13 @@ public class TableService {
 		return serviceIDs;
 	}
 
+	/**
+	 * Getting admin report
+	 * @param unitID admin unit
+	 * @param startDate starting date of report
+	 * @param endDate end date of report
+	 * @return list of admin report
+	 */
 	public static List<AdminReport> getAdminReport (int unitID, int startDate, int endDate) {
 		Connection conn = DBConnection.getConnection();
 		List<AdminReport> adminReports = new ArrayList<>();
@@ -331,6 +338,45 @@ public class TableService {
 			}
 		}
 		return adminReports;
+	}
+
+	/**
+	 * Getting discount services
+	 * @param limitNumber number of services should be returned
+	 * @return list of service object
+	 */
+	public static List<Services> getDiscountServices(int companyID, int limitNumber) {
+		Connection connection = DBConnection.getConnection();
+		List<Services> services = new ArrayList<>();
+		try {
+			String command = "SELECT" +
+					" serv.*," +
+					" servdis.*" +
+					" FROM" +
+					" companies comp," +
+					" units unit," +
+					" services serv," +
+					" servicediscount servdis" +
+					" WHERE" +
+					" comp.id = unit.comp_id" +
+					" AND unit.id = serv.unit_id" +
+					" AND serv.id = servdis.service_id" +
+					" AND unit.is_active IS TRUE" +
+					" AND serv.is_active IS TRUE" +
+					" AND comp.is_active IS TRUE" +
+					" AND servdis.is_active IS TRUE" +
+					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+					" AND comp.ID = " + companyID +
+					" LIMIT " + limitNumber;
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			fillServices(rs, services);
+		}catch(SQLException e)
+		{
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+		DBConnection.closeConnection(connection);
+		return services;
 	}
 
 	private static void prepare(PreparedStatement preparedStatement, Services service){

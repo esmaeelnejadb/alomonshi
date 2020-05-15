@@ -2,7 +2,6 @@ package com.alomonshi.restwebservices.filters.authentication;
 
 import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
-import com.alomonshi.restwebservices.filters.authentication.dofilter.DoAuthenticationFilter;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;

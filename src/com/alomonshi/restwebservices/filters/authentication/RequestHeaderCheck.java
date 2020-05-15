@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.filters.authentication.dofilter;
+package com.alomonshi.restwebservices.filters.authentication;
 
 import org.apache.http.HttpHeaders;
 import org.json.JSONObject;
@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-class RequestHeaderCheck {
+public class RequestHeaderCheck {
 
     private static final int MAX_ENTITY_READ = 1024;
     private static final String REALM = " ";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
     private ContainerRequestContext requestContext;
 
-    RequestHeaderCheck(ContainerRequestContext requestContext) {
+    public RequestHeaderCheck(ContainerRequestContext requestContext) {
         this.requestContext = requestContext;
     }
 
@@ -76,7 +76,7 @@ class RequestHeaderCheck {
      * @return client id
      */
 
-    int getClientIDFromRequestBody() {
+    public int getClientIDFromRequestBody() {
         if (requestContext.hasEntity() && isJson()) {
             InputStream inputStreamOriginal = requestContext.getEntityStream();
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStreamOriginal, MAX_ENTITY_READ);

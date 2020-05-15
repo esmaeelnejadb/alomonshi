@@ -1,4 +1,4 @@
-package com.alomonshi.restwebservices.filters.authentication.dofilter;
+package com.alomonshi.restwebservices.filters.authentication;
 
 import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.authorization.Authorization;
 import com.alomonshi.object.enums.UserLevels;
