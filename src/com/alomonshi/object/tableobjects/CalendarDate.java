@@ -73,4 +73,5 @@ public class CalendarDate {
     public void setDayOfWeek(int dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
     }
+
 }

@@ -27,12 +27,22 @@ public class DateTimeUtility {
      * Getting current persian day id
      * @return current persian day id
      */
-    public static int getCurrentPersianDate(){
+    public static int getCurrentPersianDateID(){
         Calendar cal = Calendar.getInstance();
         JalaliCalendar jalaliDate = new JalaliCalendar(cal.getTime());
-        return Integer.parseInt(jalaliDate.getYear()
-                + "" + jalaliDate.getMonth()
-                + "" + jalaliDate.getDay());
+        return Integer.parseInt(jalaliDate.getYear() +
+                "" +
+                (Integer.toString(jalaliDate.getMonth()).length() == 2
+                        ?
+                        jalaliDate.getMonth()
+                        :
+                        "0" + jalaliDate.getMonth()) +
+                "" +
+                (Integer.toString(jalaliDate.getDay()).length() == 2
+                        ?
+                        jalaliDate.getDay()
+                        :
+                        "0" + jalaliDate.getDay()));
     }
 
     /**
@@ -42,7 +52,7 @@ public class DateTimeUtility {
      * @return local date time
      */
     public static LocalDateTime getGregorianReservedTimeDatetime(int dayID, LocalTime time) {
-        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYear(dayID), getMonth(dayID), getDay(dayID));
+        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYearFromDateID(dayID), getMonthFromDateID(dayID), getDayFromDateID(dayID));
         String datetime = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 .format(jalaliCalendar.toGregorian()
                         .toZonedDateTime()
@@ -71,7 +81,7 @@ public class DateTimeUtility {
      * @return converted date
      */
     public static LocalDate convertPersianToGregorianDate(int dayID) {
-        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYear(dayID), getMonth(dayID), getDay(dayID));
+        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYearFromDateID(dayID), getMonthFromDateID(dayID), getDayFromDateID(dayID));
         String date = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 .format(jalaliCalendar.toGregorian()
                         .toZonedDateTime()
@@ -85,12 +95,11 @@ public class DateTimeUtility {
      * @return converted date
      */
     public static String convertPersianToGregorianStringDate(int dayID) {
-        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYear(dayID), getMonth(dayID), getDay(dayID));
-        String date = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        JalaliCalendar jalaliCalendar = new JalaliCalendar(getYearFromDateID(dayID), getMonthFromDateID(dayID), getDayFromDateID(dayID));
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 .format(jalaliCalendar.toGregorian()
                         .toZonedDateTime()
                         .toLocalDate());
-        return date;
     }
 
 
@@ -101,7 +110,19 @@ public class DateTimeUtility {
      */
     public static String convertGregorianToPersianDate(LocalDate localDate) {
         JalaliCalendar jalaliCalendar = new JalaliCalendar(localDate);
-        return jalaliCalendar.getYear() + "/" + jalaliCalendar.getMonth() + "/" + jalaliCalendar.getDay();
+        return jalaliCalendar.getYear() +
+                "/" +
+                (Integer.toString(jalaliCalendar.getMonth()).length() == 2
+                        ?
+                        jalaliCalendar.getMonth()
+                        :
+                        "0" + jalaliCalendar.getMonth()) +
+                "/" +
+                (Integer.toString(jalaliCalendar.getDay()).length() == 2
+                        ?
+                        jalaliCalendar.getDay()
+                        :
+                        "0" + jalaliCalendar.getDay());
     }
 
     /**
@@ -138,15 +159,15 @@ public class DateTimeUtility {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now());
     }
 
-    private static int getYear (int dayID) {
+    public static int getYearFromDateID(int dayID) {
         return Integer.parseInt(Integer.toString(dayID).substring(0,4));
     }
 
-    private static int getMonth (int dayID) {
+    public static int getMonthFromDateID(int dayID) {
         return Integer.parseInt(Integer.toString(dayID).substring(4,6));
     }
 
-    private static int getDay(int dayID) {
+    private static int getDayFromDateID(int dayID) {
         return Integer.parseInt(Integer.toString(dayID).substring(6,8));
     }
 }

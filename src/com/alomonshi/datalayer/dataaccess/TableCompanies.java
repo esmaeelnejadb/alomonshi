@@ -13,10 +13,7 @@ import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.FilterItem;
-import com.alomonshi.object.tableobjects.Company;
-import com.alomonshi.object.tableobjects.CompanyCategories;
-import com.alomonshi.object.tableobjects.Services;
-import com.alomonshi.object.uiobjects.DiscountCompany;
+import com.alomonshi.object.tableobjects.*;
 
 public class TableCompanies {
 
@@ -344,9 +341,9 @@ public class TableCompanies {
      * @param limitNumber number of company should be returned
      * @return list of company object
      */
-    public static List<DiscountCompany> getAllDiscountCompanies(int limitNumber) {
+    public static List<Company> getAllDiscountCompanies(int limitNumber) {
         Connection connection = DBConnection.getConnection();
-        List<DiscountCompany> companies = new ArrayList<>();
+        List<Company> companies = new ArrayList<>();
         try {
             String command = "SELECT" +
                     " comp.*," +
@@ -370,7 +367,7 @@ public class TableCompanies {
                     " LIMIT " + limitNumber;
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(command);
-            fillDiscountCompanies(rs, companies);
+            fillCompanies(rs, companies);
         }catch(SQLException e)
         {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -927,11 +924,13 @@ public class TableCompanies {
 			company.setDistrictID(resultSet.getInt(15));
 			company.setActive(resultSet.getBoolean(16));
 			company.setCommercialCode(resultSet.getString(17));
+            company.setCompanyPictures(TableCompanyPicture.getCompanyPictures(company.getID()));
 			company.setDiscount(resultSet.getInt("discount"));
-			company.setFavorite(resultSet.getBoolean("isFavorite"));
 			if (isUnitSet)
 			    company.setUnits(TableUnit.getUnits(company.getID(), true));
-			company.setCompanyPictures(TableCompanyPicture.getCompanyPictures(company.getID()));
+			else if (company.getDiscount() != 0)
+			    company.setUnits(TableService.getDiscountServices(company.getID()));
+            company.setFavorite(resultSet.getBoolean("isFavorite"));
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -944,22 +943,6 @@ public class TableCompanies {
 				Company company = new Company();
 				fillCompany(resultSet, company, false);
 				companies.add(company);
-			}
-		}catch (SQLException e){
-			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-		}
-	}
-
-	private static void fillDiscountCompanies(ResultSet resultSet,
-											  List<DiscountCompany> discountCompanies) {
-		try {
-			while (resultSet.next()) {
-				Company company = new Company();
-				List<Services> services = new ArrayList<>();
-				DiscountCompany discountCompany = new DiscountCompany(company, services);
-				fillCompany(resultSet, discountCompany.getCompany(), false);
-				discountCompany.setDiscountServices(TableService.getDiscountServices(discountCompany.getCompany().getID(), 3));
-				discountCompanies.add(discountCompany);
 			}
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -1055,6 +1038,5 @@ public class TableCompanies {
     	return serviceName == null ? ""
 				: (serviceName.equals("") ? serviceName : "*" + serviceName + "*") ;
 	}
-
 
 }

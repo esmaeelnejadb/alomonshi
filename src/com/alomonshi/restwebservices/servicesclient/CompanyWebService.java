@@ -6,7 +6,6 @@ import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 import com.alomonshi.object.tableobjects.FavoriteCompany;
-import com.alomonshi.object.uiobjects.DiscountCompany;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.filters.authentication.RequestHeaderCheck;
@@ -113,7 +112,7 @@ public class CompanyWebService{
     @GET
     @Path("/getDiscountList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<DiscountCompany> getDiscountList(){
+    public List<Company> getDiscountList(){
         try {
             return ClientCompanyService.getAllDiscountCompanies();
         }catch (Exception e){

@@ -15,6 +15,7 @@ import com.alomonshi.datalayer.databaseconnection.DBConnection;
 import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.ServiceDiscount;
 import com.alomonshi.object.tableobjects.Services;
+import com.alomonshi.object.tableobjects.Units;
 import com.alomonshi.object.uiobjects.AdminReport;
 
 public class TableService {
@@ -342,41 +343,45 @@ public class TableService {
 
 	/**
 	 * Getting discount services
-	 * @param limitNumber number of services should be returned
 	 * @return list of service object
 	 */
-	public static List<Services> getDiscountServices(int companyID, int limitNumber) {
+	static List<Units> getDiscountServices(int companyID) {
 		Connection connection = DBConnection.getConnection();
-		List<Services> services = new ArrayList<>();
+		List<Units> units = new ArrayList<>();
 		try {
-			String command = "SELECT" +
-					" serv.*," +
-					" servdis.*" +
-					" FROM" +
-					" companies comp," +
-					" units unit," +
-					" services serv," +
-					" servicediscount servdis" +
-					" WHERE" +
-					" comp.id = unit.comp_id" +
-					" AND unit.id = serv.unit_id" +
-					" AND serv.id = servdis.service_id" +
-					" AND unit.is_active IS TRUE" +
-					" AND serv.is_active IS TRUE" +
-					" AND comp.is_active IS TRUE" +
-					" AND servdis.is_active IS TRUE" +
-					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
-					" AND comp.ID = " + companyID +
-					" LIMIT " + limitNumber;
+			String command = "SELECT " +
+                    "    unit.ID AS unitID," +
+                    "    unit.UNIT_NAME AS unitName," +
+                    "    serv.ID AS serviceID," +
+					"    serv.SERVICE_NAME AS serviceName," +
+                    "    serv.SERVICE_PRICE AS servicePrice," +
+                    "    servdis.ID AS discountID," +
+                    "    servdis.DISCOUNT AS discount" +
+                    " FROM" +
+                    "    companies comp," +
+                    "    units unit," +
+                    "    services serv," +
+                    "    servicediscount servdis" +
+                    " WHERE" +
+                    "    comp.id = unit.comp_id" +
+                    "        AND unit.id = serv.unit_id" +
+                    "        AND serv.id = servdis.service_id" +
+                    "        AND unit.is_active IS TRUE" +
+                    "        AND serv.is_active IS TRUE" +
+                    "        AND comp.is_active IS TRUE" +
+                    "        AND servdis.is_active IS TRUE" +
+                    "        AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
+                    "        AND comp.ID = " + companyID +
+                    " ORDER BY unit.ID";
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
-			fillServices(rs, services);
+			fillDiscountServicesInUnits(rs, units);
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 		DBConnection.closeConnection(connection);
-		return services;
+		return units;
 	}
 
 	private static void prepare(PreparedStatement preparedStatement, Services service){
@@ -488,4 +493,52 @@ public class TableService {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
+
+    /**
+     * Filling discounted units by discounted services
+     * @param resultSet returned from JDBC
+     * @param units to be filled
+     */
+    private static void fillDiscountServicesInUnits (ResultSet resultSet, List<Units> units) {
+        try {
+            Units unit = new Units();
+            List<Services> services = new ArrayList<>();
+            unit.setServices(services);
+            boolean firstStep = true;
+            while (resultSet.next()) {
+				if (!firstStep &&
+						unit.getID() != resultSet.getInt("unitID")) {
+					units.add(unit);
+					unit = new Units();
+					services = new ArrayList<>();
+					unit.setServices(services);
+				}
+				fillDiscountedUnit(resultSet, unit);
+				firstStep = false;
+            }
+            units.add(unit);
+        }catch (SQLException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }
+    }
+
+    private static void fillDiscountedUnit (ResultSet resultSet,
+                                            Units unit) {
+        try {
+			Services service = new Services();
+			ServiceDiscount serviceDiscount = new ServiceDiscount();
+			////Should be revised because it forces extra process to the program///
+				unit.setID(resultSet.getInt("unitID"));
+				unit.setUnitName(resultSet.getString("unitName"));
+            service.setID(resultSet.getInt("serviceID"));
+            service.setServiceName(resultSet.getString("serviceName"));
+            service.setServicePrice(resultSet.getInt("servicePrice"));
+            serviceDiscount.setID(resultSet.getInt("discountID"));
+            serviceDiscount.setDiscount(resultSet.getInt("discount"));
+            service.setDiscount(serviceDiscount);
+            unit.getServices().add(service);
+        }catch (SQLException e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+        }
+    }
 }

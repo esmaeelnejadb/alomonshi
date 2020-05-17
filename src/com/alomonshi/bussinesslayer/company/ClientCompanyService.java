@@ -7,7 +7,6 @@ import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 import com.alomonshi.object.tableobjects.FavoriteCompany;
-import com.alomonshi.object.uiobjects.DiscountCompany;
 
 import java.util.*;
 
@@ -45,7 +44,7 @@ public class ClientCompanyService {
      * Getting all categories discounted companies
      * @return list of companies
      */
-    public static List<DiscountCompany> getAllDiscountCompanies() {
+    public static List<Company> getAllDiscountCompanies() {
         return TableCompanies.getAllDiscountCompanies(ConfigurationParameter
                 .homePageCompaniesLimitationNumber);
     }
