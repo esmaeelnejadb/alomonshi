@@ -28,14 +28,15 @@ public class TableCompanies {
 				" LOCATION_LAT," +
 				" LOCATION_LON, " +
 				" COMP_WEBSITE," +
-				" COMP_RATE, COMP_STAT, COMP_PICURL," +
+				" COMP_RATE," +
+				" COMP_PICURL," +
 				" COMP_LOCALITY," +
 				" CITY_ID," +
 				" DISTRICT_ID," +
 				" IS_ACTIVE," +
 				" COMP_COMMERTIALCODE" +
                 " )"
-				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdateCommand(company, command);
 	}
 
@@ -50,7 +51,6 @@ public class TableCompanies {
 				" LOCATION_LON = ?," +
 				" COMP_WEBSITE = ?," +
 				" COMP_RATE = ?," +
-				" COMP_STAT = ?," +
 				" COMP_PICURL = ?," +
 				" COMP_LOCALITY = ?," +
 				" CITY_ID = ?," +

@@ -213,9 +213,9 @@ public class TableCalendar {
 					fillMonthInformation(resultSet, reserveTimesOfMonth);
 				}
 			}
+			reserveTimesOfMonthList.add(reserveTimesOfMonth);
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
 	}
-
 }

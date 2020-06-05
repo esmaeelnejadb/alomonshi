@@ -44,9 +44,9 @@ public class ClientCompanyService {
      * Getting all categories discounted companies
      * @return list of companies
      */
-    public static List<Company> getAllDiscountCompanies() {
-        return TableCompanies.getAllDiscountCompanies(ConfigurationParameter
-                .homePageCompaniesLimitationNumber);
+    public static List<Company> getAllDiscountCompanies(int limitNumber) {
+        limitNumber = limitNumber == 0 ? ConfigurationParameter.homePageCompaniesLimitationNumber : limitNumber;
+        return TableCompanies.getAllDiscountCompanies(limitNumber);
     }
 
     /**

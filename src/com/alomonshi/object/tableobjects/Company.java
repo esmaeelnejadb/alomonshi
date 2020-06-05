@@ -9,6 +9,7 @@ import java.util.List;
 @XmlRootElement(namespace = " ")
 public class Company {
 	private int ID;
+	private int clientID;
 	private int companyCatID;
 	private String companyName;
 	private String companyAddress;
@@ -33,6 +34,11 @@ public class Company {
 	@JsonView(JsonViews.NormalViews.class)
 	public int getID() {
 		return ID;
+	}
+
+	@JsonView(JsonViews.ManagerViews.class)
+	public int getClientID() {
+		return clientID;
 	}
 
 	@JsonView(JsonViews.NormalViews.class)
@@ -137,6 +143,10 @@ public class Company {
 
 	public void setID(int iD) {
 		ID = iD;
+	}
+
+	public void setClientID(int clientID) {
+		this.clientID = clientID;
 	}
 
 	public void setLocality(String locality) {

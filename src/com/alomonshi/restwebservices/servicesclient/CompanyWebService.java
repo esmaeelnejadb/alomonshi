@@ -112,9 +112,9 @@ public class CompanyWebService{
     @GET
     @Path("/getDiscountList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getDiscountList(){
+    public List<Company> getDiscountList(@QueryParam("limitNumber") int limitNumber){
         try {
-            return ClientCompanyService.getAllDiscountCompanies();
+            return ClientCompanyService.getAllDiscountCompanies(limitNumber);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;

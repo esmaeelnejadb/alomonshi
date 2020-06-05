@@ -35,7 +35,6 @@ public class UtilityFunctions {
 	public static int districtNameToNumber(String name) {
 		switch (name) {
 		case "منطقه ۱" :
-
 			return 1;
 		case "منطقه ۲" :
 			return 2;
