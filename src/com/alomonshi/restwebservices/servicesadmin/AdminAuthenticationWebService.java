@@ -25,7 +25,7 @@ public class AdminAuthenticationWebService {
     @CompanySubAdminSecured
     @POST
     @Path("/checkAuthority")
-    public Response checkIsLogin(){
+    public Response checkIsLoggedIn(){
         return Response.ok().build();
     }
 

@@ -121,6 +121,7 @@ public class WebTokenHandler {
         int userID;
         String token;
         String exp;
+        String name;
         String phoneNumber;
         String email;
 
@@ -135,6 +136,7 @@ public class WebTokenHandler {
             this.token = user.getToken();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             this.exp = user.getExpirationDate().format(formatter);
+            this.name = user.getName();
             this.phoneNumber = user.getPhoneNo();
             this.email = user.getEmail();
         }
@@ -161,6 +163,14 @@ public class WebTokenHandler {
 
         public void setExp(String exp) {
             this.exp = exp;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getPhoneNumber() {

@@ -37,7 +37,7 @@ public class AuthenticationWebService {
     @ClientSecured
     @POST
     @Path("/checkAuthority")
-    public Response confirmLoginRequest(){
+    public Response checkIsLoggedIn(){
         return Response.ok().build();
     }
 

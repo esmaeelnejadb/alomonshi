@@ -1,5 +1,6 @@
 package com.alomonshi.restwebservices.servicesclient;
 
+import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.company.ClientCompanyService;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.enums.FilterItem;
@@ -9,6 +10,7 @@ import com.alomonshi.object.tableobjects.FavoriteCompany;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.filters.authentication.RequestHeaderCheck;
+import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -32,6 +34,22 @@ public class CompanyWebService{
     ContainerRequestContext requestContext;
 
     private RequestHeaderCheck requestHeaderCheck;
+    private ServiceResponse serviceResponse;
+
+    @JsonView(JsonViews.ClientViews.class)
+    @ClientSecured
+    @POST
+    @Path("/registerCompany")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ServiceResponse registerCompany(Company company){
+        serviceResponse = new ServiceResponse();
+        try{
+            return ClientCompanyService.registerCompany(company, serviceResponse);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);
+        }
+    }
 
     /**
      * getting list of companies in a specified category

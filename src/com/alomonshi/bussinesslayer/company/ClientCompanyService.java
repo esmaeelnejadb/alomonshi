@@ -1,5 +1,6 @@
 package com.alomonshi.bussinesslayer.company;
 
+import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.configuration.ConfigurationParameter;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.datalayer.dataaccess.TableFavoriteCompany;
@@ -7,6 +8,7 @@ import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 import com.alomonshi.object.tableobjects.FavoriteCompany;
+import com.alomonshi.restwebservices.message.ServerMessage;
 
 import java.util.*;
 
@@ -15,6 +17,21 @@ import java.util.*;
  */
 public class ClientCompanyService {
 
+    /**
+     * Adding company by a registered client
+     * @param company to be inserted
+     * @return service response
+     */
+    public static ServiceResponse registerCompany(Company company, ServiceResponse serviceResponse) {
+        if (TableCompanies.insert(company)) {
+            serviceResponse.setResponse(true);
+            serviceResponse.setMessage(ServerMessage.SUCCESSMESSAGE);
+        }else {
+            serviceResponse.setResponse(false);
+            serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
+        }
+        return serviceResponse;
+    }
 
     /**
      * Getting best list in each category
