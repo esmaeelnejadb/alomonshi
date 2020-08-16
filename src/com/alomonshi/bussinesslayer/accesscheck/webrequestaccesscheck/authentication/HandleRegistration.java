@@ -51,10 +51,14 @@ public class HandleRegistration {
         newUser.setVerificationCode(Integer.parseInt(verificationCode));
         if(newUser.getClientID() == 0) {
             newUser.setUserLevel(UserLevels.CLIENT);
-            if(!TableClient.insert(newUser))
+            int userID = TableClient.insert(newUser);
+            if(userID <= 0)
                 return false;
-        }else if (!TableClient.update(newUser))
-            return false;
+        }else {
+            int userID = TableClient.update(newUser);
+            if (userID <=0)
+                return false;
+        }
         return sendVerificationCodeMessage(verificationCode);
     }
 
@@ -74,7 +78,8 @@ public class HandleRegistration {
     public String handleFinalRegistration(){
         newUser.setToken(WebTokenHandler.generateNewToken());
         newUser.setExpirationDate(LoginAuthentication.generateExpirationDate());
-        if(!TableClient.update(newUser))
+        int userID = TableClient.update(newUser);
+        if(userID <= 0)
             return null;
         return webTokenHandler.setUser(newUser).generateWebToken();
     }

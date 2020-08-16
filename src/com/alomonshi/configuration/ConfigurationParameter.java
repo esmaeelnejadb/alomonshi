@@ -15,8 +15,8 @@ public class ConfigurationParameter {
     public static String smsPanelFromNumber = "";
 
     //*********Reserve Time Configuration***********/
-    public static int coulBeCancelelPeriod = 0; //in hour
+    public static int couldBeCanceledPeriod = 0; //in hour
 
     //*********Companies limitation number***********/
-    public static int homePageCompaniesLimitationNumber = 10; //in hour
+    public static int homePageCompaniesLimitationNumber = 10; //
 }

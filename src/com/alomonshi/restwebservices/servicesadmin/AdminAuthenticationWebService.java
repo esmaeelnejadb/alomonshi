@@ -1,8 +1,8 @@
 package com.alomonshi.restwebservices.servicesadmin;
+import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.accesscheck.webrequestaccesscheck.authentication.LoginAuthentication;
 import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.object.tableobjects.Users;
-import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 
@@ -14,6 +14,8 @@ import javax.ws.rs.core.Response;
 
 @Path("/adminLogin")
 public class AdminAuthenticationWebService {
+
+    private ServiceResponse serviceResponse;
 
     @Context
     HttpServletResponse httpServletResponse;
@@ -50,6 +52,12 @@ public class AdminAuthenticationWebService {
     @OPTIONS
     @Path("/checkAuthority")
     public void doOptionsForCheckAuthority() {
+        HttpContextHeader.doOptions(httpServletResponse);
+    }
+
+    @OPTIONS
+    @Path("/getAdminCompanies")
+    public void doOptionsForGetAdminCompanies() {
         HttpContextHeader.doOptions(httpServletResponse);
     }
 }

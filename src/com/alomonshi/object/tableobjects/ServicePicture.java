@@ -1,5 +1,6 @@
 package com.alomonshi.object.tableobjects;
 
+import com.alomonshi.object.enums.MediaType;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -8,6 +9,7 @@ public class ServicePicture {
     private int serviceID;
     private String picURL;
     private boolean isActive;
+    private MediaType mediaType;
 
     @JsonView(JsonViews.AdminViews.class)
     public int getID() {
@@ -29,6 +31,11 @@ public class ServicePicture {
         return isActive;
     }
 
+    @JsonView(JsonViews.NormalViews.class)
+    public MediaType getMediaType() {
+        return mediaType;
+    }
+
     public void setID(int ID) {
         this.ID = ID;
     }
@@ -43,5 +50,9 @@ public class ServicePicture {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public void setMediaType(MediaType mediaType) {
+        this.mediaType = mediaType;
     }
 }

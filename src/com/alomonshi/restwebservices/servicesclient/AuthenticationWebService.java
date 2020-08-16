@@ -129,7 +129,7 @@ public class AuthenticationWebService {
             clientPrimaryCheck = new ClientInformationCheck(user);
             if (clientPrimaryCheck.isClientRegistered()) {
                 return SMSUtils.sendSMS(SMSUtils.getSingleToNumber(phoneNumber),
-                        SMSMessage.getPasswordRetriveMessage(user)) ?
+                        SMSMessage.getPasswordRetrieveMessage(user)) ?
                         Response.ok().build() : Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
             }else
                 return Response.status(Response.Status.FORBIDDEN).build();

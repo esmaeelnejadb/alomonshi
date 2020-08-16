@@ -81,6 +81,9 @@ public class AdminManagementService {
                         return serviceResponse
                                 .setResponse(false)
                                 .setMessage(ServerMessage.FAULTMESSAGE);
+                }else if (TableAdmin.insertManager(admin)) {
+                    //Inserting admin units
+                    return editAdminUnits();
                 }else
                     return serviceResponse
                             .setResponse(false)
@@ -101,35 +104,37 @@ public class AdminManagementService {
                 , companyAdmin.getCompanyID());
         //Check if this admin is registered before in this company
         if (admin.getID() != 0) {
-            if (admin.getManagerLevel().getValue() < UserLevels.COMPANY_ADMIN.getValue()) {
-                if (companyAdmin.getAdminUnit() != null) {
-                    List<UnitAdmin> unitAdmins = new ArrayList<>();
-                    // Preparing unit admin list to be inserted in database
-                    prepareAdminUnitForUpdate(unitAdmins, companyAdmin.getAdminID());
-                    //Deleting old admin ids
-                    if (TableUnitAdmin.deleteAdmin(companyAdmin.getAdminID(), companyAdmin.getCompanyID())) {
-                        //Inserting new admin units
-                        if (TableUnitAdmin.insertUnitAdmins(unitAdmins))
-                            return serviceResponse
-                                    .setResponse(true)
-                                    .setMessage(ServerMessage.SUCCESSMESSAGE);
-                        else
-                            return serviceResponse
-                                    .setResponse(false)
-                                    .setMessage(ServerMessage.FAULTMESSAGE);
-                    }else
+            List<UnitAdmin> unitAdmins = new ArrayList<>();
+            // Preparing unit admin list to be inserted in database
+            prepareAdminUnitForUpdate(unitAdmins, companyAdmin.getAdminID());
+            if (companyAdmin.getAdminUnit() != null) {
+                //Deleting old admin ids
+                if (TableUnitAdmin.deleteAdmin(companyAdmin.getAdminID(), companyAdmin.getCompanyID())) {
+                    //Inserting new admin units
+                    if (TableUnitAdmin.insertUnitAdmins(unitAdmins))
                         return serviceResponse
                                 .setResponse(true)
+                                .setMessage(ServerMessage.SUCCESSMESSAGE);
+                    else
+                        return serviceResponse
+                                .setResponse(false)
                                 .setMessage(ServerMessage.FAULTMESSAGE);
-
                 }else
                     return serviceResponse
+                            .setResponse(true)
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+
+            }else {
+                //Inserting new admin units
+                if (TableUnitAdmin.insertUnitAdmins(unitAdmins))
+                    return serviceResponse
+                            .setResponse(true)
+                            .setMessage(ServerMessage.SUCCESSMESSAGE);
+                else
+                    return serviceResponse
                             .setResponse(false)
-                            .setMessage(ServerMessage.ADMINERROR_04);
-            }else
-                return serviceResponse
-                        .setResponse(false)
-                        .setMessage(ServerMessage.ACCESSFAULT);
+                            .setMessage(ServerMessage.FAULTMESSAGE);
+            }
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.ADMINERROR_03);
     }
@@ -142,29 +147,24 @@ public class AdminManagementService {
         Admin admin = TableAdmin.getAdminOfCompany(companyAdmin.getAdminID()
                 , companyAdmin.getCompanyID());
         if (admin.getID() != 0) {
-            if (admin.getManagerLevel().getValue() < UserLevels.COMPANY_ADMIN.getValue()) {
-                boolean response = TableAdmin.deleteAdmin(admin)
-                        && TableUnitAdmin.deleteAdmin(companyAdmin.getAdminID(), companyAdmin.getCompanyID());
+            boolean response = TableAdmin.deleteAdmin(admin)
+                    && TableUnitAdmin.deleteAdmin(companyAdmin.getAdminID(), companyAdmin.getCompanyID());
 
-                //Check if this user is admin of any other companies to change his level in client info table
-                List<Integer> adminCompanies = TableAdmin.getAdminCompanyIDs(admin.getID());
-                if (adminCompanies.isEmpty()) {
-                    Users user = TableClient.getUser(admin.getManagerID());
-                    user.setUserLevel(UserLevels.CLIENT);
-                    TableClient.update(user);
-                }
-                if (response)
-                    return serviceResponse
-                            .setResponse(true)
-                            .setMessage(ServerMessage.SUCCESSMESSAGE);
-                else
-                    return serviceResponse
-                            .setResponse(false)
-                            .setMessage(ServerMessage.FAULTMESSAGE);
-            }else
+            //Check if this user is admin of any other companies to change his level in client info table
+            List<Integer> adminCompanies = TableAdmin.getAdminCompanyIDs(admin.getID());
+            if (adminCompanies.isEmpty()) {
+                Users user = TableClient.getUser(admin.getManagerID());
+                user.setUserLevel(UserLevels.CLIENT);
+                TableClient.update(user);
+            }
+            if (response)
+                return serviceResponse
+                        .setResponse(true)
+                        .setMessage(ServerMessage.SUCCESSMESSAGE);
+            else
                 return serviceResponse
                         .setResponse(false)
-                        .setMessage(ServerMessage.ACCESSFAULT);
+                        .setMessage(ServerMessage.FAULTMESSAGE);
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.ADMINERROR_03);
     }

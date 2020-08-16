@@ -31,6 +31,7 @@ public class ClientReservedTime {
     private boolean commentable;
     private boolean cancelable;
     private LocalDateTime GregorianDateTime;
+    private String companyCover;
 
     @JsonView({JsonViews.ClientViews.class})
     public int getReserveTimeID() {
@@ -116,6 +117,11 @@ public class ClientReservedTime {
         return GregorianDateTime;
     }
 
+    @JsonView({JsonViews.ClientViews.class})
+    public String getCompanyCover() {
+        return companyCover;
+    }
+
     public boolean isCancelable() {
         return cancelable;
     }
@@ -186,5 +192,9 @@ public class ClientReservedTime {
 
     public void setGregorianDateTime(LocalDateTime gregorianDateTime) {
         GregorianDateTime = gregorianDateTime;
+    }
+
+    public void setCompanyCover(String companyCover) {
+        this.companyCover = companyCover;
     }
 }

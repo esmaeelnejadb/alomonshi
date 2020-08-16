@@ -179,7 +179,7 @@ public class TableService {
 	public static List<Services> getUnitServices(int unitID, String discountDate)
 	{
 		List<Services> services = new ArrayList<>();
-		Connection conn = DBConnection.getConnection(); 
+		Connection conn = DBConnection.getConnection();
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
@@ -200,7 +200,7 @@ public class TableService {
 		}finally {
 			if(conn != null) {
 				try {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
@@ -226,10 +226,10 @@ public class TableService {
 					" services s" +
 					" LEFT JOIN" +
 					" servicediscount sd ON s.id = sd.service_id" +
-					" AND s.IS_ACTIVE IS TRUE" +
-					" AND sd.IS_ACTIVE IS TRUE" +
 					" WHERE" +
-					" s.UNIT_ID = " + unitID;
+					" s.UNIT_ID = " + unitID +
+                    " AND s.IS_ACTIVE IS TRUE" +
+                    " AND sd.IS_ACTIVE IS TRUE";
 			ResultSet rs = stmt.executeQuery(command);
 			fillServices(rs, services);
 		}catch(SQLException e) {

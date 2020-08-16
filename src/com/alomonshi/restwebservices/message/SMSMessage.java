@@ -25,7 +25,7 @@ public class SMSMessage {
                 "\n" +
                 "جهت اطلاع از وقت های رزرو شده خود می توانید به وب سایت الومنشی مراجعه نمایید: " +
                 "\n" +
-                "www.alomonshi.ir";
+                "'alomonshi.ir/panel/ProfileInformation'";
     }
 
     /**
@@ -47,7 +47,7 @@ public class SMSMessage {
                 "\n" +
                 "جهت اطلاع از وقت های رزرو شده خود می توانید به وب سایت الومنشی مراجعه نمایید: " +
                 "\n" +
-                "www.alomonshi.ir";
+                "'alomonshi.ir/panel/ProfileInformation'";
     }
 
     /**
@@ -55,12 +55,12 @@ public class SMSMessage {
      * @param user to be got password
      * @return message
      */
-    public static String getPasswordRetriveMessage (Users user) {
+    public static String getPasswordRetrieveMessage(Users user) {
         return " باسلام، \n" +
                 "پسورود شما: \n" +
                 user.getPassword() +
                 "\n" +
-                "جهت ورود به سایت الومنشی به آدرس زیر مراجعه فرمایید: \n" +
-                "https://alomonshi.ir/login";
+                "جهت ورود به سایت الومنشی به آدرس 'alomonshi.ir/login' مراجعه فرمایید. \n" +
+                "";
     }
 }

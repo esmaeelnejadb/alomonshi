@@ -16,7 +16,7 @@ public class AdminCompanyService {
     }
 
     /**
-     * Getting managere company
+     * Getting manager company
      * @param adminID to be got cmopany from
      * @return service response including company list
      */
@@ -30,4 +30,20 @@ public class AdminCompanyService {
         }else
             return serviceResponse.setResponse(false).setMessage(ServerMessage.COMPANYERROR_01);
     }
+
+    /**
+     * Getting manager company including inactive companies
+     * @param adminID to be got cmopany from
+     * @return service response including company list
+     */
+    public ServiceResponse getAdminCompanyIncludingInactive (int adminID){
+        List<Company> companies = TableAdmin.getAdminCompaniesIncludingInactive(adminID);
+        if (!companies.isEmpty()) {
+            return serviceResponse.setResponse(true)
+                    .setMessage(ServerMessage.SUCCESSMESSAGE)
+                    .setResponseData(companies);
+        }else
+            return serviceResponse.setResponse(false).setMessage(ServerMessage.COMPANYERROR_01);
+    }
+
 }

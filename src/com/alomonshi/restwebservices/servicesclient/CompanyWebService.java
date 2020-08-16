@@ -7,6 +7,7 @@ import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 import com.alomonshi.object.tableobjects.FavoriteCompany;
+import com.alomonshi.object.uiobjects.AddingCompany;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.filters.authentication.RequestHeaderCheck;
@@ -41,10 +42,10 @@ public class CompanyWebService{
     @POST
     @Path("/registerCompany")
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse registerCompany(Company company){
+    public ServiceResponse registerCompany(AddingCompany addingCompany){
         serviceResponse = new ServiceResponse();
         try{
-            return ClientCompanyService.registerCompany(company, serviceResponse);
+            return ClientCompanyService.registerCompany(addingCompany, serviceResponse);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.FAULTMESSAGE);

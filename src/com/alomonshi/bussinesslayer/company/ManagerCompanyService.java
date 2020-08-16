@@ -3,6 +3,7 @@ package com.alomonshi.bussinesslayer.company;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.object.tableobjects.Company;
+import com.alomonshi.object.uiobjects.AddingCompany;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
 public class ManagerCompanyService {
@@ -15,18 +16,10 @@ public class ManagerCompanyService {
 
     /**
      * Inserting new company
-     * @param company to be inserted
+     * @param addingCompany to be inserted
      * @return result
      */
-    public ServiceResponse insertNewCompany (Company company) {
-
-        if (TableCompanies.insert(company)) {
-            serviceResponse.setResponse(true);
-            serviceResponse.setMessage(ServerMessage.SUCCESSMESSAGE);
-        }else {
-            serviceResponse.setResponse(false);
-            serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
-        }
-        return serviceResponse;
+    public ServiceResponse insertNewCompany (AddingCompany addingCompany) {
+        return ClientCompanyService.registerCompany(addingCompany, serviceResponse);
     }
 }

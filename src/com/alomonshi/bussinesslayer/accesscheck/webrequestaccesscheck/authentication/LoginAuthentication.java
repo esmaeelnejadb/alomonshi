@@ -66,7 +66,8 @@ public class LoginAuthentication {
             if (!clientPrimaryCheck.isTokenValid()) {
                 user.setToken(WebTokenHandler.generateNewToken());
                 user.setExpirationDate(generateExpirationDate());
-                if(!TableClient.update(user))
+                int userID = TableClient.update(user);
+                if(userID <= 0)
                     return null;
             }
             return webTokenHandler.generateWebToken();
@@ -84,7 +85,8 @@ public class LoginAuthentication {
             if (!clientPrimaryCheck.isTokenValid()) {
                 user.setToken(WebTokenHandler.generateNewToken());
                 user.setExpirationDate(generateExpirationDate());
-                if(!TableClient.update(user))
+                int userID = TableClient.update(user);
+                if(userID <= 0)
                     return null;
             }
             return webTokenHandler.generateWebToken();

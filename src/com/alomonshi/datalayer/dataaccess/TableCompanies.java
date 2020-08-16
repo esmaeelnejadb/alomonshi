@@ -17,7 +17,7 @@ import com.alomonshi.object.tableobjects.*;
 
 public class TableCompanies {
 
-	public static boolean insert(Company company){
+	public static int insert(Company company){
 		String command = "INSERT INTO COMPANIES (" +
 				"COMP_CAT_ID," +
 				" COMP_NAME," +
@@ -34,13 +34,15 @@ public class TableCompanies {
 				" CITY_ID," +
 				" DISTRICT_ID," +
 				" IS_ACTIVE," +
-				" COMP_COMMERTIALCODE" +
+				" COMP_COMMERTIALCODE," +
+				" PIC_URL, " +
+				" COVER_URL " +
                 " )"
-				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		return executeInsertUpdateCommand(company, command);
 	}
 
-	public static boolean update(Company company){
+	public static int update(Company company){
 		String command = "UPDATE COMPANIES SET COMP_CAT_ID = ?," +
 				" COMP_NAME = ?," +
 				" COMP_ADDRESS = ?," +
@@ -56,16 +58,17 @@ public class TableCompanies {
 				" CITY_ID = ?," +
 				" DISTRICT_ID = ?," +
 				" IS_ACTIVE = ?," +
-				" COMP_COMMERTIALCODE = ?" +
+				" COMP_COMMERTIALCODE = ?, " +
+				" PIC_URL = ?, " +
+				" COVER_URL = ?" +
 				" WHERE ID = "  + company.getID();
 		return executeInsertUpdateCommand(company, command);
 	}
 
-	public static boolean delete(Company company){
+	public static int delete(Company company){
 		company.setActive(false);
 		return update(company);
 	}
-
 
 	/**
 	 * Executing insert update company
@@ -73,20 +76,27 @@ public class TableCompanies {
 	 * @param command to be executed
 	 * @return execution result
 	 */
-	private static boolean executeInsertUpdateCommand(Company company, String command)
-	{		
+	private static int executeInsertUpdateCommand(Company company, String command)
+	{
 		Connection conn = DBConnection.getConnection();
 		try
 		{
-			PreparedStatement ps = conn.prepareStatement(command);
+			PreparedStatement ps = conn.prepareStatement(command, Statement.RETURN_GENERATED_KEYS);
 			prepare(ps, company);
-			int i = ps.executeUpdate();
-			return i == 1;
-			
+            int i = ps.executeUpdate();
+            if (i >= 1) {
+				try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+					if (generatedKeys.next()) {
+						return generatedKeys.getInt(1);
+					}
+					else {
+						return i;
+					}
+				}
+			}
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
 		}finally {
 			if(conn != null) {
 				try {
@@ -94,8 +104,9 @@ public class TableCompanies {
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
-		}		
+			}
+		}
+		return 0;
 	}
 
     /**
@@ -187,7 +198,8 @@ public class TableCompanies {
 					" servicediscount servdis ON serv.id = servdis.service_id" +
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
-					" WHERE comp.ID = " + companyID;
+					" WHERE comp.ID = " + companyID +
+					" AND comp.IS_ACTIVE is true";
 			Statement stmt =conn.createStatement();
 			ResultSet rs=stmt.executeQuery(command);
 			while(rs.next()) {
@@ -202,7 +214,7 @@ public class TableCompanies {
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return company;
 	}
@@ -232,6 +244,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
 					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY comp.ID";
 			Statement stmt =conn.createStatement();
@@ -244,14 +257,14 @@ public class TableCompanies {
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
 					conn.close();
-				} catch (SQLException e)  
+				} catch (SQLException e)
 				{
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return companies;
 	}
@@ -282,6 +295,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
                     " WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY comp.COMP_RATE DESC" +
                     " LIMIT " + limitNumber;
@@ -402,6 +416,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
                     " WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY comp.ID DESC" +
 					" LIMIT " + limitNumber;
@@ -444,6 +459,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
 					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY comp.COMP_RATE DESC";
 			Statement stmt =conn.createStatement();
@@ -504,6 +520,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
 					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY distance ASC";
 			Statement stmt = conn.createStatement();
@@ -555,6 +572,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
 					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY price ASC";
 
@@ -607,6 +625,7 @@ public class TableCompanies {
 					" AND servdis.is_active IS TRUE" +
 					" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
 					" WHERE comp.COMP_CAT_ID = " + categoryID +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.ID" +
 					" ORDER BY price DESC ";
 
@@ -703,6 +722,7 @@ public class TableCompanies {
 					" on fc.CLIENT_ID =  " + clientID +
 					" and comp.ID = fc.COMPANY_ID and fc.IS_ACTIVE is true" +
 					" WHERE fc.IS_ACTIVE is true" +
+					" AND comp.IS_ACTIVE is true" +
 					" GROUP BY comp.id" +
 					" ORDER BY comp.id";
 			Statement stmt = conn.createStatement();
@@ -900,6 +920,8 @@ public class TableCompanies {
 			preparedStatement.setInt(14, company.getDistrictID());
 			preparedStatement.setBoolean(15, company.isActive());
 			preparedStatement.setString(16, company.getCommercialCode());
+			preparedStatement.setString(17, company.getPicURL());
+			preparedStatement.setString(18, company.getCoverURL());
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}
@@ -924,6 +946,8 @@ public class TableCompanies {
 			company.setDistrictID(resultSet.getInt(15));
 			company.setActive(resultSet.getBoolean(16));
 			company.setCommercialCode(resultSet.getString(17));
+			company.setPicURL(resultSet.getString(18));
+			company.setCoverURL(resultSet.getString(19));
             company.setCompanyPictures(TableCompanyPicture.getCompanyPictures(company.getID()));
 			company.setDiscount(resultSet.getInt("discount"));
 			if (isUnitSet)
@@ -995,6 +1019,7 @@ public class TableCompanies {
 				" AND servdis.is_active IS TRUE" +
 				" AND NOW() BETWEEN servdis.create_date AND servdis.expire_date" +
 				" WHERE comp.COMP_CAT_ID = " + categoryID +
+				" AND comp.IS_ACTIVE is true" +
 				middleQuery +
 				" GROUP BY comp.id" +
 				" ORDER BY "+ order;

@@ -30,6 +30,9 @@ public class Company {
 	private String logoURL;
 	private boolean isActive;
 	private String commercialCode;
+	private String picURL;
+	private String coverURL;
+
 
 	@JsonView(JsonViews.NormalViews.class)
 	public int getID() {
@@ -141,6 +144,16 @@ public class Company {
 		return isActive;
 	}
 
+	@JsonView(JsonViews.NormalViews.class)
+	public String getPicURL() {
+		return picURL;
+	}
+
+	@JsonView(JsonViews.NormalViews.class)
+	public String getCoverURL() {
+		return coverURL;
+	}
+
 	public void setID(int iD) {
 		ID = iD;
 	}
@@ -227,5 +240,13 @@ public class Company {
 
 	public void setCommercialCode(String commercialCode) {
 		this.commercialCode = commercialCode;
+	}
+
+	public void setPicURL(String picURL) {
+		this.picURL = picURL;
+	}
+
+	public void setCoverURL(String coverURL) {
+		this.coverURL = coverURL;
 	}
 }

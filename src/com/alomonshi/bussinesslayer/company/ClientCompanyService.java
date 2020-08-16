@@ -2,12 +2,14 @@ package com.alomonshi.bussinesslayer.company;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.configuration.ConfigurationParameter;
+import com.alomonshi.datalayer.dataaccess.TableAdmin;
+import com.alomonshi.datalayer.dataaccess.TableClient;
 import com.alomonshi.datalayer.dataaccess.TableCompanies;
 import com.alomonshi.datalayer.dataaccess.TableFavoriteCompany;
 import com.alomonshi.object.enums.FilterItem;
-import com.alomonshi.object.tableobjects.Company;
-import com.alomonshi.object.tableobjects.CompanyCategories;
-import com.alomonshi.object.tableobjects.FavoriteCompany;
+import com.alomonshi.object.enums.UserLevels;
+import com.alomonshi.object.tableobjects.*;
+import com.alomonshi.object.uiobjects.AddingCompany;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
 import java.util.*;
@@ -19,18 +21,87 @@ public class ClientCompanyService {
 
     /**
      * Adding company by a registered client
-     * @param company to be inserted
+     * @param addingCompany to be inserted
      * @return service response
      */
-    public static ServiceResponse registerCompany(Company company, ServiceResponse serviceResponse) {
-        if (TableCompanies.insert(company)) {
-            serviceResponse.setResponse(true);
-            serviceResponse.setMessage(ServerMessage.SUCCESSMESSAGE);
+    public static ServiceResponse registerCompany(AddingCompany addingCompany, ServiceResponse serviceResponse) {
+        //Getting company admin to be checked if registered
+        Users user = TableClient.getUser(addingCompany.getUser().getPhoneNo());
+        //Admin is not registered to the website
+        if (user.getClientID() == 0) {
+            insertNotRegisteredAdminCompany(addingCompany, serviceResponse);
+        }
+        //Admin is registered before in website as company admin
+        else if (user.getUserLevel().getValue() >= UserLevels.COMPANY_ADMIN.getValue()) {
+            addingCompany.setUser(user);
+            insertExistedAdminCompany(addingCompany, serviceResponse);
+        }
+        //Admin is registered as client in the website
+        else {
+            addingCompany.setUser(user);
+            insertRegisteredAdminCompany(addingCompany, serviceResponse);
+        }
+        return serviceResponse;
+    }
+
+    /**
+     * Inserting existed admin's company
+     * @param addingCompany to be inserted
+     * @param serviceResponse returned to client
+     */
+    private static void insertExistedAdminCompany (AddingCompany addingCompany, ServiceResponse serviceResponse) {
+        int companyID = TableCompanies.insert(addingCompany.getCompany());
+        if (companyID > 0) {
+            Admin admin = new Admin();
+            admin.setActive(true);
+            admin.setManagerLevel(UserLevels.COMPANY_ADMIN);
+            admin.setManagerID(addingCompany.getUser().getClientID());
+            admin.setCompanyID(companyID);
+            if (TableAdmin.insertManager(admin)) {
+                serviceResponse.setResponse(true);
+                serviceResponse.setMessage(ServerMessage.SUCCESSMESSAGE);
+            }else {
+                serviceResponse.setResponse(false);
+                serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
+            }
         }else {
             serviceResponse.setResponse(false);
             serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
         }
-        return serviceResponse;
+    }
+
+    /**
+     * Inserting not register client as admin company
+     * @param addingCompany company to be added
+     * @param serviceResponse returned response to client
+     */
+    private static void insertNotRegisteredAdminCompany (AddingCompany addingCompany, ServiceResponse serviceResponse) {
+        addingCompany.getUser().setUserLevel(UserLevels.COMPANY_ADMIN);
+        addingCompany.getUser().setActive(true);
+        int userID = TableClient.insert(addingCompany.getUser());
+        if (userID > 0) {
+            addingCompany.getUser().setClientID(userID);
+            insertExistedAdminCompany(addingCompany, serviceResponse);
+        }else {
+            serviceResponse.setResponse(false);
+            serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
+        }
+    }
+
+    /**
+     * inserting registered company of a client but not admin company
+     * @param addingCompany to be inserted
+     * @param serviceResponse returned response
+     */
+    private static void insertRegisteredAdminCompany (AddingCompany addingCompany, ServiceResponse serviceResponse) {
+        addingCompany.getUser().setUserLevel(UserLevels.COMPANY_ADMIN);
+        int result = TableClient.update(addingCompany.getUser());
+        if (result > 0) {
+            insertExistedAdminCompany(addingCompany, serviceResponse);
+        }else {
+            serviceResponse.setResponse(false);
+            serviceResponse.setMessage(ServerMessage.FAULTMESSAGE);
+        }
     }
 
     /**

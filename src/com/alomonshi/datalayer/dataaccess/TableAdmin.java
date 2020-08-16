@@ -162,7 +162,6 @@ public class TableAdmin {
 		return companies;
 	}
 
-
 	/**
 	 * Getting a manager companies
 	 * @param adminID intended manager
@@ -180,7 +179,48 @@ public class TableAdmin {
 					" LEFT JOIN" +
 					" companies comp ON mng.company_id = comp.id" +
 					" AND mng.IS_ACTIVE IS TRUE" +
-					" AND comp.is_active IS TRUE" +
+//					" AND comp.is_active IS TRUE" +
+					" WHERE" +
+					" mng.mng_id = " + adminID;
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(command);
+			while (rs.next()) {
+				Company company = new Company();
+				company.setID(rs.getInt("companyID"));
+				company.setCompanyName(rs.getString("companyName"));
+				companies.add(company);
+			}
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
+		}
+		return companies;
+	}
+
+	/**
+	 * Getting a manager companies including inactive companies
+	 * @param adminID intended manager
+	 * @return list of manager object
+	 */
+	public static List<Company> getAdminCompaniesIncludingInactive(int adminID){
+		Connection conn = DBConnection.getConnection();
+		List<Company> companies = new ArrayList<>();
+		try
+		{
+			String command = "SELECT" +
+					" comp.id AS companyID, comp.comp_name AS companyName" +
+					" FROM" +
+					" manager mng" +
+					" LEFT JOIN" +
+					" companies comp ON mng.company_id = comp.id" +
+					" AND mng.IS_ACTIVE IS TRUE" +
 					" WHERE" +
 					" mng.mng_id = " + adminID;
 			Statement stmt = conn.createStatement();

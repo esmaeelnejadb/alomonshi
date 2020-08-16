@@ -1,6 +1,7 @@
 package com.alomonshi.datalayer.dataaccess;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.enums.MediaType;
 import com.alomonshi.object.tableobjects.ServicePicture;
 
 import java.sql.*;
@@ -14,8 +15,10 @@ public class TableServicePicture {
     public static void insertServicePic(ServicePicture servicePicture){
         String command = "INSERT INTO servicepictures (serviceID," +
                 " pictureURL," +
-                " isActive)" +
-                " values(?, ?, ?)";
+                " isActive, " +
+                " mediaType" +
+                ")" +
+                " values(?, ?, ?, ?)";
         executeInsertUpdate(servicePicture, command);
     }
 
@@ -23,7 +26,8 @@ public class TableServicePicture {
         String command = "UPDATE servicepictures SET " +
                 "serviceID = ?," +
                 " pictureURL = ?," +
-                " isActive = ?" +
+                " isActive = ?, " +
+                " mediaType = ?" +
                 " WHERE ID = " + servicePicture.getID();
         executeInsertUpdate(servicePicture, command);
     }
@@ -90,6 +94,7 @@ public class TableServicePicture {
             preparedStatement.setInt(1, servicePicture.getServiceID());
             preparedStatement.setString(2, servicePicture.getPicURL());
             preparedStatement.setBoolean(3, servicePicture.isActive());
+            preparedStatement.setInt(4, servicePicture.getMediaType().getValue());
         }catch (SQLException e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception : " + e);
         }
@@ -101,6 +106,7 @@ public class TableServicePicture {
             servicePicture.setServiceID(resultSet.getInt(2));
             servicePicture.setPicURL(resultSet.getString(3));
             servicePicture.setActive(resultSet.getBoolean(4));
+            servicePicture.setMediaType(MediaType.getByValue(resultSet.getInt(5)));
         } catch (SQLException e) {
             Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
         }

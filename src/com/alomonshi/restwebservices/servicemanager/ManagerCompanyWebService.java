@@ -2,11 +2,8 @@ package com.alomonshi.restwebservices.servicemanager;
 
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
-import com.alomonshi.bussinesslayer.company.AdminCompanyService;
 import com.alomonshi.bussinesslayer.company.ManagerCompanyService;
-import com.alomonshi.object.tableobjects.Company;
-import com.alomonshi.object.uiobjects.AdminEditObject;
-import com.alomonshi.restwebservices.annotation.CompanySubAdminSecured;
+import com.alomonshi.object.uiobjects.AddingCompany;
 import com.alomonshi.restwebservices.annotation.SiteManagerSecured;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
@@ -22,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/managerCompany")
-public class ManagerCompanyWenService {
+public class ManagerCompanyWebService {
 
     private ServiceResponse serviceResponse;
     private ManagerCompanyService managerCompanyService;
@@ -35,11 +32,11 @@ public class ManagerCompanyWenService {
     @POST
     @Path("/company")
     @Produces(MediaType.APPLICATION_JSON)
-    public ServiceResponse insertNewCompany(Company company) {
+    public ServiceResponse insertNewCompany(AddingCompany addingCompany) {
         serviceResponse = new ServiceResponse();
         try {
             managerCompanyService = new ManagerCompanyService(serviceResponse);
-            return managerCompanyService.insertNewCompany(company);
+            return managerCompanyService.insertNewCompany(addingCompany);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return serviceResponse.setResponse(false).setMessage(ServerMessage.INTERNALERRORMESSAGE);

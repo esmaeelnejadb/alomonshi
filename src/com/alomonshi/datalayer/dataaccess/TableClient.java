@@ -17,7 +17,7 @@ public class TableClient {
 	 * @param user new user information
 	 * @return true if executes properly
 	 */
-	public static boolean insert(Users user) {
+	public static int insert(Users user) {
 		String command = "INSERT INTO CLIENTINFO (VERIFICATION_CODE," +
 				" NAME," +
 				" USERNAME," +
@@ -38,7 +38,7 @@ public class TableClient {
 	 * @return true if executes properly
 	 */
 
-	public static boolean update(Users user) {
+	public static int update(Users user) {
 		String command = "UPDATE CLIENTINFO SET" +
 				" VERIFICATION_CODE = ?," +
 				" NAME = ?," +
@@ -61,7 +61,7 @@ public class TableClient {
 	 * @param user to be deleted
 	 * @return true if executes properly
 	 */
-	public static boolean delete(Users user){
+	public static int delete(Users user){
 		user.setActive(false);
 		return update(user);
 	}
@@ -72,19 +72,29 @@ public class TableClient {
 	 * @param command to be executed
 	 * @return true id query is executed correctly
 	 */
-	private static boolean executeInsertUpdate(Users user, String command)
+	private static int executeInsertUpdate(Users user, String command)
 	{
 		Connection conn = DBConnection.getConnection();
 		try {
-			PreparedStatement ps = conn.prepareStatement(command);
+			PreparedStatement ps = conn.prepareStatement(command, Statement.RETURN_GENERATED_KEYS);
 			prepare(ps, user);
-			return ps.executeUpdate() == 1;
+			int i = ps.executeUpdate();
+			if (i >= 1) {
+				try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+					if (generatedKeys.next()) {
+						return generatedKeys.getInt(1);
+					}
+					else {
+						return i;
+					}
+				}
+			}
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
-			return false;
 		}finally {
 			DBConnection.closeConnection(conn);
 		}
+		return 0;
 	}
 
 	/**

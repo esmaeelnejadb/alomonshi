@@ -40,7 +40,8 @@ public class ClientProfile {
         this.user = getCopiedUserProperties();
         WebTokenHandler webTokenHandler = new WebTokenHandler();
         webTokenHandler.setUser(this.user);
-        if (TableClient.update(user))
+        int userID = TableClient.update(user);
+        if (userID > 0)
             return serviceResponse.setResponse(true)
                     .setMessage(ServerMessage.SUCCESSMESSAGE)
                     .setResponseData(webTokenHandler.generateWebToken());
@@ -61,7 +62,8 @@ public class ClientProfile {
         try {
             if (this.user.getPassword().equals(oldPassword)) {
                 user.setPassword(newPassword);
-                if (TableClient.update(user))
+                int userID = TableClient.update(user);
+                if (userID > 0)
                     return serviceResponse.setResponse(true)
                             .setMessage(ServerMessage.SUCCESSMESSAGE);
                 else

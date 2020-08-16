@@ -87,7 +87,7 @@ public class TableReserveTime {
 		DBConnection.closeConnection(connection);
 		return response;
 	}
-	
+
 	/**
 	 * updating a list of time
 	 * @param reserveTimes list to be updated in database
@@ -183,7 +183,7 @@ public class TableReserveTime {
 			prepare(ps, reserveTime);
 			int i = ps.executeUpdate();
 			return i == 1;
-			
+
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -434,7 +434,7 @@ public class TableReserveTime {
 		}
 		return reserveTime;
 	}
-	
+
 	public static Map<MiddayID, List<ReserveTime>> getAdminUnitReserveTimeInADay(int dateID, int unitID)
 	{
 		Connection conn = DBConnection.getConnection();
@@ -452,13 +452,13 @@ public class TableReserveTime {
 					" ORDER BY ST_TIME";
 			ResultSet rs=stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
-			
+
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
 			if(conn != null) {
 				try {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
@@ -523,6 +523,7 @@ public class TableReserveTime {
 					" SUM(rs.SERVICE_PRICE) AS cost," +
 					" c.ID AS companyID," +
 					" c.COMP_NAME AS companyName," +
+					" c.COVER_URL AS companyCover," +
 					" u.ID AS unitID," +
 					" u.UNIT_NAME AS unitName," +
 					" IFNULL(com.comment, ' ') AS comment," +
@@ -556,7 +557,7 @@ public class TableReserveTime {
 		}finally {
 			if(conn != null) {
 				try {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
@@ -724,7 +725,7 @@ public class TableReserveTime {
 		}finally {
 			if(conn != null) {
 				try  {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
@@ -1084,6 +1085,7 @@ public class TableReserveTime {
 			clientReservedTime.setUnitID(resultSet.getInt("unitID"));
 			clientReservedTime.setUnitName(resultSet.getString("unitName"));
 			clientReservedTime.setCost(resultSet.getInt("cost"));
+			clientReservedTime.setCompanyCover(resultSet.getString("companyCover"));
 			clientReservedTime.setServices(TableReserveTimeServices
 					.getServices(clientReservedTime.getReserveTimeID()));
 		}catch (SQLException e) {
@@ -1156,7 +1158,7 @@ public class TableReserveTime {
 		try {
 			return clientReservedTime
                     .getGregorianDateTime()
-                    .minusHours(ConfigurationParameter.coulBeCancelelPeriod)
+                    .minusHours(ConfigurationParameter.couldBeCanceledPeriod)
                     .isAfter(LocalDateTime.now());
 		}catch (Exception e) {
 			return false;
