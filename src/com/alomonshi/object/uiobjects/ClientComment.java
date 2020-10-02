@@ -12,6 +12,7 @@ public class ClientComment {
     private String comment;
     private String replyComment;
     private String companyName;
+    private String companyCover;
     private String unitName;
     private LocalDateTime commentDate;
     private LocalDateTime replyDate;
@@ -36,6 +37,11 @@ public class ClientComment {
     @JsonView(JsonViews.ClientViews.class)
     public String getCompanyName() {
         return companyName;
+    }
+
+    @JsonView(JsonViews.ClientViews.class)
+    public String getCompanyCover() {
+        return companyCover;
     }
 
     @JsonView(JsonViews.ClientViews.class)
@@ -79,6 +85,10 @@ public class ClientComment {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public void setCompanyCover(String companyCover) {
+        this.companyCover = companyCover;
     }
 
     public void setUnitName(String unitName) {

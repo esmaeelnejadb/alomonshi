@@ -178,18 +178,13 @@ public class TableAdmin {
 					" manager mng" +
 					" LEFT JOIN" +
 					" companies comp ON mng.company_id = comp.id" +
-					" AND mng.IS_ACTIVE IS TRUE" +
-//					" AND comp.is_active IS TRUE" +
+//					" AND mng.IS_ACTIVE IS TRUE" +
+					" AND comp.is_active IS TRUE" +
 					" WHERE" +
 					" mng.mng_id = " + adminID;
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
-			while (rs.next()) {
-				Company company = new Company();
-				company.setID(rs.getInt("companyID"));
-				company.setCompanyName(rs.getString("companyName"));
-				companies.add(company);
-			}
+			fillCompanies(rs, companies);
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
@@ -225,12 +220,7 @@ public class TableAdmin {
 					" mng.mng_id = " + adminID;
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(command);
-			while (rs.next()) {
-				Company company = new Company();
-				company.setID(rs.getInt("companyID"));
-				company.setCompanyName(rs.getString("companyName"));
-				companies.add(company);
-			}
+			fillCompanies(rs, companies);
 		}catch(SQLException e) {
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}finally {
@@ -299,6 +289,24 @@ public class TableAdmin {
 			admin.setCompanyID(resultSet.getInt(3));
 			admin.setManagerLevel(UserLevels.getByValue(resultSet.getInt(4)));
 			admin.setActive(resultSet.getBoolean(5));
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
+	 * Filling manager object with manager got from database
+	 * @param resultSet returned from JDBC
+	 * @param companies object to be filled
+	 */
+	private static void fillCompanies(ResultSet resultSet, List<Company> companies){
+		try {
+			while (resultSet.next()) {
+				Company company = new Company();
+				company.setID(resultSet.getInt("companyID"));
+				company.setCompanyName(resultSet.getString("companyName"));
+				companies.add(company);
+			}
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 		}

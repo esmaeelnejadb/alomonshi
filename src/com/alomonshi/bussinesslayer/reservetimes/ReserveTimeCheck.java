@@ -91,15 +91,11 @@ class ReserveTimeCheck {
 
     ServiceResponse isServicesBelongToReserveTimeUnit(){
         List<Integer> serviceIDs = TableService.getUnitServiceIDs(reserveTime.getUnitID());
-        if (serviceIDs != null) {
-            for (Integer serviceID : reserveTime.getServiceIDs()) {
-                if (!serviceIDs.contains(serviceID))
-                    return serviceResponse.setResponse(false)
-                            .setMessage(ServerMessage.INTERNALERRORMESSAGE);
-            }
-        }else
-            return serviceResponse.setResponse(false)
-                    .setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        for (Integer serviceID : reserveTime.getServiceIDs()) {
+            if (!serviceIDs.contains(serviceID))
+                return serviceResponse.setResponse(false)
+                        .setMessage(ServerMessage.INTERNALERRORMESSAGE);
+        }
         return serviceResponse.setResponse(true);
     }
 

@@ -19,4 +19,15 @@ public class ConfigurationParameter {
 
     //*********Companies limitation number***********/
     public static int homePageCompaniesLimitationNumber = 10; //
+
+    //*********Companies limitation number***********/
+    public static int defaultPaginationOffset = 0;
+    public static int defaultPaginationPageSize = 5;
+
+    //*********Payment Configuration***********/
+    public static String merchantId = "";
+    public static String paymentRequestURL = "";
+    public static String paymentGateURL = "";
+    public static String paymentVerifyURL = "";
+    public static String paymentCallbackURL = "";
 }

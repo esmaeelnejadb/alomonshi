@@ -325,17 +325,10 @@ public class ReserveTimeService{
     private List<ReserveTime> getListOfReservedTimesBetweenDaysForDelete() {
         if (reserveTimeForm.getMidday() != null)
             return TableReserveTime
-                    .getUnitMiddayReservedTimesBetweenDays(
-                            reserveTimeForm.getUnitID(),
-                            reserveTimeForm.getStartDate(),
-                            reserveTimeForm.getEndDate(),
-                            reserveTimeForm.getMidday());
+                    .getUnitMiddayReservedTimesBetweenDays(reserveTimeForm);
         else
             return TableReserveTime
-                    .getUnitReservedTimesBetweenDays(
-                            reserveTimeForm.getUnitID(),
-                            reserveTimeForm.getStartDate(),
-                            reserveTimeForm.getEndDate());
+                    .getUnitReservedTimesBetweenDays(reserveTimeForm);
 
     }
 }

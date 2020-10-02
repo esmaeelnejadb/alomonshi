@@ -15,6 +15,7 @@ public class Initializer implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         String applicationPath = servletContextEvent.getServletContext().getRealPath("");
         ReadPropertiesFile config = new ReadPropertiesFile(applicationPath);
+
         ConfigurationParameter.databaseName = config.getKey("database.properties.dataBaseName");
         ConfigurationParameter.dataBaseUsername = config.getKey("programming.status.development").equals("on")
                 ? config.getKey("database.properties.localUsername")
@@ -22,15 +23,28 @@ public class Initializer implements ServletContextListener {
         ConfigurationParameter.databasePassword = config.getKey("programming.status.development").equals("on")
                 ? config.getKey("database.properties.localPassword")
                 : config.getKey("database.properties.serverPassword");
+
         ConfigurationParameter.smsPanelUserName = config.getKey("SMSUtil.SMSPanel.userName");
         ConfigurationParameter.smsPanelPassword = config.getKey("SMSUtil.SMSPanel.smsPass");
         ConfigurationParameter.smsPanelFromNumber = config.getKey("SMSUtil.SMSPanel.fromNumber");
+
         ConfigurationParameter.couldBeCanceledPeriod = Integer.
                 parseInt(config.
                         getKey("reservetime.clientreservetime.couldBeCanceledPeriod"));
+
         ConfigurationParameter.homePageCompaniesLimitationNumber =
                 Integer.parseInt(config.getKey("homepage.companies.limitationNumber"));
 
+        ConfigurationParameter.defaultPaginationOffset =
+                Integer.parseInt(config.getKey("pagination.information.defaultOffset"));
+        ConfigurationParameter.defaultPaginationPageSize =
+                Integer.parseInt(config.getKey("pagination.information.defaultPageSize"));
+
+        ConfigurationParameter.merchantId = config.getKey("payment.merchantId");
+        ConfigurationParameter.paymentRequestURL = config.getKey("payment.request.url");
+        ConfigurationParameter.paymentGateURL = config.getKey("payment.payment.gate");
+        ConfigurationParameter.paymentVerifyURL = config.getKey("payment.verify.url");
+        ConfigurationParameter.paymentCallbackURL = config.getKey("payment.payment.callbackURL");
     }
 
     @Override

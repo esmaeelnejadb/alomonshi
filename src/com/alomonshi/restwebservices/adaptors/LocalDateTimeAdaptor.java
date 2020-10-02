@@ -3,7 +3,6 @@ package com.alomonshi.restwebservices.adaptors;
 import com.alomonshi.utility.DateTimeUtility;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

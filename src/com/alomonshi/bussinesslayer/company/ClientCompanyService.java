@@ -2,14 +2,13 @@ package com.alomonshi.bussinesslayer.company;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.configuration.ConfigurationParameter;
-import com.alomonshi.datalayer.dataaccess.TableAdmin;
-import com.alomonshi.datalayer.dataaccess.TableClient;
-import com.alomonshi.datalayer.dataaccess.TableCompanies;
-import com.alomonshi.datalayer.dataaccess.TableFavoriteCompany;
+import com.alomonshi.datalayer.dataaccess.*;
 import com.alomonshi.object.enums.FilterItem;
 import com.alomonshi.object.enums.UserLevels;
 import com.alomonshi.object.tableobjects.*;
 import com.alomonshi.object.uiobjects.AddingCompany;
+import com.alomonshi.object.uiobjects.pagination.Pagination;
+import com.alomonshi.object.uiobjects.pagination.PaginationFactory;
 import com.alomonshi.restwebservices.message.ServerMessage;
 
 import java.util.*;
@@ -129,6 +128,17 @@ public class ClientCompanyService {
     }
 
     /**
+     * Getting nearest list in each category
+     * @return list of nearest companies in each categories
+     */
+    public static List<CompanyCategories> getNearestCompaniesInCategories(float lat, float lon) {
+        return TableCompanies.getNearestList(
+                lat,
+                lon,
+                ConfigurationParameter.homePageCompaniesLimitationNumber);
+    }
+
+    /**
      * Getting all categories discounted companies
      * @return list of companies
      */
@@ -142,17 +152,32 @@ public class ClientCompanyService {
      * @param compName company name
      * @param serveName service name
      * @param lat client location latitude
-     * @param lon client location longiture
+     * @param lon client location longitude
      * @param categoryID searched category id
      * @return list of company
      */
-    public static List<Company> getSearchedCompanies(String compName,
+    public static Pagination getSearchedCompanies(String compName,
                                                      String serveName,
                                                      float lat,
                                                      float lon,
                                                      int categoryID,
-                                                     int clientID) {
-        return TableCompanies.getSearchedCompanies(compName, serveName, lat, lon, categoryID, clientID);
+                                                     int clientID,
+                                                     Pagination pagination) {
+        PaginationFactory paginationFactory = new PaginationFactory(pagination);
+        List<Company> companies;
+        companies = TableCompanies.getSearchedCompanies(
+                compName,
+                serveName,
+                lat,
+                lon,
+                categoryID,
+                clientID,
+                paginationFactory.getOffset(),
+                paginationFactory.getDataSize());
+        pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+        pagination.setData(companies);
+        pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+        return pagination;
     }
 
     /**
@@ -161,24 +186,82 @@ public class ClientCompanyService {
      * @param filterItem filtered item
      * @return list of filtered companies
      */
-    public static List<Company> getFilteredCompanies(float lat,
+    public static Pagination getFilteredCompanies(float lat,
                                                      float lon,
                                                      int categoryID,
                                                      FilterItem filterItem,
-                                                     int clientID) {
+                                                     int clientID,
+                                                     Pagination pagination) {
+        PaginationFactory paginationFactory = new PaginationFactory(pagination);
+        List<Company> companies;
         switch (filterItem) {
             case BEST:
-                return TableCompanies.getFilteredBestCompanies(categoryID, clientID);
+                companies = TableCompanies.getFilteredBestCompanies(
+                        categoryID,
+                        clientID,
+                        paginationFactory.getOffset(),
+                        paginationFactory.getDataSize());
+                pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+                pagination.setData(companies);
+                pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+                break;
             case NEAREST:
-                return TableCompanies.getFilteredNearestCompanies(lat, lon, categoryID, clientID);
+                companies = TableCompanies.getFilteredNearestCompanies(
+                        lat,
+                        lon,
+                        categoryID,
+                        clientID,
+                        paginationFactory.getOffset(),
+                        paginationFactory.getDataSize());
+                pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+                pagination.setData(companies);
+                pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+                break;
             case CHEAPEST:
-                return TableCompanies.getFilteredCheapestCompanies(categoryID, clientID);
+                companies = TableCompanies.getFilteredCheapestCompanies(
+                        categoryID,
+                        clientID,
+                        paginationFactory.getOffset(),
+                        paginationFactory.getDataSize());
+                pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+                pagination.setData(companies);
+                pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+                break;
             case EXPENSIVE:
-                return TableCompanies.getFilteredMostExpensiveCompanies(categoryID, clientID);
+                companies = TableCompanies.getFilteredMostExpensiveCompanies(
+                        categoryID,
+                        clientID,
+                        paginationFactory.getOffset(),
+                        paginationFactory.getDataSize());
+                pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+                pagination.setData(companies);
+                pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+                break;
             case DISCOUNT:
-                return TableCompanies.getFilteredDiscountCompanies(categoryID, clientID);
+                companies = TableCompanies.getFilteredDiscountCompanies(
+                        categoryID,
+                        clientID,
+                        paginationFactory.getOffset(),
+                        paginationFactory.getDataSize());
+                pagination.setTotalData(TableCompanies.getFilteredDiscountCompaniesTotalSize(categoryID));
+                pagination.setData(companies);
+                pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+                break;
+            case NEWEST:
+                companies = TableCompanies.getFilteredNewestCompanies(
+                        categoryID,
+                        clientID,
+                        paginationFactory.getOffset(),
+                        paginationFactory.getDataSize());
+                pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+                pagination.setData(companies);
+                pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+                break;
+            default:
+                companies = null;
+                break;
         }
-        return null;
+        return pagination;
     }
 
     /**
@@ -191,20 +274,29 @@ public class ClientCompanyService {
      * @param filterItem to be filtered by
      * @return list of company
      */
-    public static List<Company> getFilteredSearchedCompanies(String compName,
+    public static Pagination getFilteredSearchedCompanies(String compName,
                                                              String serveName,
                                                              float lat,
                                                              float lon,
                                                              int categoryID,
                                                              FilterItem filterItem,
-                                                             int clientID) {
-        return TableCompanies.getFilteredSearchedCompanies(compName,
+                                                             int clientID,
+                                                             Pagination pagination) {
+        PaginationFactory paginationFactory = new PaginationFactory(pagination);
+        List<Company> companies;
+        companies = TableCompanies.getFilteredSearchedCompanies(compName,
                 serveName,
                 lat,
                 lon,
                 categoryID,
                 filterItem,
-                clientID);
+                clientID,
+                paginationFactory.getOffset(),
+                paginationFactory.getDataSize());
+        pagination.setTotalData(TableCompanies.getCompanyNumbers(categoryID));
+        pagination.setData(companies);
+        pagination.setTotalPageCount(paginationFactory.getTotalPageCount());
+        return pagination;
     }
 
     /**

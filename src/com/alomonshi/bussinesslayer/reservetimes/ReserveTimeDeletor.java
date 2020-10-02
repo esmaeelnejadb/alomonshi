@@ -2,7 +2,6 @@ package com.alomonshi.bussinesslayer.reservetimes;
 
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
-import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.uiobjects.ReserveTimeForm;
 import com.alomonshi.restwebservices.message.ServerMessage;
@@ -25,10 +24,7 @@ class ReserveTimeDeletor {
      * @return service response
      */
     ServiceResponse deleteUnitDayReserveTimeBetweenDays(ReserveTimeForm reserveTimeForm) {
-        List<ReserveTime> reserveTimes = getExistedReservedTimesBetweenDays(
-                reserveTimeForm.getUnitID()
-                , reserveTimeForm.getStartDate()
-                , reserveTimeForm.getEndDate());
+        List<ReserveTime> reserveTimes = getExistedReservedTimesBetweenDays(reserveTimeForm);
         //Check if any reserved time is existed in that period or not
         if (reserveTimes.isEmpty()) {
             //If all days between start and end date should be deleted
@@ -71,11 +67,7 @@ class ReserveTimeDeletor {
      * @return service response
      */
     ServiceResponse deleteUnitMiddayReserveTimeBetweenDays(ReserveTimeForm reserveTimeForm) {
-        List<ReserveTime> reserveTimes = getExistedMiddayReservedTimesBetweenDays(
-                reserveTimeForm.getUnitID()
-                , reserveTimeForm.getStartDate()
-                , reserveTimeForm.getEndDate()
-                , reserveTimeForm.getMidday());
+        List<ReserveTime> reserveTimes = getExistedMiddayReservedTimesBetweenDays(reserveTimeForm);
         //Check if any reserved time is existed in that period or not
         if (reserveTimes.isEmpty()) {
             //If all days midday times to be deleted
@@ -117,29 +109,21 @@ class ReserveTimeDeletor {
 
     /**
      * Getting all day reserved time from database
-     * @param unitID input
-     * @param startDay input
-     * @param endDay input
+     * @param reserveTimeForm input
      * @return list of reserve time in that period
      */
 
-    private static List<ReserveTime> getExistedReservedTimesBetweenDays(int unitID, int startDay, int endDay) {
-        return TableReserveTime.getUnitReservedTimesBetweenDays(unitID,startDay, endDay);
+    private static List<ReserveTime> getExistedReservedTimesBetweenDays(ReserveTimeForm reserveTimeForm) {
+        return TableReserveTime.getUnitReservedTimesBetweenDays(reserveTimeForm);
     }
 
     /**
      * Getting midday reserved time from database
-     * @param unitID input
-     * @param startDay input
-     * @param endDay input
-     * @param middayID input
+     * @param reserveTimeForm input
      * @return list of reserve time in that period
      */
 
-    private static List<ReserveTime> getExistedMiddayReservedTimesBetweenDays(int unitID
-            , int startDay
-            , int endDay
-            , MiddayID middayID) {
-        return TableReserveTime.getUnitMiddayReservedTimesBetweenDays(unitID,startDay, endDay, middayID);
+    private static List<ReserveTime> getExistedMiddayReservedTimesBetweenDays(ReserveTimeForm reserveTimeForm) {
+        return TableReserveTime.getUnitMiddayReservedTimesBetweenDays(reserveTimeForm);
     }
 }

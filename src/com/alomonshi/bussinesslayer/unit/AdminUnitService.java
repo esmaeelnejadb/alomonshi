@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class UnitService {
+public class AdminUnitService {
 
     private ServiceResponse serviceResponse;
     private Units unit;
@@ -24,7 +24,7 @@ public class UnitService {
      * Constructor
      * @param serviceResponse injected object
      */
-    public UnitService(Units unit, ServiceResponse serviceResponse) {
+    public AdminUnitService(Units unit, ServiceResponse serviceResponse) {
         this.unit = unit;
         this.serviceResponse = serviceResponse;
     }
@@ -33,7 +33,7 @@ public class UnitService {
      * Constructor
      * @param serviceResponse to be injected
      */
-    public UnitService(ServiceResponse serviceResponse) {
+    public AdminUnitService(ServiceResponse serviceResponse) {
         this.serviceResponse = serviceResponse;
     }
 

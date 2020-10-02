@@ -26,7 +26,7 @@ public class Units {
 	private LocalDateTime updateDate;
 	private LocalDateTime removeDate;
 	private boolean onlineReserve;
-
+	private Company company;
 
 	@JsonView(JsonViews.NormalViews.class)
 	public int getID() {
@@ -103,6 +103,11 @@ public class Units {
 		return onlineReserve;
 	}
 
+	@JsonView(JsonViews.ClientViews.class)
+	public Company getCompany() {
+		return company;
+	}
+
 	public void setID(int id) {
 		ID = id;
 	}
@@ -157,5 +162,9 @@ public class Units {
 
 	public void setOnlineReserve(boolean onlineReserve) {
 		this.onlineReserve = onlineReserve;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 }

@@ -8,6 +8,8 @@ import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.CompanyCategories;
 import com.alomonshi.object.tableobjects.FavoriteCompany;
 import com.alomonshi.object.uiobjects.AddingCompany;
+import com.alomonshi.object.uiobjects.pagination.Pagination;
+import com.alomonshi.object.uiobjects.pagination.PaginationFactory;
 import com.alomonshi.restwebservices.annotation.ClientSecured;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.filters.authentication.RequestHeaderCheck;
@@ -36,6 +38,7 @@ public class CompanyWebService{
 
     private RequestHeaderCheck requestHeaderCheck;
     private ServiceResponse serviceResponse;
+    private Pagination pagination;
 
     @JsonView(JsonViews.ClientViews.class)
     @ClientSecured
@@ -124,6 +127,23 @@ public class CompanyWebService{
     }
 
     /**
+     * @return list of nearest company list
+     */
+    @JsonView(JsonViews.ClientViews.class)
+    @GET
+    @Path("/getNearestList")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CompanyCategories> getNearestList(@QueryParam("lat") float lat,
+                                                  @QueryParam("lon") float lon){
+        try {
+            return ClientCompanyService.getNearestCompaniesInCategories(lat, lon);
+        }catch (Exception e){
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
+    /**
      *
      * @return list of discount company list
      */
@@ -153,14 +173,24 @@ public class CompanyWebService{
     @GET
     @Path("/getSearchedList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getSearchedList(@QueryParam("categoryID") int categoryID,
+    public Pagination getSearchedList(@QueryParam("categoryID") int categoryID,
                                          @QueryParam("companyName") String companyName,
                                          @QueryParam("serviceName") String serviceName,
                                          @QueryParam("lat") float lat,
                                          @QueryParam("lon") float lon,
-                                         @QueryParam("clientID")int clientID){
+                                         @QueryParam("clientID")int clientID,
+                                         @QueryParam("pageSize")int pageSize,
+                                         @QueryParam("pageNumber")int pageNumber){
+        pagination = new Pagination(pageNumber, pageSize);
         try {
-            return ClientCompanyService.getSearchedCompanies(companyName, serviceName, lat, lon, categoryID, clientID);
+            return ClientCompanyService.getSearchedCompanies(
+                    companyName,
+                    serviceName,
+                    lat,
+                    lon,
+                    categoryID,
+                    clientID,
+                    pagination);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -180,13 +210,22 @@ public class CompanyWebService{
     @GET
     @Path("/getFilteredList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getFilteredList(@QueryParam("categoryID") int categoryID,
-                                         @QueryParam("lat") float lat,
-                                         @QueryParam("lon") float lon,
-                                         @QueryParam("filterItem")FilterItem filterItem,
-                                         @QueryParam("clientID")int clientID){
+    public Pagination getFilteredList(@QueryParam("categoryID") int categoryID,
+                                      @QueryParam("lat") float lat,
+                                      @QueryParam("lon") float lon,
+                                      @QueryParam("filterItem")FilterItem filterItem,
+                                      @QueryParam("clientID")int clientID,
+                                      @QueryParam("pageSize")int pageSize,
+                                      @QueryParam("pageNumber")int pageNumber){
+        pagination = new Pagination(pageNumber, pageSize);
         try {
-            return ClientCompanyService.getFilteredCompanies(lat, lon, categoryID, filterItem, clientID);
+            return ClientCompanyService.getFilteredCompanies(
+                    lat,
+                    lon,
+                    categoryID,
+                    filterItem,
+                    clientID,
+                    pagination);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;
@@ -208,13 +247,16 @@ public class CompanyWebService{
     @GET
     @Path("/getFilteredSearchedList")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Company> getFilteredSearchedList(@QueryParam("categoryID") int categoryID,
+    public Pagination getFilteredSearchedList(@QueryParam("categoryID") int categoryID,
                                                  @QueryParam("companyName") String companyName,
                                                  @QueryParam("serviceName") String serviceName,
                                                  @QueryParam("lat") float lat,
                                                  @QueryParam("lon") float lon,
                                                  @QueryParam("filterItem")FilterItem filterItem,
-                                                 @QueryParam("clientID")int clientID){
+                                                 @QueryParam("clientID")int clientID,
+                                                 @QueryParam("pageSize")int pageSize,
+                                                 @QueryParam("pageNumber")int pageNumber){
+        pagination = new Pagination(pageNumber, pageSize);
         try {
             return ClientCompanyService.getFilteredSearchedCompanies(companyName,
                     serviceName,
@@ -222,7 +264,8 @@ public class CompanyWebService{
                     lon,
                     categoryID,
                     filterItem,
-                    clientID);
+                    clientID,
+                    pagination);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
             return null;

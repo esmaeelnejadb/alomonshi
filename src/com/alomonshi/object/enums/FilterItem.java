@@ -8,7 +8,8 @@ public enum FilterItem {
     CHEAPEST("ارزان ترین"),
     BEST("بهترین"),
     DISCOUNT("تخفیف دار"),
-    EXPENSIVE("گرانترین");
+    EXPENSIVE("گرانترین"),
+    NEWEST("جدیدترین");
     private String value;
     private static Map<FilterItem, String> keyValueMap = new HashMap<>();
 

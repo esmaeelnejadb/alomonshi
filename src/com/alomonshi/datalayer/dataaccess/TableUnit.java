@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.alomonshi.datalayer.databaseconnection.DBConnection;
+import com.alomonshi.object.tableobjects.Company;
 import com.alomonshi.object.tableobjects.Units;
 import com.alomonshi.utility.DateTimeUtility;
 
@@ -81,7 +82,7 @@ public class TableUnit {
 					}
 				}
 			}
-			
+
 		}catch(SQLException e)
 		{
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
@@ -161,11 +162,11 @@ public class TableUnit {
 		}finally {
 			if(conn != null) {
 				try {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return units;
 	}
@@ -197,11 +198,48 @@ public class TableUnit {
 		}finally {
 			if(conn != null) {
 				try {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
+		}
+		return unit;
+	}
+
+	/**
+	 * Getting unit from its id with services and comments
+	 * @param unitID intended unit id
+	 * @return unit object
+	 */
+	public static Units getUnitWithServices(int unitID)
+	{
+		Connection conn = DBConnection.getConnection();
+		Units unit = new Units();
+		try {
+			Statement stmt =conn.createStatement();
+			String command = "SELECT " +
+					" UNIT.*, COMP.*" +
+					" FROM" +
+					" UNITS UNIT" +
+					" LEFT JOIN" +
+					" COMPANIES COMP ON UNIT.COMP_ID = COMP.ID" +
+					" AND COMP.IS_ACTIVE IS TRUE" +
+					" WHERE" +
+					" UNIT.ID = " + unitID +
+					" AND UNIT.IS_ACTIVE IS TRUE";
+			ResultSet rs = stmt.executeQuery(command);
+			fillSingleUnitWithServices(rs, unit);
+		}catch(SQLException e) {
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}finally {
+			if(conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+				}
+			}
 		}
 		return unit;
 	}
@@ -234,11 +272,11 @@ public class TableUnit {
 			if(conn != null)
 			{
 				try {
-						conn.close();		
+						conn.close();
 				} catch (SQLException e) {
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
-			}	
+			}
 		}
 		return companyID;
 	}
@@ -334,6 +372,40 @@ public class TableUnit {
 	}
 
 	/**
+	 * Filling company of unit object got from database
+	 * @param resultSet returned from JDBC
+	 * @param unit to be filled
+	 */
+
+	private static void fillCompany(ResultSet resultSet, Units unit){
+		Company company = new Company();
+		try {
+			company.setID(resultSet.getInt(12));
+			company.setCompanyCatID(resultSet.getInt(13));
+			company.setCompanyName(resultSet.getString(14));
+			company.setCompanyAddress(resultSet.getString(15));
+			company.setCompanyPhoneNo1(resultSet.getString(16));
+			company.setCompanyPhoneNo2(resultSet.getString(17));
+			company.setCompanyPhoneNo3(resultSet.getString(18));
+			company.setLocationLat(resultSet.getFloat(19));
+			company.setLocationLon(resultSet.getFloat(20));
+			company.setWebsite(resultSet.getString(21));
+			company.setRate(resultSet.getFloat(22));
+			company.setLogoURL(resultSet.getString(23));
+			company.setLocality(resultSet.getString(24));
+			company.setCityID(resultSet.getInt(25));
+			company.setDistrictID(resultSet.getInt(26));
+			company.setActive(resultSet.getBoolean(27));
+			company.setCommercialCode(resultSet.getString(28));
+			company.setPicURL(resultSet.getString(29));
+			company.setCoverURL(resultSet.getString(30));
+			unit.setCompany(company);
+		}catch(SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
 	 * Fill service and comments that should be got from other tables
 	 * @param unit to be set
 	 */
@@ -342,6 +414,16 @@ public class TableUnit {
 				DateTimeUtility.getCurrentGregorianDate()));
 		unit.setUnitComments(TableComment.getUnitComments(unit.getID()));
 	}
+
+	/**
+	 * Fill service that should be got from other tables
+	 * @param unit to be set
+	 */
+	private static void fillUnitServices (Units unit) {
+		unit.setServices(TableService.getUnitServices(unit.getID(),
+				DateTimeUtility.getCurrentGregorianDate()));
+	}
+
 
 	/**
 	 * Fill single unit got from database with services and comments
@@ -354,6 +436,24 @@ public class TableUnit {
 			while (resultSet.next()) {
 				fillUnit(resultSet, unit);
 				fillUnitServicesAndComments(unit);
+			}
+		}catch (SQLException e){
+			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
+		}
+	}
+
+	/**
+	 * Fill single unit got from database with services and comments
+	 * @param resultSet return from executing query
+	 * @param unit returned filled object
+	 */
+
+	private static void fillSingleUnitWithServices(ResultSet resultSet, Units unit) {
+		try {
+			while (resultSet.next()) {
+				fillUnit(resultSet, unit);
+				fillUnitServices(unit);
+				fillCompany(resultSet, unit);
 			}
 		}catch (SQLException e){
 			Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);

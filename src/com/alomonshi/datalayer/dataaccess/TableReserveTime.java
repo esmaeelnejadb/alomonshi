@@ -17,6 +17,7 @@ import com.alomonshi.object.tableobjects.ReserveTime;
 import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.ClientReservedTime;
+import com.alomonshi.object.uiobjects.ReserveTimeForm;
 import com.alomonshi.utility.UtilityFunctions;
 
 public class TableReserveTime {
@@ -694,29 +695,36 @@ public class TableReserveTime {
 
     /**
      * Getting reserve times in a unit between two days
-     * @param unitID intended unit id
-     * @param stDate start date
-     * @param endDate end date
+     * @param reserveTimeForm input
      * @return list of reserved times
      */
-	public static List<ReserveTime> getUnitReservedTimesBetweenDays(int unitID, int stDate, int endDate)
+	public static List<ReserveTime> getUnitReservedTimesBetweenDays(ReserveTimeForm reserveTimeForm)
 	{
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
+		String middleQuery = reserveTimeForm.getDayNumbers() == null
+				|| reserveTimeForm.getDayNumbers().isEmpty()
+				?
+				""
+				:
+				getToBeDeletedDayListMiddleQuery(reserveTimeForm.getDayNumbers());
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" * FROM" +
-					" RESERVETIMES" +
+					" RESERVETIMES rt , calendar cal" +
 					" WHERE" +
-					" STATUS = " +
+					" rt.DAY_ID = cal.ID" +
+					" AND" +
+					" rt.STATUS = " +
 					ReserveTimeStatus.RESERVED.getValue() +
-					" AND UNIT_ID = " +
-					unitID +
-					" AND DAY_ID BETWEEN " +
-					stDate +
+					" AND rt.UNIT_ID = " +
+					reserveTimeForm.getUnitID() +
+					" AND rt.DAY_ID BETWEEN " +
+					reserveTimeForm.getStartDate() +
 					" AND " +
-					endDate;
+					reserveTimeForm.getEndDate() +
+					middleQuery;
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
 		}catch(SQLException e) {
@@ -736,33 +744,35 @@ public class TableReserveTime {
 
 	/**
 	 * Getting unit midday reserved times
-	 * @param unitID input
-	 * @param stDate input
-	 * @param endDate input
-	 * @param midday input
+	 * @param reserveTimeForm input
 	 * @return reserve time list
 	 */
-	public static List<ReserveTime> getUnitMiddayReservedTimesBetweenDays(int unitID
-			, int stDate
-			, int endDate
-			, MiddayID midday) {
+	public static List<ReserveTime> getUnitMiddayReservedTimesBetweenDays(ReserveTimeForm reserveTimeForm) {
 		Connection conn = DBConnection.getConnection();
 		List<ReserveTime> reserveTimes = new ArrayList<>();
+		String middleQuery = reserveTimeForm.getDayNumbers() == null
+				|| reserveTimeForm.getDayNumbers().isEmpty()
+				?
+				""
+				:
+				getToBeDeletedDayListMiddleQuery(reserveTimeForm.getDayNumbers());
 		try {
 			Statement stmt = conn.createStatement();
 			String command = "SELECT" +
 					" * FROM" +
-					" RESERVETIMES" +
+					" RESERVETIMES rt, calendar cal" +
 					" WHERE" +
-					" STATUS = " +
+					" rt.DAY_ID = cal.ID AND " +
+					" rt.STATUS = " +
 					ReserveTimeStatus.RESERVED.getValue() +
-					" AND UNIT_ID = " +
-					unitID +
-					" AND DAY_ID BETWEEN " +
-					stDate +
+					" AND rt.UNIT_ID = " +
+					reserveTimeForm.getUnitID() +
+					" AND rt.DAY_ID BETWEEN " +
+					reserveTimeForm.getStartDate() +
 					" AND " +
-					endDate +
-					" AND MIDDAY_ID = " + midday.getValue();
+					reserveTimeForm.getEndDate() +
+					" AND rt.MIDDAY_ID = " + reserveTimeForm.getMidday().getValue() +
+					middleQuery;
 			ResultSet rs = stmt.executeQuery(command);
 			fillReserveTimeList(rs, reserveTimes);
 		}catch(SQLException e) {

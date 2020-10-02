@@ -24,6 +24,11 @@ public class ServicesService {
 
     /**
      * Constructor
+     */
+    public ServicesService() {}
+
+    /**
+     * Constructor
      * @param serviceResponse injected object
      */
     public ServicesService(Services service, ServiceResponse serviceResponse) {
@@ -38,6 +43,21 @@ public class ServicesService {
     public ServicesService(ServiceResponse serviceResponse) {
         this.serviceResponse = serviceResponse;
     }
+
+    /**
+     * Get selected service by id for client
+     * @param serviceID to be got from database
+     * @return service object
+     */
+    public Services getServiceByIdForClient (int serviceID) {
+        try {
+            return TableService.getService(serviceID, DateTimeUtility.getCurrentGregorianDate());
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
 
     /**
      * Getting unit services from database

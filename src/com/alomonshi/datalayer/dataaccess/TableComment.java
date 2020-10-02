@@ -17,7 +17,6 @@ import com.alomonshi.object.enums.ReserveTimeStatus;
 import com.alomonshi.object.tableobjects.Comments;
 import com.alomonshi.object.tableobjects.Services;
 import com.alomonshi.object.uiobjects.ClientComment;
-import com.mysql.fabric.xmlrpc.Client;
 
 public class TableComment {
 
@@ -200,6 +199,7 @@ public class TableComment {
 					"    com.reply_comment AS replyComment," +
 					"    com.comment AS comment," +
 					"    comp.COMP_NAME AS companyName," +
+					"    comp.COVER_URL AS companyCover," +
 					"    unit.UNIT_NAME AS unitName," +
 					"    com.COMMENT_DATE AS commentDate," +
 					"    com.REPLY_DATE AS replyDate," +
@@ -228,11 +228,11 @@ public class TableComment {
 		{
 			if(conn != null)
 			{
-				try 
+				try
 				{
-						conn.close();		
-				} catch (SQLException e)  
-				{	
+						conn.close();
+				} catch (SQLException e)
+				{
 					Logger.getLogger("Exception").log(Level.SEVERE, "Exception " + e);
 				}
 			}
@@ -339,6 +339,7 @@ public class TableComment {
 			clientComment.setComment(resultSet.getString("comment"));
 			clientComment.setReplyComment(resultSet.getString("replyComment"));
 			clientComment.setCompanyName(resultSet.getString("companyName"));
+			clientComment.setCompanyCover(resultSet.getString("companyCover"));
 			clientComment.setUnitName(resultSet.getString("unitName"));
 			clientComment.setCommentDate(resultSet.getObject("commentDate", LocalDateTime.class));
 			clientComment.setReplyDate(resultSet.getObject("replyDate", LocalDateTime.class));

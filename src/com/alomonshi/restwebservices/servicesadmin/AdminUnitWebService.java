@@ -1,7 +1,7 @@
 package com.alomonshi.restwebservices.servicesadmin;
 import com.alomonshi.bussinesslayer.ServiceResponse;
 import com.alomonshi.bussinesslayer.accesscheck.dbchangeaccesscheck.CheckAdminAuthority;
-import com.alomonshi.bussinesslayer.unit.UnitService;
+import com.alomonshi.bussinesslayer.unit.AdminUnitService;
 import com.alomonshi.object.tableobjects.Units;
 import com.alomonshi.object.uiobjects.AdminEditObject;
 import com.alomonshi.restwebservices.annotation.CompanyAdminSecured;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @Path("/adminUnit")
 public class AdminUnitWebService {
 
-    private UnitService unitService;
+    private AdminUnitService unitService;
     private ServiceResponse serviceResponse;
 
     @Context
@@ -43,7 +43,7 @@ public class AdminUnitWebService {
         try {
             if (CheckAdminAuthority.isUserCompanyAuthorized(adminEditObject.getClientID()
                     , adminEditObject.getCompanyID())) {
-                unitService = new UnitService(serviceResponse);
+                unitService = new AdminUnitService(serviceResponse);
                 return unitService.getCompanyUnit(adminEditObject.getCompanyID());
             }else
                 return serviceResponse.setResponse(false).setMessage(ServerMessage.ACCESSFAULT);
@@ -67,7 +67,7 @@ public class AdminUnitWebService {
     public ServiceResponse getAdminUnitList(AdminEditObject adminEditObject) {
         serviceResponse = new ServiceResponse();
         try {
-            unitService = new UnitService(serviceResponse);
+            unitService = new AdminUnitService(serviceResponse);
             return unitService.getAdminUnit(adminEditObject.getClientID());
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
@@ -89,7 +89,7 @@ public class AdminUnitWebService {
     public ServiceResponse insertNewUnit(Units unit) {
         serviceResponse = new ServiceResponse();
         try {
-            unitService = new UnitService(unit, serviceResponse);
+            unitService = new AdminUnitService(unit, serviceResponse);
             if (CheckAdminAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())) {
                 return unitService.insertNewUnit();
             }else
@@ -109,7 +109,7 @@ public class AdminUnitWebService {
     public ServiceResponse updateUnit(Units unit) {
         serviceResponse = new ServiceResponse();
         try {
-            unitService = new UnitService(unit, serviceResponse);
+            unitService = new AdminUnitService(unit, serviceResponse);
             if (CheckAdminAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
                     && CheckAdminAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
                 return unitService.updateUnit();
@@ -134,7 +134,7 @@ public class AdminUnitWebService {
     public ServiceResponse deleteUnit(Units unit) {
         serviceResponse = new ServiceResponse();
         try {
-            unitService = new UnitService(unit, serviceResponse);
+            unitService = new AdminUnitService(unit, serviceResponse);
             if (CheckAdminAuthority.isUserCompanyAuthorized(unit.getClientID(), unit.getCompanyID())
                     && CheckAdminAuthority.isUnitBelongToCompany(unit.getID(), unit.getCompanyID())) {
                 return unitService.deleteUnit();
