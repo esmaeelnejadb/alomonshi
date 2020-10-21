@@ -7,6 +7,7 @@ import com.alomonshi.restwebservices.adaptors.LocalTimeAdaptor;
 import com.alomonshi.restwebservices.views.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -32,7 +33,6 @@ public class ReserveTime {
 	private List<Integer> serviceIDs;
 	private String resCodeID;
 	private LocalDateTime reserveTimeGRDateTime;
-
 
 	@JsonView(JsonViews.ClientViews.class)
 	public int getID() {

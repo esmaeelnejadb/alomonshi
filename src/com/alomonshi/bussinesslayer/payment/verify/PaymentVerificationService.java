@@ -87,7 +87,7 @@ public class PaymentVerificationService {
         PaymentVerified paymentVerifiedForCheck = TablePaymentVerified.getPaymentRequest(paymentVerified.getAuthority());
         if (paymentVerifiedForCheck.getID() == 0) {
             if (TablePaymentVerified.insertVerifiedTransaction(paymentVerified)){
-                serviceResponse.setResponse(true);
+                serviceResponse.setResponse(true).setResponseData(paymentVerified.getRefID());
             }else
                 serviceResponse.setResponse(false);
         }else {

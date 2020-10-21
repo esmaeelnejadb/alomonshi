@@ -521,6 +521,7 @@ public class TableReserveTime {
 					" r.DURATION AS duration," +
 					" r.RES_CODE_ID AS reserveCode," +
 					" r.RESERVE_GR_TIME AS gregorianDate," +
+					" r.CLIENT_ID as clientID," +
 					" SUM(rs.SERVICE_PRICE) AS cost," +
 					" c.ID AS companyID," +
 					" c.COMP_NAME AS companyName," +
@@ -584,8 +585,10 @@ public class TableReserveTime {
 					"    r.DURATION AS duration," +
 					"    r.RES_CODE_ID AS reserveCode," +
 					"    r.RESERVE_GR_TIME AS gregorianDate," +
+					" 	 r.CLIENT_ID as clientID," +
 					"    c.id AS companyID," +
 					"    c.COMP_NAME AS companyName," +
+					" 	 c.COVER_URL AS companyCover," +
 					"    u.ID AS unitID," +
 					"    u.UNIT_NAME AS unitName," +
                     "    SUM(rs.SERVICE_PRICE) AS cost" +
@@ -1090,6 +1093,7 @@ public class TableReserveTime {
 			clientReservedTime.setDuration(resultSet.getInt("duration"));
 			clientReservedTime.setReserveCodeID(resultSet.getString("reserveCode"));
 			clientReservedTime.setGregorianDateTime(resultSet.getObject("gregorianDate", LocalDateTime.class));
+			clientReservedTime.setClientID(resultSet.getInt("clientID"));
 			clientReservedTime.setCompanyID(resultSet.getInt("companyID"));
 			clientReservedTime.setCompanyName(resultSet.getString("companyName"));
 			clientReservedTime.setUnitID(resultSet.getInt("unitID"));

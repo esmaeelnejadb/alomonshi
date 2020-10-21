@@ -15,6 +15,7 @@ import java.util.List;
 public class ClientReservedTime {
 
     private int reserveTimeID;
+    private int clientID;
     private Integer dayID;
     private LocalTime startTime;
     private int duration;
@@ -36,6 +37,11 @@ public class ClientReservedTime {
     @JsonView({JsonViews.ClientViews.class})
     public int getReserveTimeID() {
         return reserveTimeID;
+    }
+
+    @JsonView({JsonViews.ClientViews.class})
+    public int getClientID() {
+        return clientID;
     }
 
     @XmlJavaTypeAdapter(PersianDateIDAdaptor.class)
@@ -128,6 +134,10 @@ public class ClientReservedTime {
 
     public void setReserveTimeID(int reserveTimeID) {
         this.reserveTimeID = reserveTimeID;
+    }
+
+    public void setClientID(int clientID) {
+        this.clientID = clientID;
     }
 
     public void setDayID(Integer dayID) {

@@ -4,6 +4,7 @@ import com.alomonshi.bussinesslayer.reservetimes.ReserveTimeService;
 import com.alomonshi.datalayer.dataaccess.TableReserveTime;
 import com.alomonshi.object.enums.MiddayID;
 import com.alomonshi.object.tableobjects.ReserveTime;
+import com.alomonshi.object.uiobjects.ClientReservedTime;
 import com.alomonshi.restwebservices.filters.HttpContextHeader;
 import com.alomonshi.restwebservices.message.ServerMessage;
 import com.alomonshi.restwebservices.views.JsonViews;
@@ -42,6 +43,31 @@ public class ClientReserveTimesWebService {
             return TableReserveTime.getClientUnitReserveTimeInADay(dateID, unitID);
         }catch (Exception e){
             Logger.getLogger("Exception").log(Level.SEVERE, "Error : " + e);
+            return null;
+        }
+    }
+
+    /**
+     * getting client reserved time for online payment
+     * @param reserveTime to be reserved
+     * @return service response
+     */
+    @ClientSecured
+    @POST
+    @Path("/getReserveTime")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public ClientReservedTime getReservedTime(ReserveTime reserveTime){
+        try {
+            ClientReservedTime clientReservedTime = TableReserveTime.getClientReservedTime(reserveTime.getID());
+            if (clientReservedTime.getClientID() == reserveTime.getClientID()) {
+                return clientReservedTime;
+            }else {
+                return null;
+            }
+        }catch (Exception e) {
+            Logger.getLogger("Exception").log(Level.SEVERE, "Cannot find reserved time "
+                    + reserveTime.getID() + " Because of "+ e);
             return null;
         }
     }
